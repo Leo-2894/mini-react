@@ -1,4 +1,4 @@
-import { diff, clone } from './diff.js';
+import { diff } from './diff.js';
 import { patch, validatePatch } from './patch.js';
 import { readTree, disposeDOM } from './dom.js';
 export function createRenderer(host, { role = 'managed' } = {}) {

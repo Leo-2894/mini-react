@@ -29,6 +29,10 @@ describe('D01/D02 DOM and VDOM', () => {
     expect(clone.children[1].value).toBe('<live&>'); expect(clone.children[2].value).toBe('b');
     expect(readTree(clone)).toEqual(shape);
   });
+  it('covers additional boolean attrs and rejects non-string styles', () => {
+    expect(h('ol', { attrs: { reversed: false, inert: true } }).attrs).toEqual({ inert: '' });
+    expect(() => h('p', { attrs: { style: { color: 'red' } } })).toThrow(/style must be a string/);
+  });
   it('supports pure children and reserved round-trip keys', () => {
     const Child = ({ label }) => h('span', {}, label);
     const node = h(Child, { key: 'stable', label: 'Hello' });

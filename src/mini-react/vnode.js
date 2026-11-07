@@ -1,4 +1,4 @@
-const booleans = new Set('checked selected disabled readonly multiple required autofocus hidden open controls loop muted autoplay'.split(' '));
+const booleans = new Set('allowfullscreen async autofocus autoplay checked controls default defer disabled formnovalidate hidden inert ismap itemscope loop multiple muted nomodule novalidate open playsinline readonly required reversed selected'.split(' '));
 const unsupported = new Set(['svg', 'math', 'template']);
 export const text = value => ({ kind: 'text', text: String(value) });
 export const comment = value => ({ kind: 'comment', text: String(value) });
@@ -9,6 +9,7 @@ export function normalizeAttrs(attrs = {}) {
   const result = {};
   for (const [rawName, value] of Object.entries(attrs)) {
     const name = rawName.toLowerCase();
+    if (name === 'style' && value != null && typeof value !== 'string') throw Error('style must be a string');
     if (!/^[a-z_:][a-z0-9_:.-]*$/.test(name) || name.startsWith('on') || name === 'srcdoc' || name === 'data-key') throw Error(`Unsafe/reserved attribute: ${name}`);
     if (value == null || (booleans.has(name) && value === false)) continue;
     if (['href', 'src', 'action', 'formaction', 'xlink:href'].includes(name) && /^[\s\u0000-\u0020]*(javascript|vbscript|data):/i.test(String(value).replace(/[\u0000-\u0020]/g, ''))) throw Error(`Unsafe URL: ${name}`);
