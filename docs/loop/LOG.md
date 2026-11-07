@@ -35,3 +35,9 @@
 - vnode/dom, loopback server, npm 스크립트, D01/D02 unit 작성. 원본 DOM 재생성 없음.
 - npm run test:unit: exit 0, 1 file / 12 passed / 0 failed / 0 skipped.
 - 회귀/자체 리뷰: literal VDOM, form live props, 공백/comment/빈 text/unsafe/지원 밖/frozen 입력 검증. 설계 변경 없음. 수정 시도 0.
+
+## Sol TURN 03 — PASS
+- diff.js 및 F01/F02: TEXT/ATTRS/CREATE/CHILDREN/EVENTS/PROPS, preorder 참조, keyed/unkeyed 혼합, 입력/계획 불변.
+- npm run test:unit: exit 0, 2 files / 20 passed / 0 failed / 0 skipped.
+- 기록 갱신 Python read_text 기본 cp949 오류 1회: UTF-8 명시로 수정. 제품/테스트 실패 아님, 기록 갱신 재실행.
+- 자체 리뷰: DOM 접근 없음, CREATE 내부 중복 수정 없음, 함수 identity 보존. 계약 변경 없음.
