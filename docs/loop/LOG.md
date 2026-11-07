@@ -41,3 +41,9 @@
 - npm run test:unit: exit 0, 2 files / 20 passed / 0 failed / 0 skipped.
 - 기록 갱신 Python read_text 기본 cp949 오류 1회: UTF-8 명시로 수정. 제품/테스트 실패 아님, 기록 갱신 재실행.
 - 자체 리뷰: DOM 접근 없음, CREATE 내부 중복 수정 없음, 함수 identity 보존. 계약 변경 없음.
+
+## Sol TURN 04 — PASS
+- patch.js/renderer.js 및 P01~P05 DOM 통합 unit. 변경 전 참조 결속, 전체 preflight, postorder CHILDREN, listener 정리, controlled prop drift/selection 복구.
+- npm run test:unit: exit 0, 3 files / 32 passed / 0 failed / 0 skipped. 소형 keyed 목록 25쌍 결과/참조 검증 포함.
+- git diff --check: exit 0. 자체 리뷰: 변경 없는 DOM write 0, stale/foreign/replay/외부변경 사전 거부. 수정 시도 0.
+- 계약 변경 없음. validatePatch 내부 helper를 export하여 TURN 05 양 영역 사전 검증에 재사용한다.
