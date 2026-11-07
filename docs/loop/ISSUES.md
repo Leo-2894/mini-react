@@ -1,13 +1,13 @@
-# TURN 06 독립 검수 — 현재 OPEN 이슈
+# TURN 06 — Sol 수정 완료 / Astra 재검수 대기
 기준 HEAD: 90fc52b63099f537a7be319eef6b0db449afdad4 / 제품 83b1711ae13a63fba6cb38eaf6cb5162c12bc7ec.
 판정 REJECTED. 상세 재현·기대/실제·원인·수정 지시는 reviews/turn06.md 3절에 기록했다.
 
 | ID | Severity | Status | 위치 | 재현·실제 결과 | 수정/재검수 |
 |---|---|---|---|---|---|
-| QA06-001 | HIGH | OPEN | src/mini-react/dom.js:13,39; patch.js:19; renderer.js:28 | checkbox attrs.type + props.value='first'를 동일 Tree로 두 번 render → External DOM change | reflected attrs/props 계약; no-op/type 전환/외부 변경 검출 회귀 |
-| QA06-002 | HIGH | OPEN | phase1/index.html:16,18; src/phase1/controller.js:11,23 | 같은 name radio 복제→actual 체크 해제; UI Patch→actual true/edit false | 영역별 group/form ownership 격리, 초기 참조/양쪽 History 일치 |
-| QA06-003 | HIGH | OPEN | src/phase1/controller.js:11; html-policy.js:3,12 | 동일 id/for 복제 후 edit label click→actual checkbox만 변경 | 영역 내 label 연결, logical id/for 보존, Patch/History/keyboard 회귀 |
-| QA06-004 | MEDIUM | OPEN | src/phase1/main.js:6,57 | h3에 id=edit-text 설정 후 텍스트 변경→Invalid text | 제어 패널 참조/조회 범위 격리, 예약 UI ID 충돌 회귀 |
+| QA06-001 | HIGH | Sol 수정 완료 / Astra 재검수 대기 | src/mini-react/dom.js:13,39; patch.js:19; renderer.js:28 | checkbox attrs.type + props.value='first'를 동일 Tree로 두 번 render → External DOM change | reflected attrs/props 계약; no-op/type 전환/외부 변경 검출 회귀 |
+| QA06-002 | HIGH | Sol 수정 완료 / Astra 재검수 대기 | phase1/index.html:16,18; src/phase1/controller.js:11,23 | 같은 name radio 복제→actual 체크 해제; UI Patch→actual true/edit false | 영역별 group/form ownership 격리, 초기 참조/양쪽 History 일치 |
+| QA06-003 | HIGH | Sol 수정 완료 / Astra 재검수 대기 | src/phase1/controller.js:11; html-policy.js:3,12 | 동일 id/for 복제 후 edit label click→actual checkbox만 변경 | 영역 내 label 연결, logical id/for 보존, Patch/History/keyboard 회귀 |
+| QA06-004 | MEDIUM | Sol 수정 완료 / Astra 재검수 대기 | src/phase1/main.js:6,57 | h3에 id=edit-text 설정 후 텍스트 변경→Invalid text | 제어 패널 참조/조회 범위 격리, 예약 UI ID 충돌 회귀 |
 
 증거: output/playwright/turn06/independent-forms.log, independent-boundaries.log, independent-assertions.log, radio-ui-snapshot.log, id-collision-ui.log, 이미지 2개.
 기존 unit 53/E2E 8은 독립 재실행 PASS지만 위 반례는 실패했다. Sol REVIEW_REWORK 후 Astra TURN 06 재검수 필요. TURN 07 승인 없음.
@@ -46,3 +46,19 @@ ISSUE-ID / Severity(CRITICAL,HIGH,MEDIUM,LOW) / Status / Commit / 파일:줄 / �
 - SOL-005-01 / MEDIUM / RESOLVED (8 E2E 재검증 PASS): E2E sync helper가 innerHTML 문자열 동등을 사용하여 같은 DOM의 속성 순서 차이를 오탐. 첫 실행 3 passed/5 failed. production 함수를 쓰지 않는 DOM 구조·정렬 속성·live props oracle로 교체, Node === 별도 검증 유지. output/playwright/turn05-attempt1에 원본 실패 trace 보존. 제품 계약 변경 없음.
 
 - SOL-005-02 / LOW / RESOLVED: 자체 리뷰에서 boolean attribute 목록 누락 및 style 객체의 암묵 문자열화를 확인. HTML boolean 목록 보강, style string 계약 강제 및 단위 반례 추가. 계약 변경 없음.
+
+## REVIEW_REWORK 1 — 수정 연결 (독립 해결 승인 아님)
+수정 코드: ee14fc8235a7874643af26ef9374602fd6975659. Astra의 원본 REJECTED 판정은 reviews/turn06.md에 보존했다.
+
+| 결함 | 수정 파일/원인 처리 | 회귀 테스트 | 실행 증거/남은 검토 |
+|---|---|---|---|
+| QA06-001 | src/mini-react/dom.js expectedAttrs/syncProps, patch.js preflight/control: 엔진이 input.value/type 갱신 후 만든 value content attribute만 logical/physical projection으로 정확 비교 | tests/unit/review06.test.js QA06-001 5건; tests/e2e/review06.spec.js QA06-001 | 동일 Tree 반복/no-op 0 writes, attrs+props 충돌, 기본 on/명시 값/제어권 제거/명시 attr 삭제/type 전환, 외부 value/title/empty-style 거부 PASS |
+| QA06-002 | src/phase1/boundaries.js isolateHost + controller.js: host 외부 독립 native form ownership | unit initial checked radios; E2E checked radio cloning / Inspector type-name radio / combined | 초기 source ===, 초기 true 상태, 여러 그룹 draft/patch/no-op/Undo/Redo 및 saved snapshot PASS |
+| QA06-003 | boundaries.js capture label activation: 전역 기본 activation 취소, host 내부 control focus/click. id/for 원문 유지 | unit explicit/implicit label; E2E explicit/implicit labels + text focus + Space + History | 재현된 교차 활성화 해소 PASS. 물리 ID namespace/native label.control/labels 및 보조기기 전역 ID 해석을 격리하지 않는 한계는 Astra 검토 필요 |
+| QA06-004 | src/phase1/main.js: 초기 Inspector control Map/고정 노드 참조 | E2E every Inspector control id collision; combined | edit-text/target/attr-name/attr-value/tag 각각 편집→Patch→Undo/Redo 및 alert 없음 PASS |
+
+모든 최종 명령: test-unit.log 60/0/0 exit 0, test-e2e.log 14/0/0 exit 0, test-all.log 60+14/0/0 exit 0. 경로는 output/playwright/turn06-rework1/.
+수정 전 신규 실패: unit 6 FAIL(기존 53 PASS), 신규 E2E 5 FAIL. 기존 테스트 삭제/skip/기대값 완화 없음.
+
+### 도구 부작용 — 제품 검증 완화 없음
+CLI screenshot 전후 text input에 style 없음→style="" 생성 확인(cli-screenshot-attrs.log). 그 뒤 연속 Patch는 외부 변경으로 거부되었으며 이는 정상 검출이다. cli-combined-failure.*에 보존. Chromium/Chrome 연속 조작 probe 및 screenshot을 마지막에 배치한 CLI snapshot에서는 성공했다. 엔진은 이를 예외 처리하지 않았다.

@@ -84,3 +84,34 @@
 - 최종 git rev-parse HEAD 불변; git diff --check exit 0; src/tests/phase1/scripts/package/architecture 변경 없음. 검수 브라우저 close, 직접 시작 서버 Ctrl+C 종료, CLI list no browsers/4173 listener 없음 확인.
 - 판정 HIGH 3 / MEDIUM 1 → TURN 06 REJECTED. Sol REVIEW_REWORK 후 같은 TURN 06 재검수. revision_count 0(첫 수정 전). TURN 07~12 미착수 유지.
 - 보고서/STATE/HANDOFF/LOG/ISSUES만 저장. 미검증 Firefox/WebKit·Phase 2·clean reinstall. 필수 명령 실행 가능했으므로 TEST_BLOCKED 아님. 정상 인계 STOP.
+
+## Sol TURN 06 REVIEW_REWORK 1 — 시작
+- 사용자 지정 순서의 문서 9개 전체 읽기. cwd/root/HEAD 90fc52b 일치. 예상된 Astra 문서 5개 변경 외 제품 변경 없음. 검수 산출물을 로컬 baseline commit으로 보존.
+- revision_count=0은 완료된 재검수 회수이며 현재 첫 수정 진행. 먼저 네 결함 실패 회귀를 확보한다. 기존 output/playwright/turn06/는 수정하지 않는다. 새 증거는 turn06-rework1/.
+
+### REVIEW_REWORK 1 — 재현 및 수정 시도 1
+- 수정 전 npm run test:unit exit 1: 기존 53 PASS, 신규 6 FAIL, 0 SKIP. red-unit.log.
+- 수정 전 신규 E2E npm run test:e2e -- tests/e2e/review06.spec.js exit 1: 0 PASS/5 FAIL/0 SKIP. red-e2e.log 및 red-test-results/. 기존 Astra turn06 증거 불변.
+- QA06-001: input value content-attribute의 엔진 반영 직후 projection을 Node별 WeakMap에 기록. logical attrs/props는 불변, 외부 attrs 사전 검증은 정확 비교 유지.
+- QA06-002: host 외부에 각기 form wrapper를 배치, name/VDOM/source Node는 보존.
+- QA06-003: host capture boundary에서 label의 native 전역 activation을 취소하고 host 내부 control만 focus/click. 물리 id/for는 보존. radio와 label을 별도로 처리.
+- QA06-004: Inspector control은 bootstrap에서 고정 참조 확보. 사용자 DOM의 id를 금지하지 않음.
+- 공개 VDOM/Diff/Patch/renderer 인터페이스 변경 없음. 폼 wrapper/label activation 정책과 value projection은 재검수 대상 구현 보완이다.
+
+### REVIEW_REWORK 1 — 시도 1 검증/CLI 원인 분리
+- npm run test:unit exit 0: 59 PASS/0 FAIL/0 SKIP. npm run test:e2e exit 0: 기존 8+신규 5 = 13 PASS/0 FAIL/0 SKIP. attempt1-unit.log / attempt1-e2e.log.
+- CLI ID collision 편집→Patch 성공, browser console errors/warnings 0. 이후 screenshot을 끼운 radio 연속 조작에서 External DOM change 발생, cli-combined-failure.yml/png 보존.
+- 같은 연속 조작을 신규 E2E로 추가: Chromium 1 PASS, Chrome channel 1 PASS (combined-probe.log/chrome-combined-probe.log). 실행 도구 차이 원인 조사.
+- 확정 원인: CLI screenshot 전 actual/editor text input attrs에 style 없음, 후 style="" 생성. cli-screenshot-attrs.log의 before/after 실제 속성 배열로 확인. 제품은 의도대로 외부 속성 mutation을 거부했다. 검사 완화/제품 수정 없음. screenshot은 검증 마지막 또는 reload 후 후속 조작. 제품 실패 수정 회수에 추가하지 않음.
+- 외부 empty style 거부 unit 추가 및 radio saved snapshot 기대값 보강. README에 projection/form/label 활성화 정책과 native ID getter 한계, screenshot 도구 부작용 기록.
+
+## 2026-11-07 15:45 Asia/Seoul — Sol REVIEW_REWORK 1 검증 완료 / Astra 재검수 인계
+- 최종 npm run test:unit exit 0: 5 files / 60 PASS / 0 FAIL / 0 SKIP. test-unit.log.
+- 최종 npm run test:e2e exit 0: 14 Chromium PASS / 0 FAIL / 0 SKIP. test-e2e.log.
+- 최종 npm run test:all exit 0: 60 unit + 14 Chromium E2E PASS / 0 FAIL / 0 SKIP. test-all.log. 반복 실행을 고유 시험 수로 중복 합산하지 않음.
+- 기존 53 unit/8 E2E 유지 + 신규 7 unit/6 E2E. History/lock/preflight/listener/focus 포함 전체 회귀 통과. radio snapshot 기대값 검증.
+- CLI 최종 snapshot: 실제/테스트 radio 모두 checked, 성공 status, History 3/3. cli-final-snapshot.log/radio-fixed.png. 초기 ID 충돌 수정 성공 화면 id-collision-fixed.png.
+- baseline hashes 재확인: turn06 원본 보고서, architecture, 하네스, Agent1 모두 UNCHANGED. 원본 Astra 증거 폴더를 쓰기 대상으로 사용하지 않음.
+- git diff --check exit 0. 수정 코드 커밋 ee14fc8235a7874643af26ef9374602fd6975659; Astra 산출물 보존 checkpoint b431784.
+- 제품 수정 시도 1회. 완료된 QA 재검수는 0회, 첫 재검수 대기. label activation 정책/native ID getter 한계와 대안은 README/HANDOFF/ISSUES에 명시. 공개 엔진 API/VDOM 변경 없음.
+- STATE: 06 REVIEW_REWORK / next_owner Astra / rework_status AWAITING_ASTRA_REVIEW. 원본 독립 review_status REJECTED 유지. TURN 07 미착수. 공통 기록 커밋 후 최종 작업 트리 확인하고 STOP.
