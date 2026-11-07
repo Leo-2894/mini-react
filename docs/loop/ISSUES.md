@@ -1,6 +1,22 @@
+# TURN 06 독립 검수 — 현재 OPEN 이슈
+기준 HEAD: 90fc52b63099f537a7be319eef6b0db449afdad4 / 제품 83b1711ae13a63fba6cb38eaf6cb5162c12bc7ec.
+판정 REJECTED. 상세 재현·기대/실제·원인·수정 지시는 reviews/turn06.md 3절에 기록했다.
+
+| ID | Severity | Status | 위치 | 재현·실제 결과 | 수정/재검수 |
+|---|---|---|---|---|---|
+| QA06-001 | HIGH | OPEN | src/mini-react/dom.js:13,39; patch.js:19; renderer.js:28 | checkbox attrs.type + props.value='first'를 동일 Tree로 두 번 render → External DOM change | reflected attrs/props 계약; no-op/type 전환/외부 변경 검출 회귀 |
+| QA06-002 | HIGH | OPEN | phase1/index.html:16,18; src/phase1/controller.js:11,23 | 같은 name radio 복제→actual 체크 해제; UI Patch→actual true/edit false | 영역별 group/form ownership 격리, 초기 참조/양쪽 History 일치 |
+| QA06-003 | HIGH | OPEN | src/phase1/controller.js:11; html-policy.js:3,12 | 동일 id/for 복제 후 edit label click→actual checkbox만 변경 | 영역 내 label 연결, logical id/for 보존, Patch/History/keyboard 회귀 |
+| QA06-004 | MEDIUM | OPEN | src/phase1/main.js:6,57 | h3에 id=edit-text 설정 후 텍스트 변경→Invalid text | 제어 패널 참조/조회 범위 격리, 예약 UI ID 충돌 회귀 |
+
+증거: output/playwright/turn06/independent-forms.log, independent-boundaries.log, independent-assertions.log, radio-ui-snapshot.log, id-collision-ui.log, 이미지 2개.
+기존 unit 53/E2E 8은 독립 재실행 PASS지만 위 반례는 실패했다. Sol REVIEW_REWORK 후 Astra TURN 06 재검수 필요. TURN 07 승인 없음.
+이하 Sol TURN 05 및 초기 TURN 01 기록은 과거 이력이며 현재 OPEN 상태를 덮어쓰지 않는다.
+
+---
 # API Studio issues
 
-## 현재 상태 — Sol TURN 05
+## 이전 상태 — Sol TURN 05
 - SOL-005-01/02 재검증 완료. 확인된 미해결 제품 결함 없음.
 - 필수 Phase 1 자체 검증: 53 unit + 8 Chromium E2E PASS, 0 fail/skip. 독립 승인 대기.
 - Chromium 이외 브라우저/Phase 2 전체 미검증. 원자 rollback 미지원은 계약상 한계이며 부분 적용 오류 잠금은 unit 검증했다.

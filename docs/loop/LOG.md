@@ -65,3 +65,22 @@
 - 로컬 검증 코드 checkpoint: 83b1711ae13a63fba6cb38eaf6cb5162c12bc7ec. 02 b4acee1 / 03 601b091 / 04 07a20db / 05 83b1711. 원격 없음.
 - STATE 06/Astra/NOT_STARTED, 07~12 미착수. Sol 05 자체 PASS만 기록. turn06.md 생성/승인 없음. HANDOFF/ISSUES 갱신 후 docs checkpoint 및 최종 git status 확인으로 종료.
 - 미해결 확정 결함 없음. 미검증: Chromium 외 브라우저, Astra 독립 QA, Phase 2 전체. 설계 변경 없음.
+
+## 2026-11-07 15:01~15:14 Asia/Seoul — Astra TURN 06 독립 검수 REJECTED
+- 필수 순서로 지침/상태/설계/이전 리뷰/LOG/ISSUES 읽기 성공. 별도 Astra 지침 파일 없음. 실제 cwd/Git root 지정 경로 일치.
+- 시작 HEAD 90fc52b63099f537a7be319eef6b0db449afdad4, git status --short empty. git diff --stat 83b1711..HEAD: 공통 기록 4개만 변경, src/tests/phase1/scripts/package diff 없음.
+- npm run test:unit exit 0: 4 files, 53 PASS/0 FAIL/0 SKIP.
+- npm run test:e2e exit 0: 8 Chromium PASS/0 FAIL/0 SKIP.
+- npm run test:all exit 0: 53 unit + 8 Chromium E2E PASS, 0 FAIL/0 SKIP. 모두 별도 실행; 재실행 수치를 고유 테스트 수로 합산하지 않음.
+- stdout/stderr: output/playwright/turn06/test-unit.log, test-e2e.log, test-all.log. 이전 보고서는 prior-playwright-report/prior-test-results에 복사 보존.
+- Playwright Skill 및 CLI reference 읽음, npx/로컬 CLI 확인. 자동 E2E 후 npm run dev 서버 별도 시작; CLI astra-turn06 open→snapshot→Inspector 조작→snapshot→이미지 및 eval.
+- Chrome/157.0.0.0에서 독립 probe: QA06-001 value reflected attrs, QA06-002 radio 그룹 간섭, QA06-003 label for 교차 연결, QA06-004 Inspector ID 충돌 재현. 최종 기대/실제 5조건 0 PASS/5 FAIL; CLI 실행 exit 0과 기능 실패를 구별함.
+- 추가 통과: mixed keyed/unkeyed text/comment 이동·6개 Node 참조·이동 부모 내부 갱신, 교체 subtree listener 0, 55회 History 후 50개/oldest S6/newest S55 양쪽 복원, unsafe editor preflight DOM/cursor 보존, default-on checkbox round trip.
+- 증거: independent-forms.log, independent-boundaries.log, independent-assertions.log, radio-ui-snapshot.log, id-collision-ui.log, radio-mismatch.png(시각 검토), id-collision.png. probe 소스도 CLI 로그에 포함되어 재현 가능.
+- 마지막 probe trace .playwright-cli/traces/trace-1794031875416.trace(.network/resources 동반). 전체 UI 과정 trace로 과장하지 않음.
+- 최초 복잡한 CLI eval 1회는 .cmd quoting SyntaxError로 미실행. 같은 CLI JS에 Node spawnSync 인자 배열을 전달해 해결. 제품 오류/수정 시도가 아님.
+- unsafe onclick 후보의 의도적 주입에서 CSP 차단 console error 1건. 정상 앱 오류로 분류하지 않음.
+- 첫 E2E 실패 5개 error-context 직접 대조: 속성 순서 문자열 차이 확인. 현재 독립 DOM 구조 oracle의 순서 무시/live props/참조 assertion은 타당. 해당 수정과 별개로 폼/ID 경계 회귀 누락 확인.
+- 최종 git rev-parse HEAD 불변; git diff --check exit 0; src/tests/phase1/scripts/package/architecture 변경 없음. 검수 브라우저 close, 직접 시작 서버 Ctrl+C 종료, CLI list no browsers/4173 listener 없음 확인.
+- 판정 HIGH 3 / MEDIUM 1 → TURN 06 REJECTED. Sol REVIEW_REWORK 후 같은 TURN 06 재검수. revision_count 0(첫 수정 전). TURN 07~12 미착수 유지.
+- 보고서/STATE/HANDOFF/LOG/ISSUES만 저장. 미검증 Firefox/WebKit·Phase 2·clean reinstall. 필수 명령 실행 가능했으므로 TEST_BLOCKED 아님. 정상 인계 STOP.
