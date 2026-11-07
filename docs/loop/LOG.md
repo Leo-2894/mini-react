@@ -47,3 +47,21 @@
 - npm run test:unit: exit 0, 3 files / 32 passed / 0 failed / 0 skipped. 소형 keyed 목록 25쌍 결과/참조 검증 포함.
 - git diff --check: exit 0. 자체 리뷰: 변경 없는 DOM write 0, stale/foreign/replay/외부변경 사전 거부. 수정 시도 0.
 - 계약 변경 없음. validatePatch 내부 helper를 export하여 TURN 05 양 영역 사전 검증에 재사용한다.
+
+## Sol TURN 05 — 진행/수정 시도 1
+- npm run test:unit: 4 files / 51 passed, 0 failed/skipped.
+- Chromium v1254 설치 성공. npm run test:e2e 1차: exit 1, 3 passed / 5 failed / 0 skipped.
+- SOL-005-01: 속성 순서의 문자열 비교 오탐. 독립 구조 oracle로 수정. 실패 trace output/playwright/turn05-attempt1 보존.
+
+## 2026-11-07 14:55 Asia/Seoul — Sol TURN 05 PASS 및 Astra 인계 STOP
+- E2E 수정 시도 1 후 npm run test:e2e: exit 0, 8 passed / 0 failed / 0 skipped.
+- 자체 리뷰/수정 시도 2: HTML boolean 목록 보강, style 문자열 계약 강제. SOL-005-02 회귀 unit 추가; 예상 밖 두 번째 적용 실패의 cursor/잠금 unit 추가. 불필요한 renderer import 정리.
+- npm run test:unit: exit 0, 4 files / 53 passed / 0 failed/skipped.
+- 최종 npm run test:all: exit 0, 53 unit + 8 Chromium E2E passed / 0 failed / 0 skipped. 원본 로그 output/playwright/turn05-test-all.log, HTML report playwright-report/.
+- CLI Skill: npx 존재 확인, local @playwright/cli --help; open→snapshot→fill e58→click e62→snapshot→click e11→snapshot. 실제/테스트 제목 반영 및 S1 History 추가 확인. console error: Total messages 0 (Errors 0, Warnings 0).
+- screenshot output/playwright/phase1-desktop.png 전체 화면 시각 검토 완료. 모바일 390x844 overflow/console E2E 통과. CLI browser close, dev server Ctrl+C 종료.
+- git diff --check exit 0; runtime dependencies 없음; src의 innerHTML/outerHTML/eval/replaceChildren/textContent 직접 갱신 검색 결과 없음. DOM 직접 편집은 설계 허용된 editHost에 한정.
+- 기존 architecture SHA256 6DABC961C18F27D27764400A23352F3F19956A27284D5269464DBDAD5C1F47CB / 하네스 237E5374067253F98ED73B8FBA4AE51C2722C2642EEDC9817AC9EB45C5583325 / Agent1 83639CFD08C4CAA8549C871BB152A6792A3B99D8B5C7C7F6118972A5CA6C8FC9 불변.
+- 로컬 검증 코드 checkpoint: 83b1711ae13a63fba6cb38eaf6cb5162c12bc7ec. 02 b4acee1 / 03 601b091 / 04 07a20db / 05 83b1711. 원격 없음.
+- STATE 06/Astra/NOT_STARTED, 07~12 미착수. Sol 05 자체 PASS만 기록. turn06.md 생성/승인 없음. HANDOFF/ISSUES 갱신 후 docs checkpoint 및 최종 git status 확인으로 종료.
+- 미해결 확정 결함 없음. 미검증: Chromium 외 브라우저, Astra 독립 QA, Phase 2 전체. 설계 변경 없음.

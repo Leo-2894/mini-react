@@ -1,4 +1,11 @@
 # API Studio issues
+
+## 현재 상태 — Sol TURN 05
+- SOL-005-01/02 재검증 완료. 확인된 미해결 제품 결함 없음.
+- 필수 Phase 1 자체 검증: 53 unit + 8 Chromium E2E PASS, 0 fail/skip. 독립 승인 대기.
+- Chromium 이외 브라우저/Phase 2 전체 미검증. 원자 rollback 미지원은 계약상 한계이며 부분 적용 오류 잠금은 unit 검증했다.
+- 아래 TURN 01 내용은 초기 설계 시점의 기록이다.
+
 기준: TURN 01 / 2026-11-07 / 구현 없음 / commit none
 
 ## 미해결 확정 결함
@@ -18,3 +25,8 @@
 ## 이후 결함 기록 형식
 ISSUE-ID / Severity(CRITICAL,HIGH,MEDIUM,LOW) / Status / Commit / 파일:줄 / 재현 명령·입력 / 기대 / 실제 / 증거 / 원인 가설 / 수정 지시 / 재검수 결과.
 검증 불가는 UNVERIFIED로 분리하고 CRITICAL/HIGH 또는 필수 미검증은 QA PASS 금지.
+
+## TURN 05 구현 중 발견/수정
+- SOL-005-01 / MEDIUM / RESOLVED (8 E2E 재검증 PASS): E2E sync helper가 innerHTML 문자열 동등을 사용하여 같은 DOM의 속성 순서 차이를 오탐. 첫 실행 3 passed/5 failed. production 함수를 쓰지 않는 DOM 구조·정렬 속성·live props oracle로 교체, Node === 별도 검증 유지. output/playwright/turn05-attempt1에 원본 실패 trace 보존. 제품 계약 변경 없음.
+
+- SOL-005-02 / LOW / RESOLVED: 자체 리뷰에서 boolean attribute 목록 누락 및 style 객체의 암묵 문자열화를 확인. HTML boolean 목록 보강, style string 계약 강제 및 단위 반례 추가. 계약 변경 없음.
