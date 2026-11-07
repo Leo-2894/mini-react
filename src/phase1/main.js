@@ -3,7 +3,11 @@ import { createDOM, domToVNode } from '../mini-react/dom.js';
 import { createRenderer } from '../mini-react/renderer.js';
 import { createPhase1 } from './controller.js';
 import { validatePolicy, protectEditor } from './html-policy.js';
-const $ = id => document.getElementById(id);
+// Capture control references before user DOM can introduce colliding IDs.
+const inspector = document.querySelector('.inspector');
+const inspectorControls = new Map([...inspector.querySelectorAll('[id]')].map(node => [node.id, node]));
+const initialNodes = new Map(['actual-host', 'edit-host', 'feedback-host'].map(id => [id, document.getElementById(id)]));
+const $ = id => inspectorControls.get(id) || initialNodes.get(id);
 const actual = $('actual-host'), editor = $('edit-host');
 const app = createPhase1(actual, editor);
 const feedback = createRenderer($('feedback-host'));

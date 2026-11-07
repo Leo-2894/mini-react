@@ -46,3 +46,11 @@ Inspector 대상은 테스트 영역 내부의 CSS 선택자다. 예: `[data-key
 HTML namespace의 제한된 DOM을 지원한다. SVG/MathML/template/custom element/Shadow DOM/file input/multiple select는 범위 밖이며 오류를 낸다. 전역 최단 편집/LIS/Fiber/Concurrent React 호환성을 보장하지 않는다. 구조/속성 외부 변경은 거부하고 제어 중인 live prop drift만 복구한다. 현재 브라우저 검증은 Chromium이다.
 
 HTTP 통신·CORS 설명·민감 요청 이력 정제와 Phase 2 사용법은 TURN 09~11에서 구현 및 검증 후 문서화한다. 현재 Phase 1의 PASS는 구현자의 자체 검증이며 Astra의 TURN 06/12 승인과 구별한다. 기술 계약은 `docs/architecture.md`, 실제 진행/인계/실패 기록은 `docs/loop/` 참고.
+
+## TURN 06 폼/ID 경계 보완 (Astra 재검수 대기)
+
+- 엔진은 input의 attrs와 live props를 계속 분리한다. checkbox/radio의 value setter 및 type 전환은 value content attribute를 바꿀 수 있으므로, 엔진 반영 직후의 logical/physical value 매핑을 Node별 WeakMap으로 보관해 정확히 검증한다. 이는 input.value 속성 하나의 엔진 반영 추적이며 managed Tree 재채택이 아니다. 외부 value/다른 속성 변경은 그대로 거부한다. 제어 props 제거 시 현재 값을 보존한다.
+- Phase 1은 host 바깥에 서로 다른 form wrapper를 둔다. 실제/테스트 radio는 같은 name을 유지하면서 서로 다른 native form owner를 갖는다. wrapper는 snapshot의 children 밖에 있으며 원본 노드와 논리 Tree를 재생성하지 않는다. form submit은 차단한다.
+- 물리 id/for는 원문 그대로 유지한다. host의 label click boundary가 native 전역 activation을 취소하고 host 내부 control을 focus/click한다. implicit label과 control 직접 클릭/키보드 동작은 유지한다. 물리 ID namespace를 다시 쓰지 않으므로 native label.control/labels getter와 보조기기의 전역 ID 해석까지 격리하는 방식은 아니다. 이 정책과 한계는 Astra 재검수 대상이다.
+- Inspector는 초기 제어 노드 참조를 보관하므로 같은 사용자 id가 생겨도 제어 입력 조회를 가로채지 못한다.
+- Playwright CLI 기본 screenshot이 caret 숨김 처리 후 text input에 style=""를 남기는 현상을 실제 속성 전후 로그로 확인했다. 엔진은 이를 외부 변경으로 거부한다. screenshot은 기능 검증 마지막에 찍고, 이후 상호작용을 이어가려면 reload한다. 테스트 도구의 변경을 제품에서 무시하지 않는다.

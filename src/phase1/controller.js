@@ -3,9 +3,11 @@ import { readTree } from '../mini-react/dom.js';
 import { validatePatch } from '../mini-react/patch.js';
 import { validatePolicy } from './html-policy.js';
 import { createHistory } from './history.js';
+import { isolateHost } from './boundaries.js';
 export function createPhase1(actualHost, editHost) {
   const document = actualHost.ownerDocument;
   const initial = validatePolicy(readTree(actualHost), document);
+  const releaseActual = isolateHost(actualHost), releaseEditor = isolateHost(editHost);
   const actualRenderer = createRenderer(actualHost);
   const editRenderer = createRenderer(editHost, { role: 'editable' });
   editRenderer.render(initial);
@@ -43,6 +45,6 @@ export function createPhase1(actualHost, editHost) {
       validatePatch(editHost, plan);
       try { editRenderer.commit(plan); } catch (error) { locked = true; throw error; }
     },
-    destroy() { actualRenderer.destroy(); editRenderer.destroy(); }
+    destroy() { actualRenderer.destroy(); editRenderer.destroy(); releaseActual(); releaseEditor(); }
   };
 }

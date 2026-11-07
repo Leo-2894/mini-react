@@ -1,5 +1,5 @@
 import { diff, equal, indexTree } from './diff.js';
-import { createDOM, disposeDOM, syncEvents, syncProps } from './dom.js';
+import { createDOM, disposeDOM, syncEvents, syncProps, expectedAttrs } from './dom.js';
 import { normalizeAttrs } from './vnode.js';
 const applied = new WeakSet();
 export function validatePatch(host, plan) {
@@ -16,7 +16,7 @@ export function validatePatch(host, plan) {
     } else {
       if (node.nodeType !== 1 || node.localName !== v.tag || node.namespaceURI !== 'http://www.w3.org/1999/xhtml' || node.getAttribute('data-key') !== v.key) throw Error('External DOM change: element/key');
       const attrs = Object.fromEntries([...node.attributes].filter(a => a.name !== 'data-key').map(a => [a.name, a.value]));
-      if (!equal(normalizeAttrs(attrs), v.attrs) || node.childNodes.length !== record.children.length) throw Error('External DOM change: attrs/children');
+      if (!equal(normalizeAttrs(attrs), expectedAttrs(node, v.attrs)) || node.childNodes.length !== record.children.length) throw Error('External DOM change: attrs/children');
     }
     nodes.set(record.id, node);
     record.children.forEach((child, i) => bind(child, node.childNodes[i]));
@@ -57,7 +57,7 @@ export function patch(host, plan) {
   }
   function control(node, vnode) {
     (vnode.children || []).forEach((child, i) => control(node.childNodes[i], child));
-    if (vnode.kind === 'element') syncProps(node, vnode.props);
+    if (vnode.kind === 'element') syncProps(node, vnode.props, vnode.attrs);
   }
   control(host, plan.nextTree);
   removed.forEach(disposeDOM);
