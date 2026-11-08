@@ -1,3 +1,19 @@
+# TURN 12 — 최종 독립 검수 REJECTED (2026-11-08)
+검수 담당 Sol 6.1 / HIGH — 최종 독립 검수 세션.
+HEAD eb368fdc7a32cd79a382a0726af9fd0c5b53ab43 / 제품 9c53b3a6f668e54e90c2702be301c12561c1a858.
+QA12-001 / HIGH / OPEN: src/api/history.js:8~11의 decode 후 long-token 정규식이 encoded slash base64를 놓침.
+재현: GET /session/abcdefghijklmnopqrstuvwx%2Fabc?secret=fake-query → Recent requests 원문 토큰 저장/표시 → Reuse 원문복원/Send 활성.
+기대 /session/[redacted], 수정 전 전송 차단. 28자 canonical base64/한 segment 증거 base64-classification.log.
+증거 output/playwright/turn12/independent-http.log (21PASS/1FAIL), privacy-ui.log. 가짜 토큰/loopback만 사용.
+수정: raw 경로 segment 경계를 보존하며 URL decode 후 표준 base64 slash 변형을 정제. unit·UI 실패 회귀 먼저 확보하고 기존 JWT/plus/정상 path/211개 회귀 유지. 상세 turn12.md §4.
+SOL-011-02는 이전 JWT/plus 사례 자체 수정 성공을 인정하되 이번 추가 변형까지 독립 해결로 승인하지 않는다. 모든 임의 비밀 탐지 요구로 확대하지 않음.
+정규 unit152/E2E59/all152+59 각각 exit0/FAIL0/SKIP0. runtime 독립10/0, Phase1 projection10/0. QA06-001~005 현 회귀 유지. 현재HIGH1로 최종 제출 승인 보류.
+TURN12 최초검수 revision_count=0/2, 다음 구현 Sol 동일TURN12 REVIEW_REWORK. TURN06 역사횟수 별도.
+언어 JS/TS실사용NO/Node dev·test YES, 제품APIbackend 없음. 제품/시험은 검수에서 수정하지 않았다.
+
+---
+## 이전 이슈 원문 (역사 기록)
+
 # TURN 11 — 구현 자체 PASS / 최종 독립 검수 대기
 CODE: 9c53b3a6f668e54e90c2702be301c12561c1a858. 최종 unit152/E2E59, 필수3명령 exit0/FAIL0/SKIP0. 고유211개.
 자체 확인 범위 신규 확정 미해결 없음. 전체 제품 독립 승인은 TURN12 NOT_STARTED/PENDING이며 구현 세션이 승인하지 않는다.

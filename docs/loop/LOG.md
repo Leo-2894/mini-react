@@ -283,3 +283,23 @@
 - 문서 STATE/HANDOFF/ISSUES 갱신, TURN11 자체PASS와 TURN12 독립PENDING 구분. TURN06 counter 이력 별도보존, TURN12 counter0은 신규 마일스톤 초기값.
 - 미검증 Firefox/WebKit/실제스크린리더/clean reinstall/실제외부API가용성·CORS/예외자연발생빈도. 원자rollback/전체메모리한도/모든비밀자동탐지/모든조건부Hook자동탐지 주장 없음.
 - 최종 작업트리/인계HEAD는 handoff-receipt.json/최종응답. 다음 담당 별도 Sol6.1HIGH 독립검수 TURN12, 사용자 시작 전 자동실행 없음. 인계 후 즉시 STOP.
+
+
+## 2026-11-08 — TURN 12 최종 독립 검수: Sol 6.1 / HIGH
+- 사용자 첨부 요청문 읽고 기준 root/cwd/HEAD eb368fdc7a32cd79a382a0726af9fd0c5b53ab43/status clean 확인. 제품9c53b3a6f668e54e90c2702be301c12561c1a858. 독립 검수 모델 변경 적용, Astra 원문/과거 승인 범위 보존.
+- AGENTS/전체하네스/STATE/HANDOFF/architecture/TURN06최종승인/ISSUES/LOG/id-scope/implementation/README 확인. 인계 이후 공통기록4개만 diff, 제품·시험 없음.
+- language-audit.json: tracked src19개 .js, TS/TSX/JSX·tsconfig 없음, type=module/HTML→main imports 확인. Node24.22.1/npm11.19.1 실제 실행. Node는 scripts/static 및 tests/fixture/http:CORS, Vitest/Playwright. 제품APIbackend/TS컴파일 없음. lock Vite optionalpeer tsx를 제품TS와 구분.
+- 새 output/playwright/turn12 생성, 기존 report/test-results prior-* 복사. 기존 TURN06~11 증거 쓰기 없음.
+- 독립 npm run test:unit exit0 12files/152PASS/0FAIL/0SKIP; test:e2e exit0 Chromium59/0/0; test:all exit0 152unit+59E2E/0/0. 고유211, 재실행·진단 합산 없음. test-*.log.
+- Playwright Skill 읽고 local CLI qa-turn12. 자동서버 종료 후 npm dev 및 node tests/fixtures/server.js 순차 시작, loopback만 사용.
+- independent-runtime.js/log 10/0: batch+props/queue13/lazy/setter/child/inputfocus/caret,cleanup순서,no-op0write,failedUI/hooks/memo보존,retry,remount/deps/childHook/loop50.
+- independent-http.js/log21PASS/1FAIL: 실제HTTP5/query인코딩/header/body/masked response,409/503/204/invalidJSON/text/large,timeout/cancel/CORS,JWToken/plusbase64 정제통과. encodedslash base64는History원문잔존.
+- privacy-ui.js/log로 실제 Recent requests token저장/aria-label/Reuse/Send활성 확인. base64-classification.log28자canonical=true,raw한segment. QA12-001 HIGH OPEN, 최종REJECTED.
+- independent-phase1-projection.log는 과거 독립세션 작성script를 현코드 재실행10/0. 구현세션 자기증거 복사 아님.
+- independent-flows.log의 인위적250ms응답은 Cancel클릭전완료로 locator timeout; 제품실패와구분. 수동resolve로순서를고정한 independent-flows-deterministic.js/log는 late응답무시/History1/행Node===/DOMLabPatchUndo왕복/mobile390키보드Send/history/오류0 모두정상.
+- 첫 긴UI진단호출은파일·로그미생성으로실행증거에포함하지않음. 짧은privacyUI로재실행. 언어audit의 고정 npm --version shell 호출은Node deprecation warning만 기록, 인자외부삽입없음.
+- CORS negative/409/503 network console은 의도한대조, stale setter warning/loop error는예외probe. 정상UI pageerror=[] 및정규console검사통과와구분. mobile-final.png 마지막촬영/시각검토,후속제품Patch없음.
+- shared engine source diff는component/hooks추가+vnode자식Hook경계뿐. App루트Hook/panelsprops/프레임워크없음/기존Phase1시험불변 확인. timeout시험60/200실패대조유지+30초retry보강 타당.
+- 필수언어표·검증지도·결함재현·수정조건을 turn12.md에작성. 최종승인/로컬제출준비보류, 수정은구현Sol 동일TURN12 REVIEW_REWORK. 최초검수 revision_count0/2, QA06카운터별도.
+- 검수브라우저close/직접dev와HTTPfixture Ctrl+C종료(의도한exit1). 제품·시험·README·설계·TURN06보고미수정. 신규turn12+공통기록4개만변경. 반려상태여서승인용commit없음,원격/다른세션실행없음.
+- 미검증 clean install/Firefox/WebKit/실제스크린리더/외부운영API/예외자연빈도. 필수시험실행차단없음(TEST_BLOCKED아님). 반려근거는QA12-001 실제재현. 기록후STOP.

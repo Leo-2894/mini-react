@@ -1,3 +1,34 @@
+# [HANDOFF — 2026-11-08 — TURN 12 최종 독립 검수]
+FROM: Sol 6.1 / HIGH — 최종 독립 검수 세션
+TO: Sol — 구현 세션
+CURRENT TURN: 12
+STATUS: REJECTED / REVIEW_REWORK 대기
+REVIEW HEAD: eb368fdc7a32cd79a382a0726af9fd0c5b53ab43
+PRODUCT CODE: 9c53b3a6f668e54e90c2702be301c12561c1a858
+WORKTREE: 시작 clean; 종료 turn12 신규 보고 + STATE/HANDOFF/LOG/ISSUES 4개만 변경. 제품/정규시험/TURN06 보고 불변. 검수 문서 미커밋 상태를 보존할 것.
+EVIDENCE: 독립 unit152/0/0 exit0, Chromium59/0/0 exit0, all152+59/0/0 exit0. output/playwright/turn12/.
+OPEN ISSUE: QA12-001 HIGH — encoded slash를 포함한 긴 base64 경로 토큰 History 누락.
+NEXT ALLOWED ACTION: 동일 TURN12의 구현 REVIEW_REWORK → 독립 재검수 인계. 프로젝트 최종 제출/배포 승인 없음.
+REVISION: TURN12 최초 검수, revision_count=0/2. 기존 TURN06 횟수와 별도. Sol 수정 완료만으로 완료 재검수 횟수를 올리지 않는다.
+DO NOT: 자기 독립 승인/전체 엔진 재작성/기존 실패 증거 삭제/원격 push·PR·배포/다른 세션 자동 실행.
+
+QA12-001 재현:
+1. 제품 /에서 GET http://127.0.0.1:4174/session/abcdefghijklmnopqrstuvwx%2Fabc?secret=fake-query 전송.
+2. Recent requests가 .../session/[redacted]가 아니라 원문 %2F 포함 토큰을 저장/표시함.
+3. Reuse 후 URL 그대로, Send enabled=true. 기대는 정제 URL/수정 전 Send 차단.
+28자 canonical base64임을 btoa(atob(token))===token으로 확인했고 %2F는 한 raw segment 안에 있음.
+원인 src/api/history.js:8~11: decode 후 long-token regex가 slash를 포함하지 않아 false. 이미 지원하는 긴 base64형 변형의 누락이며 모든 임의 비밀 탐지 확대 요구가 아님.
+최소 수정: segment 경계를 유지하면서 decode된 표준 base64 slash 변형도 정제. unit literal + UI 저장/Reuse/차단 red→green, 기존 JWT/plus/normal path 회귀 유지. 기존 211개와 세 명령 각각 검증.
+증거 independent-http.log(21/1), privacy-ui.log, base64-classification.log. 상세 재현/판정 docs/loop/reviews/turn12.md.
+
+통과: runtime 독립10/0, Phase1 projection 재실행10/0, 실제HTTP5/CORS/timeout/cancel, 취소 무시 transport→최신 응답, 모바일/두 페이지/행=== 정상. 언어 audit: 제품19개JS, TypeScript NO, Node YES(dev/static/tests/fixture), Node24.22.1/npm11.19.1, 제품 API backend 없음.
+기존 정상 회귀로 해결된 부분은 보존하고 QA12-001에 집중. 제품은 이번 검수에서 수정하지 않았음.
+미검증 clean install/Firefox/WebKit/실제스크린리더/운영외부API/예외빈도. 브라우저/수동 서버 전부 종료. screenshot 마지막, 제품 외부변경 검사 완화 없음.
+프로젝트 최종 완료·제출 준비 미승인. 별도 구현 세션 인계 후 STOP.
+
+---
+## 이전 구현 인계 원문 (역사 기록)
+
 # [HANDOFF — 2026-11-08 16:25 Asia/Seoul — TURN 11 완료]
 FROM: Sol — 구현 세션
 TO: Sol 6.1 / HIGH — 별도 독립 검수 세션

@@ -1,38 +1,38 @@
 # API Studio loop state
-current_turn: 11
+current_turn: 12
 next_turn: 12
-next_owner: Sol 6.1 / HIGH — Independent Review (separate session)
-next_role: IndependentReview
-implementation_status: PASS
-review_status: NOT_STARTED
-approval_status: PENDING
-operational_status: HANDOFF_READY
-next_action: USER_START_SEPARATE_TURN12_REVIEW
-last_verified_commit: 9c53b3a6f668e54e90c2702be301c12561c1a858
+next_owner: Sol
+next_role: Implementation
+implementation_status: PASS (TURN07~11 자체 검증)
+review_status: REJECTED
+approval_status: REJECTED
+operational_status: REVIEW_REWORK_PENDING
+project_complete: false
+submission_ready: false
+next_action: REVIEW_REWORK_QA12_001
+last_verified_commit: eb368fdc7a32cd79a382a0726af9fd0c5b53ab43
 product_commit: 9c53b3a6f668e54e90c2702be301c12561c1a858
 phase1_review_status: PASS / APPROVED (TURN06 당시 SHA에 한정)
-last_independently_reviewed_head: d7ec63024c24571caa22080dd345fc2afd97470a
 phase1_approved_product_commit: ff2a689162c2d6129749f400810846fbee50e736
-reviewer: Sol 6.1 / HIGH — 별도 독립 검수 세션
-reviewer_change_reason: 최신 사용자 명시 검수 모델 변경; 구현과 검수 역할 분리 유지
-review_counter_scope: TURN12 (미착수; 완료된 수정→재검수 없음)
+last_independently_reviewed_head: eb368fdc7a32cd79a382a0726af9fd0c5b53ab43
+reviewer: Sol 6.1 / HIGH — 최종 독립 검수 세션
+reviewer_change_reason: 최신 사용자 명시 검수 모델 변경; 구현과 검수 역할 분리
+review_counter_scope: TURN12
 revision_count: 0
 revision_limit: 2
 active_rework_round: 0
-implementation_attempts: 2
+implementation_attempts: 0
 qa06_limit_cycle: 2
 qa06_new_cycle_completed_reviews: 1
 qa06_previous_cycle_completed_reviews: 2
 qa06_lifetime_rework_round: 3
 qa06_limit_reset_reason: 사용자 명시 지시 "다시 한도 재설정 됐어"
-last_updated: 2026-11-08 16:25 Asia/Seoul
+last_updated: 2026-11-08 17:06 Asia/Seoul
 
-TURN07~11은 각 게이트를 실제 충족한 구현 자체 PASS. 전체 제품의 독립 승인 상태는 PENDING이며 TURN12는 NOT_STARTED다.
-TURN06 승인 및 두 이전 주기의 반려/한도 재설정 이력은 보존했다. TURN12의 새 마일스톤 counter=0은 TURN06 재검수 횟수를 삭제/재설정한 것이 아니다.
-최종 고유 정규 시험211개: unit152/Chromium59. 필수3명령 각 exit0/FAIL0/SKIP0. 증거 output/playwright/turn11/.
-기존 승인/설계/Phase1 원본시험/과거증거287개 hash 불변(vnode의 승인된 함수자식 Hook 경계 확장 제외), 별도 최종 독립 검수 필요.
-코드 커밋 후 공통기록4개 docs-only 인계 commit. 최종 HEAD/clean 상태는 turn11/handoff-receipt.json 및 최종 응답에 기록.
-검수 세션 자동 실행·TURN12 수행·원격 작업 없음. 인계 후 STOP.
+TURN12 최초 독립 검수 REJECTED. QA12-001 HIGH OPEN: encoded slash가 포함된 28자 canonical base64가 History URL/재사용에 남고 Send 활성.
+다음 Sol 구현 세션 동일TURN12 REVIEW_REWORK. 최종제출준비 미완료. 최초 검수는 수정→재검수 횟수에 포함하지 않으며 revision_count=0/2, TURN06 역사횟수 별도보존.
+독립 unit152/E2E59/all152+59 각 exit0 FAIL0 SKIP0. 별도 HTTP/privacy21/1 및 UI 실패가 반려근거. 제품19개JS/TypeScript NO, Node YES(dev/static/tests/fixtures), v24.22.1/npm11.19.1, 제품APIbackend 없음.
+증거 output/playwright/turn12/. 제품·시험 수정없음, 검수기록5개만변경. 기존보고보존, 브라우저·수동서버종료. 원격작업/자동세션없음.
 
 | TURN | Owner | Status | Evidence | Commit |
 |---|---|---|---|---|
@@ -47,7 +47,10 @@ TURN06 승인 및 두 이전 주기의 반려/한도 재설정 이력은 보존�
 | 09 | Sol | PASS | 자체: unit144/Chromium36 A01/A02 | 16f3f9d |
 | 10 | Sol | PASS | 자체: unit148/Chromium53, 실제HTTP/CORS/경합 | 4143dec |
 | 11 | Sol | PASS | 자체: unit152/Chromium59, A06/문서/인계 | 9c53b3a |
-| 12 | Sol 6.1 독립 QA | NOT_STARTED | 별도 검수 세션 사용자 시작 대기 | none |
+| 12 | Sol 6.1 독립 QA | REJECTED | QA12-001 HIGH, 긴 base64 encoded slash History 누락; reviews/turn12.md | eb368fd |
+
+## 이전 구현/검수 기록 (역사 기록; 현재 상태는 위 TURN12 REJECTED)
+
 
 ## 이전 검증 기록 (역사 기록; 현재 상태는 위 PASS/APPROVED)
 
