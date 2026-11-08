@@ -1,3 +1,46 @@
+# [HANDOFF — 2026-11-08 13:24 Asia/Seoul]
+FROM: Sol (Agent 1)
+TO: Astra (Independent QA)
+CURRENT TURN: 06 — REVIEW_REWORK 2 수정 완료 / 두 번째 재검수 요청
+STATUS: AWAITING_ASTRA_REVIEW (Sol 자체 회귀 PASS, 기존 독립 REJECTED 유지)
+CODE SHA / LAST VERIFIED COMMIT: 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52
+HANDOFF HEAD: 이 문서를 포함한 최종 docs-only 커밋. 실제 전체 SHA는 git rev-parse HEAD 및 Sol 최종 응답에 명시.
+WORKTREE: 코드 1ec56bc + 공통 기록 4개 인계 commit. 최종 git status --short clean 확인. remote 없음.
+FILES CHANGED: src/mini-react/scope.js(신규), dom.js, patch.js, renderer.js; src/phase1/boundaries.js, controller.js, main.js; tests/unit/id-scope.test.js(신규), review06.test.js; tests/e2e/id-scope.spec.js(신규); README, docs/id-scope.md(신규); 공통 loop 기록 4개.
+EVIDENCE: test:unit exit 0 75/0/0; test:e2e exit 0 28 Chromium/0/0; test:all exit 0 75 unit+28 Chromium/0/0 (PASS/FAIL/SKIP). 각각 별도 실행, 고유 103개. output/playwright/turn06-rework2/{test-unit,test-e2e,test-all}.log.
+ISSUES: QA06-001/002/004의 Astra RESOLVED 유지 및 회귀 PASS. QA06-003은 Sol 수정 완료 / Astra 두 번째 재검수 대기, 독립 RESOLVED 아님.
+REVISION: revision_count=1 유지(완료된 첫 수정→재검수). active_rework_round=2, 제품 구현 시도 1회. 두 번째 Astra 재검수에 주요 결함 잔존 시 BLOCKED/사람 결정. Sol 자체 완료로 revision_count를 올리지 않음.
+NEXT ALLOWED ACTION: Astra 동일 TURN 06 두 번째 재검수. 원본 native 관계/이름 반례와 승인 ID 경계 계약 및 새/기존 회귀를 직접 확인 → 판정·공통 기록 갱신 → STOP.
+DO NOT: Sol 자기 승인/다른 TURN 대리 수행/TURN 07/다른 세션 자동 실행/증거 덮어쓰기/외부 변경 검사 완화.
+
+## 변경 계약과 구현
+Astra가 architecture 말미에 승인한 Phase 1 ID 경계만 구현했다. 순수 diff/Tree 형식은 불변이며 default renderer/Phase 2 API 동작은 유지한다.
+선택적 인자: domToVNode(node,scope), readTree(host,scope), createDOM(vnode,document,scope), patch/validatePatch(host,plan,scope), createRenderer(host,{role,scope}). 상세는 docs/id-scope.md.
+- source 논리 Tree를 먼저 검증한 뒤 원래 Node를 보존하고 초기 id/IDREF 속성만 보정. source focus/caret/radio 초기 상태 회귀 유지.
+- scope는 Node별로 직접 쓴 physical 값만 logical로 해석. prefix 제거/현재 DOM 무조건 신뢰 없음. 새 raw logical 편집 보존.
+- IDREF: for + aria-labelledby/describedby/controls/owns/flowto/details/errormessage/activedescendant. token 순서/ASCII 공백 보존, missing target은 scope 내부 dangling ID로 외부-only fallback 금지. 일반 ARIA 원문 유지.
+- same-host empty/ASCII whitespace/duplicate logical ID는 명시적 오류. Inspector 후보는 전체 logical Tree에 대입해 사전 검증.
+- Inspector logical selector는 detached logical view의 native CSS parser를 사용하고 실제 Node로 대응. 다른 렌더링 경로/실제 DOM 쓰기 없음.
+- attrs Patch와 preflight는 logical→physical 정확 비교. 실제 physical id/for/ARIA mutation은 쓰기 전에 거부. actual managed DOM 재채택 없음.
+- 이전 label capture/click guard를 제거했다. label.control/input.labels 및 Chrome native AX 이름이 각 host에 연결된다.
+
+## red → green과 회귀
+- 수정 전 신규 unit 3 FAIL, Chromium 4 FAIL: native labels actual 2/editor 0, editor control 외부, editor ARIA 이름 외부 결속. red-unit/red-e2e.log, red-test-results/.
+- 기존 unit 1건의 물리 원문 ID assertion은 승인 계약에 맞춰 literal logical read + native 관계/physical 분리 assertion으로 바꿈. 기존 시험 삭제/skip/기대값 완화 없음.
+- 보강 browser 1건은 about:blank에서 import한 테스트 초기화 누락. goto 추가해 재검증, scope-test-results에 증거 보존. 제품 수정 회수와 구별.
+- 최종 기존 60+14 및 신규 15 unit/14 E2E 모두 PASS. 새 독립 DOM oracle는 fixture data-key→literal logical ID로 물리 값을 해석하고 native 관계·literal id/for도 별도 확인. production decoder를 기대값 생성에 사용하지 않음.
+- Chrome CDP Accessibility.getPartialAXTree로 checkbox/radio/text의 actual/editor 이름이 각각 동일하게 한 번 나옴. native-ax.log, 정규 E2E 3건.
+- CLI도 두 host label/control/labels=1, 각 native 이름 유지 및 draft [false,true]→Patch [true,true]→Undo [false,false]→Redo [true,true] 확인. cli-native-result.log, cli-history-result.log, snapshots, native-boundaries.png. screenshot 마지막, 브라우저/수동 서버 종료.
+- ID/for/ARIA 생성·변경·삭제·대상 재지정/History/draft, external-only/논리 selector/Inspector 충돌/no-op 0 writes/초기 Node/focus/caret/외부 physical attrs 검출 PASS. value/type/radio/listener/History 50개/preflight/부분 실패 lock 기존 회귀 유지.
+
+## 증거 보존과 한계
+기존 turn06/turn06-rework1/turn06-rereview1 및 Astra architecture/review를 포함한 101개 파일 hash 불변. 최초 문서 보존 checkpoint f1ca731. 기존 보고서 prior-* 복사. 기존 REJECTED 보고 원문을 수정하지 않음.
+미검증: Firefox/WebKit, 실제 스크린리더 운용, clean dependency reinstall, Phase 2. Chrome native AX 검증을 실제 스크린리더 인증으로 과장하지 않음. Inspector view는 구조·속성 selector용이며 :focus 같은 live pseudo-state 에뮬레이션을 보장하지 않음. 자세한 범위는 docs/id-scope.md.
+
+재현: PowerShell cwd C:\Users\Leo\Desktop\API 1. npm run test:unit / test:e2e / test:all. dev 접속 http://127.0.0.1:4173/phase1/ (E2E 전 별도 dev 서버 종료).
+
+---
+## 이전 Astra 인계 원문 (역사 기록 보존)
 # [HANDOFF — 2026-11-07 20:20 Asia/Seoul]
 FROM: Astra (Independent QA)
 TO: Sol

@@ -1,3 +1,24 @@
+# TURN 06 REVIEW_REWORK 2 — 현재 Sol 수정 상태
+CODE: 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52. 독립 판정은 첫 재검수 REJECTED 유지. 다음은 Astra 두 번째 재검수다.
+
+| ID | 현재 상태 | 수정/검증 |
+|---|---|---|
+| QA06-001 | Astra RESOLVED 유지 | value/type projection 전체 기존 회귀 PASS |
+| QA06-002 | Astra RESOLVED 유지 | radio form ownership/초기 checked/History 회귀 PASS |
+| QA06-003 HIGH | Sol 수정 완료 / Astra 두 번째 재검수 대기 | optional DOM scope, native label/control/labels, 접근성 이름 및 logical ID/IDREF 경계. 독립 해결 승인 아님 |
+| QA06-004 | Astra RESOLVED 유지 | 고정 Inspector 참조/ID 충돌 및 logical selector 회귀 PASS |
+
+QA06-003 수정 파일: src/mini-react/scope.js/dom.js/patch.js/renderer.js; src/phase1/boundaries.js/controller.js/main.js. 승인된 architecture 보완 계약 이내, docs/id-scope.md에 선택적 인자/정책/한계 명시.
+- 신규 실패: unit/id-scope.test.js 3 FAIL; e2e/id-scope.spec.js 4 FAIL. red-unit/red-e2e.log 및 red-test-results/.
+- 최종 새 unit 15 + E2E 14: native checkbox/radio/text, CDP AX 이름, 논리 round trip/IDREF 목록·공백, missing target/외부-only, 빈·중복 ID, rename/delete/History/draft, no-op, logical selector/Inspector, 초기 source/focus/caret, 외부 physical mutation.
+- 기존 물리 ID 동일성 1건은 literal logical 값 + native 관계/physical 구분 검사로 보완. 독립 browser logical oracle와 native 관계 assertions 병행.
+- 최종 test:unit 75/0/0 exit 0; test:e2e 28/0/0 exit 0; test:all 75+28/0/0 exit 0. 증거 output/playwright/turn06-rework2/.
+- native/control/labels는 두 host 각각 자체 control/labels 1개. Chrome AX checkbox/radio/text 이름이 각각 한 번씩 유지. CLI native/history 로그로 추가 확인.
+- 남은 제품 확정 결함은 Sol 검증 범위에서 미재현. 독립 QA는 아직 미완료. Firefox/WebKit/실제 스크린리더/Phase 2 미검증, Inspector live focus pseudo-state 에뮬레이션 범위 밖.
+revision_count=1 유지, active_rework_round=2. 두 번째 재검수 결과에도 주요 결함이 남으면 BLOCKED/사람 결정. TURN 07 금지.
+
+---
+## 이전 Astra 첫 재검수 및 이전 이슈 원문 (보존)
 # TURN 06 첫 재검수 — 현재 독립 판정 (2026-11-07 20:20)
 기준 HEAD 612bea5448fb77f6fda6c807c6b4cdc0a45c1900 / 제품 ee14fc8235a7874643af26ef9374602fd6975659.
 **FAIL / REJECTED. HIGH 1건 OPEN. revision_count=1/2. Sol REVIEW_REWORK 2, TURN 07 금지.**

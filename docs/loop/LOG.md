@@ -138,3 +138,31 @@
 - QA06-001/002/004 RESOLVED, QA06-003 HIGH PARTIALLY FIXED/OPEN. FAIL/REJECTED. 첫 수정→첫 재검수 완료 revision_count=1. 다음 Sol 동일 TURN 06 REVIEW_REWORK 2; TURN 07 NOT_STARTED.
 - 하네스 §4.3의 계약 변경안/영향/추가 시험 기록 요구에 따라 architecture.md 말미에 제한적 Phase 1 ID 경계 설계 승인(구현/QA 미승인)을 추가. 원본 architecture/최초 turn06 보고 내용 보존. review/STATE/HANDOFF/LOG/ISSUES 갱신.
 - 검수 CLI 브라우저 close, 직접 시작한 dev 서버 Ctrl+C 종료(exit 1은 의도한 중단); 4173 listener 없음 확인. 필수 테스트 차단 없음. Firefox/WebKit/실제 스크린리더/clean reinstall/Phase 2 미검증. Sol 세션 자동 실행 없이 STOP.
+
+## Sol TURN 06 REVIEW_REWORK 2 — 시작 (2026-11-08)
+- 필수 문서 전체 및 승인된 ID 경계 계약, 실제 cwd/Git HEAD 612bea5 확인. 예상된 Astra 문서 6개 외 변경 없음. 검수 산출물을 baseline commit으로 보존.
+- active_rework_round=2, revision_count=1/review_status REJECTED 유지. 기존 증거 3폴더 및 설계/검수 원본 hash manifest를 turn06-rework2/baseline-hashes.json에 보존, 기존 보고서 prior-* 복사.
+
+### REVIEW_REWORK 2 — RED 및 구현 시도 1
+- 신규 native unit 3 FAIL/0 PASS, Chromium E2E 4 FAIL/0 PASS (exit 1). red-unit/red-e2e.log 및 red-test-results 보존. native labels 2/0, editor control 외부, ARIA 이름 외부 결속 재현.
+- 선택적 DOM scope: Node별 소유 logical/physical attr mapping, host별 예약 ID/IDREF, 엄격한 physical preflight, logical selector detached native CSS view. default 엔진 경로 유지.
+- Phase 1 초기 속성 경계 보정만 수행, 라벨 클릭 guard 제거/native activation 복원. 신규 기능 구현은 승인된 context 경계 이내.
+
+### REVIEW_REWORK 2 — 검증 보강
+- 시도 1 unit: 62 PASS/1 FAIL. 남은 1건은 이전 물리 ID 원문 일치 assertion이며 승인된 계약에 맞춰 logical read의 literal 기대값 + native control/양 host physical ID 구분 assertion으로 대체. 새 native 시험 약화 없음.
+- 보강 후 unit 75 PASS/0 FAIL/0 SKIP. 기존 60 + 신규 15.
+- 전체 E2E 1차: 18 PASS/0 FAIL/0 SKIP (기존 14+native/ARIA 4).
+- 추가 IDREF/selector/History/외부 오염/초기 focus E2E: 10 PASS/1 FAIL. focus 시험만 about:blank에서 module import한 시험 초기화 누락으로 미실행. page.goto 추가, 실패 trace scope-test-results 보존. 제품 수정 아님.
+
+## 2026-11-08 13:24 Asia/Seoul — REVIEW_REWORK 2 최종 검증 / Astra 두 번째 재검수 인계
+- npm run test:unit exit 0: 6 files / 75 PASS / 0 FAIL / 0 SKIP.
+- npm run test:e2e exit 0: 28 Chromium PASS / 0 FAIL / 0 SKIP.
+- npm run test:all exit 0: 75 unit +28 Chromium PASS / 0 FAIL / 0 SKIP. 각각 별도 실행, 고유 103개이며 재실행 중복 합산하지 않음.
+- output/playwright/turn06-rework2/test-unit.log, test-e2e.log, test-all.log에 stdout/stderr 보존.
+- Chrome native AX 직접 3 E2E PASS: Accessibility.getPartialAXTree에서 양 host의 checkbox/radio/text 이름이 각 1번 유지(native-ax.log).
+- CLI open→snapshot→fixture/native CDP 확인→snapshot ref e97 체크→현재 snapshot→fixture Patch/Undo/Redo native 재확인→마지막 screenshot→close. errors/warnings 0, 진단 log 2건. cli-native-result/cli-history-result 및 snapshots/native-boundaries.png. 수동 dev 서버 Ctrl+C 종료.
+- baseline-hashes.json 101개 이전 증거/architecture/turn06 review 파일 SHA256 모두 불변 확인. 최초 검수 기록은 f1ca731에 보존. 순수 diff/vnode 및 Astra 설계/보고서 diff 없음.
+- git diff --check 및 staged diff --check exit 0. 수정 코드 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52. 공통 기록은 별도 docs-only 인계 커밋.
+- 사용자 승인한 Phase 1 optional context만 구현. default APIs/Phase 2 계약 유지. 자세한 구현/ARIA/selector 정책 docs/id-scope.md, README 최신화. prototype/ARIA 이름 덧씌우기/클릭 guard 우회 없음.
+- 구현 시도 1회. 승인 계약에 따른 이전 물리 ID assertion 보완 및 새 테스트 초기화 수정은 기록했고 실패/skip 은폐 없음.
+- STATE: current_turn 06 / next_owner Astra / AWAITING_ASTRA_REVIEW / active_rework_round 2 / revision_count 1 / review_status REJECTED 유지. TURN 07 NOT_STARTED. 같은 TURN 06 두 번째 재검수 요청 후 STOP.
