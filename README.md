@@ -81,3 +81,11 @@ root.mount(document.querySelector('#empty-host'));
 useEffect(setup, deps)는 성공한 DOM Patch와 Hook commit 뒤에 실행한다. 변경된 슬롯의 cleanup을 먼저 모두 실행하고 새 setup을 슬롯 순서로 실행한다. deps 생략은 매 commit, []는 mount, 배열은 길이 및 각 원소 Object.is 비교이며 배열은 복사한다. unmount는 살아 있는 cleanup을 한 번씩 실행한다. cleanup 오류가 있어도 다른 cleanup을 계속 수행한다. setup은 undefined 또는 동기 cleanup 함수만 반환할 수 있다.
 
 useMemo(factory, deps)는 같은 deps 정책으로 값과 참조를 재사용한다. 계산은 render draft에만 저장하므로 render 실패 시 committed cache를 보존한다. memo factory의 Hook/setter는 금지한다. effect의 setter는 현재 commit 뒤 별도 microtask로 처리하며 연속 자동 update 50회 초과를 오류로 중단한다. effect/cleanup 실패는 이미 반영된 UI를 rollback하지 않고 오류를 보고한다. 실패한 effect를 확실히 다시 시작하려면 원인을 수정한 뒤 unmount/mount한다.
+
+## HTTP 모듈 (TURN 09)
+
+`src/api/request.js`의 buildRequest는 GET/POST/PUT/PATCH/DELETE, 절대 HTTP(S) URL, 중복 query와 Headers, JSON body를 검증한다. GET body는 보내지 않고 JSON body가 있을 때만 누락 Content-Type을 보충한다. userinfo·개행 header·정제된 [redacted] URL의 전송을 거부한다. sendRequest는 Fetch/credentials:omit, 기본 30초 timeout, 외부 AbortSignal을 사용한다.
+
+HTTP 4xx/5xx는 상태·headers·body가 있는 응답이다. 잘못된 JSON은 raw text로 표시하고 parse 경고를 구분한다. 네트워크 오류만으로 CORS/DNS 원인을 확정하지 않으며 우회 proxy를 사용하지 않는다. response header의 auth/cookie/key/token/secret/password/credential 이름 값은 마스킹한다. 응답 표시는 100,000자로 제한하고 잘림을 알린다. 전체 수신 메모리 제한은 보장하지 않는다. 깊은 JSON은 pretty stringify 실패 시 raw text로 fallback한다.
+
+History는 세션 메모리 20개이며 id/time/method/정제 URL/status/elapsed만 저장한다. query/hash/userinfo를 제거하고 민감 이름 뒤 경로 값과 긴 토큰형 segment를 [redacted]로 가린다. 임의 경로에 숨은 모든 비밀을 탐지하는 보장은 없다. 재사용은 method/정제 URL만 복원하며 Params/Headers/Body를 비운다. 자동 전송하지 않는다. localStorage와 console에 요청·응답 본문이나 인증값을 기록하지 않는다.
