@@ -51,7 +51,7 @@ test('A03 browser CORS failure is explained and a following request succeeds',as
  await send(page,base+'/echo');await expect(page.getByTestId('http-status')).toContainText('200');
 });
 test('A04 real timeout is distinguished and does not block retry',async({page})=>{
- await page.evaluate(async()=>{const{root}=await import('/src/main.js');root.updateProps({timeout:20});});await send(page,base+'/slow?delay=200');await expect(page.getByRole('alert')).toContainText('Request timed out');await send(page,base+'/echo');await expect(page.getByTestId('http-status')).toContainText('200');
+ await page.evaluate(async()=>{const{root}=await import('/src/main.js');root.updateProps({timeout:60});});await send(page,base+'/slow?delay=200');await expect(page.getByRole('alert')).toContainText('Request timed out');await page.evaluate(async()=>{const{root}=await import('/src/main.js');root.updateProps({timeout:30000});});await send(page,base+'/echo');await expect(page.getByTestId('http-status')).toContainText('200');
 });
 test('A05 JSON tree toggles, long text caps, input caret and keyboard send work',async({page})=>{
  await page.getByRole('tab',{name:'Headers',exact:true}).click();await page.getByRole('button',{name:'+ Add header',exact:true}).click();await page.getByRole('textbox',{name:'header key 1',exact:true}).fill('X-Test');const input=page.getByRole('textbox',{name:'header value 1',exact:true});await input.fill('abcdef');

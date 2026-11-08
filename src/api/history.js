@@ -6,7 +6,7 @@ export function sanitizeURL(raw) {
     let redactNext = false;
     url.pathname = url.pathname.split('/').map(segment => {
       let decoded; try { decoded = decodeURIComponent(segment); } catch { decoded = segment; }
-      const redact = redactNext || /^[a-z0-9_=-]{24,}$/i.test(decoded);
+      const redact = redactNext || /^[a-z0-9_+=.-]{24,}$/i.test(decoded);
       redactNext = !redact && sensitive.test(decoded);
       return redact ? '[redacted]' : segment;
     }).join('/');
