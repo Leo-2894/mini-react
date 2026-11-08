@@ -1,8 +1,10 @@
 import { diff, equal, indexTree } from './diff.js';
-import { createDOM, disposeDOM, syncEvents, syncProps, expectedAttrs } from './dom.js';
+import { createDOM, disposeDOM, syncEvents, syncProps, expectedAttrs, setDOMAttribute } from './dom.js';
 import { normalizeAttrs } from './vnode.js';
 const applied = new WeakSet();
-export function validatePatch(host, plan) {
+export function validatePatch(host, plan, scope = null) {
+  if (scope && scope.host !== host) throw Error('Foreign DOM scope');
+  scope?.validateTree(plan.oldTree); scope?.validateTree(plan.nextTree);
   if (applied.has(plan)) throw Error('Plan already applied');
   if (!equal(diff(plan.oldTree, plan.nextTree).operations, plan.operations)) throw Error('Invalid patch operations');
   const records = indexTree(plan.oldTree), nodes = new Map([[0, host]]);
@@ -16,7 +18,7 @@ export function validatePatch(host, plan) {
     } else {
       if (node.nodeType !== 1 || node.localName !== v.tag || node.namespaceURI !== 'http://www.w3.org/1999/xhtml' || node.getAttribute('data-key') !== v.key) throw Error('External DOM change: element/key');
       const attrs = Object.fromEntries([...node.attributes].filter(a => a.name !== 'data-key').map(a => [a.name, a.value]));
-      if (!equal(normalizeAttrs(attrs), expectedAttrs(node, v.attrs)) || node.childNodes.length !== record.children.length) throw Error('External DOM change: attrs/children');
+      if (!equal(normalizeAttrs(attrs), expectedAttrs(node, scope ? scope.physicalAttrs(v.attrs) : v.attrs)) || node.childNodes.length !== record.children.length) throw Error('External DOM change: attrs/children');
     }
     nodes.set(record.id, node);
     record.children.forEach((child, i) => bind(child, node.childNodes[i]));
@@ -24,11 +26,11 @@ export function validatePatch(host, plan) {
   bind(records[0], host);
   return { nodes, records };
 }
-export function patch(host, plan) {
-  const { nodes } = validatePatch(host, plan);
+export function patch(host, plan, scope = null) {
+  const { nodes } = validatePatch(host, plan, scope);
   const fresh = new Map();
   // All new subtrees are prepared before the first write to the managed host.
-  for (const op of plan.operations) if (op.type === 'CREATE') fresh.set(op.id, createDOM(op.subtree, host.ownerDocument));
+  for (const op of plan.operations) if (op.type === 'CREATE') fresh.set(op.id, createDOM(op.subtree, host.ownerDocument, scope));
   const resolve = ref => Object.hasOwn(ref, 'old') ? nodes.get(ref.old) : fresh.get(ref.fresh);
   const active = host.ownerDocument.activeElement;
   let selection;
@@ -40,8 +42,8 @@ export function patch(host, plan) {
     if (op.type === 'TEXT') resolve(op.target).data = op.text;
     if (op.type === 'ATTRS') {
       const node = resolve(op.target);
-      op.remove.forEach(name => node.removeAttribute(name));
-      Object.entries(op.set).forEach(([name, value]) => node.setAttribute(name, value));
+      op.remove.forEach(name => setDOMAttribute(node, name, null, scope));
+      Object.entries(op.set).forEach(([name, value]) => setDOMAttribute(node, name, value, scope));
     }
     if (op.type === 'EVENTS') syncEvents(resolve(op.target), op.next);
   }

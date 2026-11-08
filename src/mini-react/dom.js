@@ -26,29 +26,38 @@ export function syncProps(node, props, attrs = {}) {
   for (const [name, value] of Object.entries(props)) if (!Object.is(node[name], value)) node[name] = value;
   if (node.localName === 'input') inputValues.set(node, { logical: attrs.value, physical: node.getAttribute('value') });
 }
-export function domToVNode(node) {
+export function readAttrs(node, scope = null) {
+  const attrs = scope ? scope.readAttrs(node) : Object.fromEntries([...node.attributes].map(attr => [attr.name, attr.value]));
+  delete attrs['data-key'];
+  return attrs;
+}
+export function setDOMAttribute(node, name, value, scope = null) {
+  if (scope) scope.write(node, name, value);
+  else if (value === null) node.removeAttribute(name);
+  else node.setAttribute(name, value);
+}
+export function domToVNode(node, scope = null) {
   if (node.nodeType === 3) return text(node.data);
   if (node.nodeType === 8) return comment(node.data);
   if (node.nodeType !== 1 || node.namespaceURI !== 'http://www.w3.org/1999/xhtml') throw Error(`Unsupported DOM node at ${node.nodeName}`);
-  const attrs = {};
-  for (const attr of node.attributes) if (attr.name !== 'data-key') attrs[attr.name] = attr.value;
+  const attrs = readAttrs(node, scope);
   const props = {};
   const tag = node.localName;
   if (['input', 'textarea', 'select'].includes(tag)) props.value = node.value;
   if (tag === 'input') props.checked = node.checked;
   if (tag === 'option') props.selected = node.selected;
-  try { return h(tag, { key: node.getAttribute('data-key'), attrs, props }, [...node.childNodes].map(domToVNode)); }
+  try { return h(tag, { key: node.getAttribute('data-key'), attrs, props }, [...node.childNodes].map(child => domToVNode(child, scope))); }
   catch (error) { throw Error(`${node.nodeName}: ${error.message}`); }
 }
-export function readTree(host) { return tree([...host.childNodes].map(domToVNode)); }
-export function createDOM(vnode, document = globalThis.document) {
+export function readTree(host, scope = null) { return tree([...host.childNodes].map(child => domToVNode(child, scope))); }
+export function createDOM(vnode, document = globalThis.document, scope = null) {
   validateVNode(vnode);
   if (vnode.kind === 'text') return document.createTextNode(vnode.text);
   if (vnode.kind === 'comment') return document.createComment(vnode.text);
   const node = document.createElement(vnode.tag);
-  for (const [name, value] of Object.entries(vnode.attrs)) node.setAttribute(name, value);
+  for (const [name, value] of Object.entries(vnode.attrs)) setDOMAttribute(node, name, value, scope);
   if (vnode.key != null) node.setAttribute('data-key', vnode.key);
-  for (const child of vnode.children) node.appendChild(createDOM(child, document));
+  for (const child of vnode.children) node.appendChild(createDOM(child, document, scope));
   syncProps(node, vnode.props, vnode.attrs);
   syncEvents(node, vnode.events);
   return node;

@@ -51,6 +51,6 @@ HTTP 통신·CORS 설명·민감 요청 이력 정제와 Phase 2 사용법은 TU
 
 - 엔진은 input의 attrs와 live props를 계속 분리한다. checkbox/radio의 value setter 및 type 전환은 value content attribute를 바꿀 수 있으므로, 엔진 반영 직후의 logical/physical value 매핑을 Node별 WeakMap으로 보관해 정확히 검증한다. 이는 input.value 속성 하나의 엔진 반영 추적이며 managed Tree 재채택이 아니다. 외부 value/다른 속성 변경은 그대로 거부한다. 제어 props 제거 시 현재 값을 보존한다.
 - Phase 1은 host 바깥에 서로 다른 form wrapper를 둔다. 실제/테스트 radio는 같은 name을 유지하면서 서로 다른 native form owner를 갖는다. wrapper는 snapshot의 children 밖에 있으며 원본 노드와 논리 Tree를 재생성하지 않는다. form submit은 차단한다.
-- 물리 id/for는 원문 그대로 유지한다. host의 label click boundary가 native 전역 activation을 취소하고 host 내부 control을 focus/click한다. implicit label과 control 직접 클릭/키보드 동작은 유지한다. 물리 ID namespace를 다시 쓰지 않으므로 native label.control/labels getter와 보조기기의 전역 ID 해석까지 격리하는 방식은 아니다. 이 정책과 한계는 Astra 재검수 대상이다.
+- REVIEW_REWORK 2는 Astra의 승인된 ID 경계 계약에 따라 logical id/for/ARIA IDREF는 Tree·History·Inspector에 보존하고 host별 physical ID로 native 관계를 분리한다. 초기 source Node를 유지하며 id/IDREF 속성만 경계 보정한다. 이전 label 클릭 우회 guard는 제거했고 native label.control/input.labels 및 접근성 이름을 검증한다. 상세 선택적 API/IDREF/빈·중복 ID/selector/오류 정책은 docs/id-scope.md 참고. 제품의 독립 QA 승인은 아직 REJECTED다.
 - Inspector는 초기 제어 노드 참조를 보관하므로 같은 사용자 id가 생겨도 제어 입력 조회를 가로채지 못한다.
 - Playwright CLI 기본 screenshot이 caret 숨김 처리 후 text input에 style=""를 남기는 현상을 실제 속성 전후 로그로 확인했다. 엔진은 이를 외부 변경으로 거부한다. screenshot은 기능 검증 마지막에 찍고, 이후 상호작용을 이어가려면 reload한다. 테스트 도구의 변경을 제품에서 무시하지 않는다.

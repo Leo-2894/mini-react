@@ -1,5 +1,5 @@
 import { h, tree } from '../mini-react/vnode.js';
-import { createDOM, domToVNode } from '../mini-react/dom.js';
+import { createDOM, domToVNode, readTree } from '../mini-react/dom.js';
 import { createRenderer } from '../mini-react/renderer.js';
 import { createPhase1 } from './controller.js';
 import { validatePolicy, protectEditor } from './html-policy.js';
@@ -43,17 +43,22 @@ function apply() { run(() => { const result = app.apply(); draft = false; return
 function travel(offset) { run(() => { app.travel(app.history.cursor + offset); draft = false; return '양 영역과 History 커서를 함께 이동했습니다.'; }); }
 function edited() { draft = true; message = '미적용 편집이 있습니다. Patch를 적용하거나 편집을 되돌리세요.'; isError = false; updateFeedback(); }
 function target() {
-  const node = editor.querySelector($('target').value);
+  const node = app.editScope.querySelector($('target').value);
   if (!node) throw Error('대상 선택자에 해당하는 요소가 없습니다.');
   return node;
 }
 function edit(action) {
   run(() => {
-    const node = target(), vnode = domToVNode(node);
+    const node = target(), vnode = domToVNode(node, app.editScope);
     // Validate an independent detached candidate before any editable-host write.
     const candidate = action(vnode);
-    if (candidate) validatePolicy(tree(candidate));
-    if (candidate) node.replaceWith(createDOM(candidate)); else node.remove();
+    const next = readTree(editor, app.editScope), path = [];
+    for (let current = node; current !== editor; current = current.parentNode) path.unshift([...current.parentNode.childNodes].indexOf(current));
+    let parent = next;
+    for (const index of path.slice(0, -1)) parent = parent.children[index];
+    parent.children.splice(path.at(-1), 1, ...(candidate ? [candidate] : []));
+    validatePolicy(next); app.editScope.validateTree(next);
+    if (candidate) node.replaceWith(createDOM(candidate, document, app.editScope)); else node.remove();
     draft = true;
     return '테스트 DOM 편집 완료. 실제 영역에는 아직 적용되지 않았습니다.';
   });

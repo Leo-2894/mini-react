@@ -1,6 +1,7 @@
 import { afterEach, describe, it, expect } from 'vitest';
 import { h, tree } from '../../src/mini-react/vnode.js';
 import { createRenderer } from '../../src/mini-react/renderer.js';
+import { readTree } from '../../src/mini-react/dom.js';
 import { createPhase1 } from '../../src/phase1/controller.js';
 afterEach(() => { document.body.replaceChildren(); });
 function setup() { const host = document.createElement('div'); document.body.append(host); return { host, renderer: createRenderer(host) }; }
@@ -63,7 +64,9 @@ describe('QA06-002/003 Phase 1 boundaries', () => {
   it('explicit and implicit label activation stays in its area without changing logical id/for', () => {
     const { actual, editor, app } = pair('<label for="local-box">Explicit</label><input id="local-box" type="checkbox"><label>Implicit<input type="checkbox"></label>');
     editor.querySelector('label').click(); expect(actual.querySelector('input').checked).toBe(false); expect(editor.querySelector('input').checked).toBe(true);
-    expect(editor.querySelector('input').id).toBe('local-box'); expect(editor.querySelector('label').htmlFor).toBe('local-box');
+    expect(readTree(editor, app.editScope).children[1].attrs.id).toBe('local-box'); expect(readTree(editor, app.editScope).children[0].attrs.for).toBe('local-box');
+    expect(editor.querySelector('label').control).toBe(editor.querySelector('input'));
+    expect(editor.querySelector('input').id).not.toBe(actual.querySelector('input').id);
     editor.querySelectorAll('label')[1].click(); expect(actual.querySelectorAll('input')[1].checked).toBe(false); expect(editor.querySelectorAll('input')[1].checked).toBe(true);
     app.apply(); app.travel(0); app.travel(1);
     expect(actual.querySelector('input').checked).toBe(true); expect(editor.querySelector('input').checked).toBe(true);
