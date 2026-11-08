@@ -247,3 +247,10 @@
 - npm run test:unit exit0 118/0/0, test:e2e exit0 Chromium36/0/0, test:all exit0 118+36/0/0. 고유154, output/playwright/turn08/test-*.log/results.json. 기존 reports prior-*/E2E별도/final-* 보존. E2E 자체 서버 외 별도 서버 없음.
 - 기존 Phase1/QA06-005 및 TURN07 전부 유지. git diff --check PASS. effect 오류는 이미 commit된 UI를 rollback하지 않으며 render 실패와 구분해 README에 명시. 공개 계약 변경 없음.
 - 다음 TURN09 진행 가능. 최종 독립 승인 아님.
+
+## TURN 09 — 자체 PASS / A01~A02
+- 코드 16f3f9d79282beb2f355c76c9ed6f9b97d64b5b6: src/api/request.js/response.js/history.js 및 api.test.js 신규, README. buildRequest→Fetch(credentials omit/AbortSignal/timeout)→parseResponse, 정제 metadata20개.
+- 최초25unit 중24 PASS/1 FAIL: 정제한 secret-value의 문자열을 다시 민감 필드명으로 취급해 다음 일반 경로까지 가림. redactNext를 비정제 segment에만 설정하는 최소 수정. 원본 assertion 유지.
+- 시도2: 동일25 PASS, 깊은 JSON fallback 회귀 추가 뒤26 PASS. 보조 Python의 기본 cp949로 시험 파일 읽기 실패1회는 UTF-8 명시로 수정하고 신규 깊이 시험이 실제 추가·실행된 attempt2-unit-depth.log에26개 확인. 제품 실패와 구분.
+- 필수 명령 각각 exit0: unit144/0/0, Chromium36/0/0, all144+36/0/0. 고유180, output/playwright/turn09/test-*.log/results.json.
+- 5 methods/query중복/인코딩/header/body 검증, 200/400/500/204/text/invalidJSON/network/timeout/abort, privacy/reuse/20개한도 PASS. Mock Fetch 단위이며 실제 HTTP 전송/CORS 브라우저 증거는 다음 TURN10에서 확보. 기존회귀/QA06-005 유지, 설계변경 없음.

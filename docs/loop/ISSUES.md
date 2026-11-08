@@ -1,3 +1,10 @@
+# TURN 09 — 자체 검증 완료
+SOL-009-01 / LOW / RESOLVED: 민감 경로 값 이후의 정상 segment 과잉 정제. history.js의 다음 segment flag 수정, 원본 실패→통과 증거 output/playwright/turn09/attempt1-unit.log/attempt2-unit-depth.log. 코드 16f3f9d79282beb2f355c76c9ed6f9b97d64b5b6.
+깊은 JSON pretty stringify 한계는 raw fallback으로 처리. 신규 확정 미해결 없음. 실제 네트워크·CORS E2E는 TURN10 범위.
+
+---
+## 이전 기록 보존
+
 # TURN 08 — 자체 검증 완료
 신규 확정 미해결 없음. R03~R05 및 이전 회귀118unit/36E2E PASS. effect 오류 후 이미 commit된 UI의 rollback은 계약 범위 밖이며 실패 render 보존과 구분한다.
 

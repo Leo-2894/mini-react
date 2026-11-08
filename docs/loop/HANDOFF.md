@@ -1,3 +1,13 @@
+# TURN 09 — 자체 PASS / 다음 TURN 10
+CODE: 16f3f9d79282beb2f355c76c9ed6f9b97d64b5b6
+FILES: src/api/request.js/response.js/history.js, tests/unit/api.test.js, README, 공통기록.
+EVIDENCE: test:unit144/0/0, test:e2e36/0/0 Chromium, test:all144+36/0/0 모두 exit0. 고유180. output/playwright/turn09/.
+BOUNDARY: Mock Fetch 단위 완료; 실제 HTTP/CORS와 UI/race는 TURN10 검증 대상. privacy는 metadata heuristic이며 모든 비밀 탐지를 주장하지 않는다.
+NEXT: 구현 Sol TURN10 API Studio App/순수 자식/JSON Viewer/실제 loopback E2E.
+
+---
+## 이전 기록 보존
+
 # TURN 08 — 자체 PASS / 다음 TURN 09
 CODE: 6dab819e4b03ed9eb953e84cafded084b81b0d3f
 FILES: hooks.js/component.js, 신규 tests/unit/hooks.test.js 및 tests/e2e/hooks.spec.js, README, 공통 기록.
