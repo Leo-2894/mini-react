@@ -1,6 +1,6 @@
 # API Studio / Mini React
 
-현재 진행: TURN 06은 별도 Sol 6.1/HIGH 독립 검수에서 PASS / APPROVED. TURN 07 FunctionComponent와 루트 useState를 구현했다. 제품 페이지(`index.html`)는 TURN 10 대상이다.
+현재 진행: TURN 06은 별도 Sol 6.1/HIGH 독립 검수에서 PASS / APPROVED. TURN 07~08 FunctionComponent와 루트 Hooks를 구현했다. 제품 페이지(`index.html`)는 TURN 10 대상이다.
 
 ## 실행 (Windows PowerShell)
 
@@ -75,3 +75,9 @@ root.mount(document.querySelector('#empty-host'));
 자식은 h(Child, props)로 평가하는 순수 함수다. 자식/initializer/updater/이벤트에서 Hook을 호출하거나 render/updater 중 setter를 실행하면 오류다. Hook 종류·개수 변경은 commit 전에 거부한다. 조건부/custom Hook 및 Child(props) 직접 호출의 모든 위반을 자동 탐지하지 않으므로 정적 검수도 필요하다. 객체 상태를 직접 mutation하지 않는다.
 
 실패 render는 committed hooks/props/UI를 유지하고 실패 queue를 폐기한다. 자동 microtask 오류는 console.error와 root.error로 보고하며 자동 재시도하지 않는다. 원인을 고친 뒤 root.update()로 명시 재시도한다. 부분 DOM 오류는 기존 renderer의 오류 정책을 따르며 rollback을 보장하지 않는다. unmount는 예약 작업을 무효화하고 같은 엔진으로 빈 Tree를 반영한 뒤 listener/슬롯을 정리한다. 오래된 setter는 경고 후 무시한다.
+
+## useEffect / useMemo (TURN 08)
+
+useEffect(setup, deps)는 성공한 DOM Patch와 Hook commit 뒤에 실행한다. 변경된 슬롯의 cleanup을 먼저 모두 실행하고 새 setup을 슬롯 순서로 실행한다. deps 생략은 매 commit, []는 mount, 배열은 길이 및 각 원소 Object.is 비교이며 배열은 복사한다. unmount는 살아 있는 cleanup을 한 번씩 실행한다. cleanup 오류가 있어도 다른 cleanup을 계속 수행한다. setup은 undefined 또는 동기 cleanup 함수만 반환할 수 있다.
+
+useMemo(factory, deps)는 같은 deps 정책으로 값과 참조를 재사용한다. 계산은 render draft에만 저장하므로 render 실패 시 committed cache를 보존한다. memo factory의 Hook/setter는 금지한다. effect의 setter는 현재 commit 뒤 별도 microtask로 처리하며 연속 자동 update 50회 초과를 오류로 중단한다. effect/cleanup 실패는 이미 반영된 UI를 rollback하지 않고 오류를 보고한다. 실패한 effect를 확실히 다시 시작하려면 원인을 수정한 뒤 unmount/mount한다.

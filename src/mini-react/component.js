@@ -1,6 +1,6 @@
 import { createRenderer } from './renderer.js';
 import { tree } from './vnode.js';
-import { renderWithHooks, withoutHooks } from './hooks.js';
+import { renderWithHooks, withoutHooks, isRendering, commitEffects, cleanupEffects } from './hooks.js';
 
 export class FunctionComponent {
   constructor(App, initialProps = {}) {
@@ -9,7 +9,7 @@ export class FunctionComponent {
     this.hooks = []; this.queues = new Map(); this.hookIndex = 0;
     this.renderer = null; this.mounted = false; this.error = null;
     this.pending = false; this.propsPending = false; this.committed = false;
-    this.phase = 'idle'; this.ticket = 0; this.generation = 0;
+    this.phase = 'idle'; this.ticket = 0; this.generation = 0; this.autoUpdates = 0;
   }
   mount(host) {
     if (this.mounted) throw Error('Root is already mounted');
@@ -20,8 +20,8 @@ export class FunctionComponent {
   }
   enqueue(index, action, generation) {
     if (generation !== this.generation) { console.warn('Ignored stale setter'); return; }
-    if (this.phase !== 'idle') throw Error('Setter is forbidden during render/updater');
     if (!this.mounted) { console.warn('Ignored setter after unmount'); return; }
+    if (isRendering() || !['idle', 'effects'].includes(this.phase)) throw Error('Setter is forbidden during render/updater');
     if (this.error) throw Error('Root failed; call update() explicitly to retry');
     const queue = this.queues.get(index) || [];
     if (!queue.length && typeof action !== 'function' && Object.is(this.hooks[index].value, action)) return;
@@ -33,7 +33,13 @@ export class FunctionComponent {
     queueMicrotask(() => {
       if (!this.mounted || ticket !== this.ticket) return;
       this.pending = false;
-      try { this.update(); } catch (error) { console.error('Root update failed', error); }
+      try {
+        if (++this.autoUpdates > 50) throw Error('Automatic update loop exceeded 50 updates');
+        this.update();
+      } catch (error) {
+        this.error = error; this.queues.clear(); ++this.ticket; this.pending = false;
+        console.error('Root update failed', error);
+      } finally { if (!this.pending) this.autoUpdates = 0; }
     });
   }
   updateProps(nextProps) {
@@ -64,8 +70,9 @@ export class FunctionComponent {
       this.renderer.render(tree(node));
       this.hooks = draft; this.props = props; this.nextProps = props;
       this.propsPending = false; this.committed = true;
+      this.phase = 'effects'; commitEffects(this.hooks);
     } catch (error) {
-      this.error = error; this.queues.clear(); this.propsPending = false; this.nextProps = this.props;
+      this.error = error; this.queues.clear(); ++this.ticket; this.pending = false; this.propsPending = false; this.nextProps = this.props;
       throw error;
     } finally { this.phase = 'idle'; }
   }
@@ -73,6 +80,10 @@ export class FunctionComponent {
     if (this.phase !== 'idle') throw Error('Cannot unmount during render');
     if (!this.mounted) return;
     this.mounted = false; ++this.ticket; this.pending = false; this.queues.clear();
+    this.propsPending = false; this.nextProps = this.props;
+    this.phase = 'effects';
+    for (const error of cleanupEffects(this.hooks.filter(slot => slot.kind === 'effect'))) { this.error = error; console.error('Effect cleanup failed', error); }
+    this.phase = 'idle';
     try { this.renderer.render(tree()); }
     finally { this.renderer.destroy(); this.hooks = []; this.committed = false; }
   }
