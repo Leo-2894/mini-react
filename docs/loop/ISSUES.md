@@ -1,3 +1,17 @@
+# TURN12 REVIEW_REWORK 1 — 구현 수정 완료 / 독립 재검수 대기
+QA12-001 / HIGH / Sol 수정 완료 — 독립 재검수 대기 / CODE e513ba404d00cfbf3602afe240276efa2920905e.
+독립 REJECTED는 유지한다. 최초 보고의 HIGH/OPEN 판정 원문을 아래에 보존하며 구현 세션이 독립 RESOLVED로 변경하지 않는다.
+
+| 항목 | 수정 및 원인 | 회귀 | 증거/현재 상태 |
+|---|---|---|---|
+| QA12-001 | src/api/history.ts decoded slash token class 보완; raw segment 경계 유지. 최소수정 129b8845fde62fa03c679a061154d758f389e2bc | unit/privacy12 8, e2e/privacy12 2 | red-unit 6/2→green8/0, red-e2e0/2→green2/0; 최종 전체 PASS. 별도 검수 대기 |
+| SOL-012-TS-01 | TS 전환 scope.ts element guard가 잘못된 대상에서 조용히 생략: 명시적 throw 복원 | unit/typescript 1, DOM 불변 확인 | red-projection-type0/1→green1/0. Sol 자체 해결, 독립 회귀 확인 요청 |
+| TS 전환 | 사용자 명시 승인: src21 strict TS, tsc build/dist serving; API/Hook/scope 경계 동일 | 기존 unit TS import + 최신 build hash E2E | typecheck/build exit0, unit161/E2E62/all exit0/FAIL0/SKIP0. 독립 승인 대기 |
+
+증거 output/playwright/turn12-rework1/; 전체 파일 지도·수정 시도·지원 한계는 HANDOFF와 final-source-audit.json 참조. 설치/빌드 도구(Node)와 제품 언어(TS)/브라우저JS 구분을 architecture/README에 명시했다. 초기 strict3진단은 annotation 로그 보존 후 해결했고 any/nocheck 우회하지 않았다. 기존 QA06-001~005의 독립 해결 원문 및 현재 정규 회귀를 유지한다. 새 자체 확인 미해결 없음; 독립 검수 미실시.
+
+---
+## 직전 독립 이슈 보고 원문 (역사 기록)
 # TURN 12 — 최종 독립 검수 REJECTED (2026-11-08)
 검수 담당 Sol 6.1 / HIGH — 최종 독립 검수 세션.
 HEAD eb368fdc7a32cd79a382a0726af9fd0c5b53ab43 / 제품 9c53b3a6f668e54e90c2702be301c12561c1a858.

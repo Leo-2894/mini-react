@@ -303,3 +303,53 @@
 - 필수언어표·검증지도·결함재현·수정조건을 turn12.md에작성. 최종승인/로컬제출준비보류, 수정은구현Sol 동일TURN12 REVIEW_REWORK. 최초검수 revision_count0/2, QA06카운터별도.
 - 검수브라우저close/직접dev와HTTPfixture Ctrl+C종료(의도한exit1). 제품·시험·README·설계·TURN06보고미수정. 신규turn12+공통기록4개만변경. 반려상태여서승인용commit없음,원격/다른세션실행없음.
 - 미검증 clean install/Firefox/WebKit/실제스크린리더/외부운영API/예외자연빈도. 필수시험실행차단없음(TEST_BLOCKED아님). 반려근거는QA12-001 실제재현. 기록후STOP.
+
+
+---
+## TURN12 REVIEW_REWORK 1 — Sol 구현 수정 완료 / 독립 재검수 대기
+시각: 2026-11-08 20:09 Asia/Seoul. 자체 검증 PASS이며 독립 판정 REJECTED는 유지한다.
+- 사용자 승인: 첨부된 “최종 수정 및 TypeScript 전환”은 QA12-001 수정과 제품 src 전체 TS 전환을 명시 승인한다. 기존 JavaScript 통일 계약의 언어/도구 항목만 변경한다. 별도 엔진/프레임워크/제품 backend를 추가하지 않았다.
+- 검수 원문 보존 commit: c4ff3bdab0cdf655ddb5be1db981f6b6e8b7122d. QA12-001 최소 수정 commit: 129b8845fde62fa03c679a061154d758f389e2bc. 최종 제품/언어·빌드 수정 CODE SHA: e513ba404d00cfbf3602afe240276efa2920905e.
+- 최종 인계 HEAD는 이 기록을 포함한 docs-only commit이며 전체 SHA와 실제 clean 여부는 output/playwright/turn12-rework1/handoff-receipt.json 및 최종 응답에서 확인한다. 제품 SHA 뒤 추가 코드 변경 없음.
+- current_turn=12, active_rework_round=1, revision_count=0/2 유지. Sol 완료는 완료된 독립 재검수 횟수에 포함하지 않는다. 다음 담당 Sol 6.1 / HIGH 별도 독립 검수 세션. 자기 독립 승인/다른 세션 자동 실행/원격 작업 없음.
+
+### QA12-001 실패 → 성공
+- src/api/history.ts: raw slash 경계를 먼저 나눈 뒤 각 segment decode, 긴 토큰 문자집합에 decoded slash 추가. 일반 경로 유지/민감 이름 뒤 값 정제/query/hash/userinfo 제거 유지.
+- tests/unit/privacy12.test.js: 신규8개. 수정 전 red-unit.log 6PASS/2FAIL/0SKIP exit1 (%2F/%2f). 최소 수정 후 green-unit-js.log 8PASS/0FAIL/0SKIP exit0.
+- tests/e2e/privacy12.spec.js: 신규2개. red-e2e.log 0PASS/2FAIL/0SKIP exit1 → green-e2e-js.log 2PASS/0FAIL/0SKIP exit0. History 저장 URL·Recent requests 접근성 이름·Reuse draft·Send disabled·원문 부재를 literal로 확인.
+- 최소 JS 수정 뒤 동일 동작을 TS로 보존했고 최종 전체 시험에서 재확인. 기존 red trace/screenshot과 이전 보고서 보존.
+- 상태: QA12-001 HIGH — Sol 수정 완료 / 독립 재검수 대기. 구현 세션에서 독립 RESOLVED로 바꾸지 않는다.
+
+### TypeScript 전환 및 오류 경계
+- src의 기존19개 JS 모듈→TS, mini-react/types.ts와 api/types.ts 공통 타입2개 추가(총21). 수동관리 제품 JS 사본0. strict=true, noEmitOnError=true, any 타입/ts-ignore/ts-nocheck 없음.
+- VNode/Tree·Ref/Operation/PatchPlan·renderer/scope·Hook slot/queue/cleanup·요청 draft/snapshot·응답 결과·History·컴포넌트 props/DOM 이벤트를 구분했다. 외부 VNode/DOM/JSON 경계는 unknown과 실제 검증을 사용한다.
+- 국소 단언은 clone의 입력/출력 generic, 내부 Hook의 kind/슬롯 상관관계와 generic cache, 기본 props뿐이다. literal narrowing용 as const도 사용한다. React 전체 타입 호환성을 주장하지 않는다.
+- TypeScript 7.0.2 정확 버전 devDependency/lock 고정. Node v24.22.1/npm11.19.1. Node는 정적 개발 서버/빌드/시험/fixture에 사용, 제품 API backend 별도 없음. 브라우저 Fetch/CORS 계약 불변.
+- tsconfig와 scripts/build.js: ES module tsc 출력 dist/src/*.js, HTML/CSS/SVG도 dist에 복사. root/dist 절대경로·직속경로·symlink 확인 후 명시된 생성물만 삭제. noEmitOnError로 실패 시 stale 출력 유지하지 않는다.
+- dev는 초기 자동 build 후 기존 /,/phase1/,/src/...js 경로를 dist에서 서빙. E2E webServer가 dev를 자체 시작해 최신 build. /src/main.ts는404. source watch 없음(수정 후 build+reload).
+- unit 기존13파일의 변경은 .js→.ts import뿐. 기존 E2E파일/기대값/HTML/CSS 불변. build E2E는 모든 TS source SHA256 및 compiler version, JS MIME, TS404, 두 페이지를 검사.
+- 자체 리뷰: annotation 첫 strict 검사3diagnostic(App event, lazy initializer, Inspector child 타입)은 typecheck-annotation.log exit1→typecheck-green.log exit0으로 해결.
+- 추가 동작 보존 회귀 tests/unit/typescript.test.js: projection 대상이 Text일 때 element 쓰기를 조용히 건너뛰던 TS guard를 red-projection-type.log 0PASS/1FAIL exit1로 확보, scope.ts의 명시적 오류 거부 복원 후 green-projection-type.log 1PASS/0FAIL exit0. DOM 불변도 확인. 마지막 코드 변경 후 모든 필수 명령 재실행.
+- 구현 처리 단계3개 기록: privacy 최소 수정 / TS 초기 검사 진단 수정 / 자체 리뷰 projection guard 복원. 반복 추측 수정/테스트 삭제·skip·기대값 완화 없음.
+
+### 최종 실행 (PASS/FAIL/SKIP)
+증거 base: output/playwright/turn12-rework1/
+| 명령 | exit | PASS | FAIL | SKIP | 증거 |
+|---|---:|---|---:|---:|---|
+| npm run typecheck | 0 | strict 검사 | 0 | 0 | typecheck-green.log |
+| npm run build | 0 | TS21 + 자산 | 0 | 0 | build-green.log |
+| npm run test:unit | 0 | 161 unit (14 files) | 0 | 0 | test-unit.log |
+| npm run test:e2e | 0 | 62 Chromium | 0 | 0 | test-e2e.log |
+| npm run test:all | 0 | typecheck/build + 161 unit + 62 Chromium | 0 | 0 | test-all.log |
+
+- 고유223개 = 기존211 + privacy unit8/E2E2 + projection unit1/build E2E1. 반복 실행·CLI 확인은 합산하지 않는다. final-command-results.json은 개별 종료 코드를 기록한다.
+- npm run dev도 초기 build와 두 페이지 실행을 직접 확인. 장기 서버를 Ctrl+C로 정상 정리하여 종료코드1; dev를 종료코드0 시험으로 보고하지 않는다.
+- Playwright Skill 실제 읽고 CLI sol-ts12 사용: fake encoded URL Send200→History [redacted]→Reuse [redacted]/disabled true, DOM Lab text edit→Patch 양 영역 일치→Undo 양 영역 복구. cli-*.log. CLI close 및 수동 dev/fixture 종료 후 E2E 자체 서버와 충돌 없이 최종 실행.
+- QA06-001~005, native label/AX, logical/physical round trip, projection 실패 잠금과 read-only preflight 비잠금, History/참조/listener/focus/caret, Hooks batch/effect/memo/실패 보존, 실제HTTP5/CORS/timeout/cancel/late, 모바일/행/왕복/정상오류없음의 기존 회귀 통과.
+- final-source-audit.json: 기존 증거/검수 보고/지침428개 SHA256 일치, 기존 unit import만 변경, 기존 E2E/HTML/CSS 불변, dist 자산 hash 일치. 처음 lexical any 검색은 영문 주석의 단어(any)만 오탐; 원본 감사 결과도 source-audit-comment-false-positive.json에 보존하고 실제 any 타입0 확인.
+- prior/red/green/pre-projection/e2e/final 보고서·test-results를 구분 보존. 기존 TURN06~12 증거/독립 보고 원문은 수정하지 않았다.
+
+### 독립 재검수 요청 및 한계
+- 동일 TURN12에서 QA12-001 red→green을 독립 재현하고 TS 소스 전환·strict·빌드 삭제 경계·dev/E2E 자동 build·unit TS/브라우저 최신 JS 연결·두 페이지·기존 전체 계약을 검수한다. 기존 JS/과거 SHA 승인으로 새 코드 전체를 승인하지 않는다.
+- 미검증: clean dependency reinstall, Firefox/WebKit, 실제 스크린리더 운용, 실제 외부 API 가용성/CORS, 예외 주입의 자연 발생 빈도. 임의 비밀 전체 탐지/응답 전체 수신 메모리 제한/자동 watch를 보장하지 않는다.
+- 새로운 자체 확인 미해결 결함 없음. 독립 재검수 미실시이므로 최종 제품 승인·제출 준비는 false. 다음 허용 작업은 사용자가 시작하는 별도 Sol 6.1/HIGH 동일TURN12 재검수. 인계 후 STOP.
