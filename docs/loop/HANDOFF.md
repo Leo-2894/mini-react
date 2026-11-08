@@ -1,3 +1,41 @@
+# [HANDOFF — 2026-11-07 20:20 Asia/Seoul]
+FROM: Astra (Independent QA)
+TO: Sol
+CURRENT TURN: 06 — 첫 재검수 완료 / REVIEW_REWORK 2 대기
+STATUS: FAIL / REJECTED
+BASELINE HEAD: 612bea5448fb77f6fda6c807c6b4cdc0a45c1900
+PRODUCT COMMIT: ee14fc8235a7874643af26ef9374602fd6975659
+WORKTREE: 검수 시작 clean. 제품/기존 테스트 불변. 종료 시 Astra 문서 6개(architecture, turn06 review, STATE, HANDOFF, LOG, ISSUES)만 수정. 원격 작업/커밋 없음.
+EVIDENCE: 독립 test:unit 60/0/0 exit 0; test:e2e 14/0/0 exit 0; test:all 60 unit+14 E2E/0/0 exit 0. 별도 probe value 31 PASS/0 FAIL, boundary 14 PASS/2 FAIL, regression 8 PASS/0 FAIL. output/playwright/turn06-rereview1/.
+OPEN ISSUES: QA06-003 HIGH 1건. QA06-001/002/004는 Astra 재현 및 회귀 확인 후 RESOLVED. 기존 최초 보고 원문 보존, 새 판정은 reviews/turn06.md 말미 참조.
+NEXT ALLOWED ACTION: 같은 TURN 06의 Sol REVIEW_REWORK 2 → 코드/회귀/증거 인계 → Astra 두 번째 재검수. TURN 07 금지.
+REVISION: revision_count=1 (첫 수정→첫 재검수 완료). active_rework_round=1 완료; Sol이 두 번째 수정 시작 시 2로 변경. 최대 2회 중 남은 수정→재검수 1회. 그 뒤 주요 결함 잔존 시 BLOCKED/사람의 방향 결정.
+DO NOT: 자기 승인/다른 TURN 실행/제품 전체 렌더러 재작성/외부 변경 검사 완화/기존 실패 증거 덮어쓰기.
+
+## 남은 결함과 수정 계약
+QA06-003의 label 클릭은 이제 로컬 input을 활성화하지만 native 연결은 깨져 있다. editor label.control이 actual input, actual labels=2/editor labels=0. 실제 브라우저 접근성 트리는 actual checkbox "Local consent Local consent", editor checkbox는 이름 없음. 일반 text input도 같은 문제다. 이는 보조기기 전체 인증 요구가 아니라 허용한 HTML label 관계의 재현된 결함이다.
+증거: independent-boundaries.log, native-label-accessibility-result.log. 재현 코드는 turn06 보고서 및 probe 로그에 있다.
+
+Astra는 docs/architecture.md 말미의 **Phase 1 ID 경계 보완 계약**만 설계 승인했다. 구현/QA 승인 아님.
+- 두 host의 logical id/for/IDREF는 Tree/History/Inspector에 보존, physical ID는 host별로 격리하여 native 관계와 접근성 이름 복구.
+- 선택적 scope/context를 공유 DOM 입출력/attrs patch/preflight/Inspector 경로에 일관되게 적용. default renderer/Phase 2/single shared Diff 계약 유지.
+- 초기 source Node === 및 논리 sample 상태 유지. namespace 변환만 제한적인 초기 속성 보정 허용.
+- actual/Inspector 외부-only 대상 연결 금지, ARIA IDREF와 논리 selector 지원, id 삭제/변경/History, no-op 0 writes, 외부 physical mutation 거부를 검증.
+- getter 조작/aria-label 덧씌우기/클릭 guard만 유지/지원 id·for 삭제로 숨기지 말 것.
+- 위 범위를 넘는 큰 변경이 필요하면 비용·변경안을 먼저 기록하고 중단. 전체 엔진 재작성 승인 없음.
+
+## 실행 순서 및 인계 조건
+1. 신규 native 관계/이름 실패 회귀 확보. 현재 클릭/Space/focus 통과와 별도로 assertion.
+2. 계약에 맞춰 QA06-003 수정, 관련 value/radio/Inspector 회귀 유지.
+3. test:unit / test:e2e / test:all 각각 실행하고 exit/PASS/FAIL/SKIP, 수정 SHA 및 신규 red→green 증거 기록.
+4. 같은 TURN 06으로 Astra 재검수 요청 후 STOP. revision_count는 완료된 수정→재검수 횟수이므로 Sol 수정 완료만으로 2로 올리지 않는다.
+
+기존 turn06/turn06-rework1 증거 보존. 새 증거는 별도 rework2 경로 사용. screenshot이 text input에 style=""를 남기는 현상도 Astra가 독립 확인했고, 그 뒤 External DOM change 거부는 정상이다. 촬영 마지막 또는 reload 후 다음 조작.
+미검증: Firefox/WebKit/실제 스크린리더/clean reinstall/Phase 2. 필수 실행 장애는 해소되었고 TEST_BLOCKED 아님. 검수 브라우저·서버 종료, 다른 세션 자동 실행 없음.
+
+---
+## 이전 인계 원문 (역사 기록; 아래 대기 상태는 현재 상태가 아님)
+
 # [HANDOFF — 2026-11-07 15:45 Asia/Seoul]
 FROM: Sol (Agent 1)
 TO: Astra (Independent QA)

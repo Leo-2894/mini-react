@@ -242,3 +242,28 @@ TURN 06/12는 기존 테스트 실행 외에도 아래 반례를 독립 선정�
 현재 TURN 01만 승인한다. CRITICAL/HIGH 또는 필수 미검증은 QA PASS 금지. 검수 반려 수정은 동일 TURN의 REVIEW_REWORK이며 하네스의 3회 구현 수정/2회 QA 재검수 한도를 따른다.
 
 Sol 인계 증거: 실제 commit 또는 none, git status, 명령/종료코드/통과·실패·skip, trace 경로, 관련 파일·테스트 ID, 제한 사항. 검수 시작/끝의 작업 트리를 대조하고 동시 변경이면 중단한다. README에는 두 페이지 실행, Mini React 차이·제약, 핵심 알고리즘, 테스트 재현, CORS/History 개인정보 정책, 시연 절차를 포함한다.
+
+
+---
+
+## TURN 06 첫 재검수 보완 계약 — Phase 1 ID 경계 (2026-11-07)
+설계 판정: **아래 제한적 보완을 Astra가 승인한다. 구현 및 TURN 06 QA는 미승인(REJECTED)**. 이 절은 위 §4~6의 Phase 1 입출력에만 추가되는 경계 계약이며 default renderer/Phase 2의 attrs 계약은 유지한다. 실제 구현은 Sol REVIEW_REWORK 2 담당이다.
+
+### 필요성과 대안
+612bea5의 별개 form wrapper는 radio 그룹을 분리하지만 duplicate id/for의 문서 전역 연결을 바꾸지 못한다. 독립 Chromium에서 editor label.control이 actual input을 가리키고 actual labels=2/editor labels=0, editor 접근성 이름 없음이 재현됐다. capture click 우회는 입력 동작 일부만 복구한다.
+Phase 1 host별 물리 ID/IDREF 격리를 채택한다. 클릭 우회만 유지하거나 aria-label을 덧씌우는 대안은 native 연결을 해결하지 않는다. iframe/별도 document는 문서 소유권·포커스·선택/UI 영향이 크고 Shadow DOM은 현 범위 밖이므로 이번 수정에 도입하지 않는다.
+
+### 필수 불변식과 구현 경계
+1. VDOM/History/Inspector의 사용자 id 및 label for는 논리 값이다. 두 host는 같은 논리 Tree를 가지되 물리 DOM ID는 host별 namespace로 달라질 수 있다. ID 생성은 다른 host 및 Inspector ID와 충돌하지 않아야 한다. 단순 문자열 prefix 제거로 임의 사용자 값을 오인하지 말고 소유권 있는 mapping을 사용한다.
+2. Phase 1에만 선택적 scope/context를 적용한다. DOM→Tree, createDOM, attrs patch, preflight, Inspector 후보 생성/선택이 동일한 변환을 사용해야 한다. context 없는 기존 API/default renderer는 그대로 동작한다. 새 Diff/Patch 엔진, DOM 전체 교체, managed DOM 재채택은 금지한다. 필요한 선택적 인자와 내부 helper는 구현 문서에 명시한다.
+3. 초기에는 실제 sample DOM을 먼저 논리 Tree로 읽고 검증한다. 실제 source Node 자체는 보존한다. 이 경계 설정을 위한 id/IDREF 물리 속성 변환만 초기화 예외로 허용한다. snapshot은 초기 논리 값과 live 상태를 보존하며 복제 노드는 이미 격리된 속성으로 삽입한다. 초기 radio 상태나 focus를 바꾸지 않는다.
+4. label.for는 같은 host의 논리 id만 참조한다. native label.control/input.labels와 접근성 이름이 각각 해당 host에 결속되어야 한다. 외부에만 같은 id가 있는 경우 그 외부 control/Inspector에 연결하지 않는다. implicit label 및 직접 control 클릭/키보드는 native 의미를 유지한다.
+5. 기존 지원 aria-* 중 ID를 참조하는 값도 같은 경계를 따라야 한다. 최소 aria-labelledby/aria-describedby와 지원하는 다른 단일/목록 IDREF 속성을 명시하여 처리한다. 일반 문자열/boolean ARIA는 원문 보존한다. IDREF 목록의 순서/공백 의미 및 존재하지 않는 내부 대상 처리 방침을 기록한다. ID 격리를 위해 aria 지원을 조용히 제거하지 않는다.
+6. 사용자 편집은 현재 edit DOM에서 다시 읽는다. 도구가 적용한 알려진 physical 값만 logical 값으로 복원하며, 사용자가 새로 편집한 logical ID를 오래된 캐시로 덮어쓰지 않는다. Inspector의 논리 ID 선택과 속성 선택(예: #box, [id="box"], label[for="box"])은 계속 동작해야 한다. namespace를 UI/History에 노출하지 않는다. 동일 host 내 중복/빈 ID는 명시적 정책과 시험을 두고 임의의 다른 host 대상으로 fallback하지 않는다.
+7. 실제 managed DOM의 외부 id/for/IDREF 변경은 mutation 전에 거부한다. physical projection은 엔진이 소유한 값만 증명하며 현재 DOM을 무조건 신뢰하는 검증 예외가 아니다. 나머지 attrs/구조 검증 및 value projection을 유지한다.
+8. id/for 대상 변경·삭제·노드 이동, no-op, Undo/Redo와 미적용 draft를 처리한다. no-op mapping 재할당/불필요 DOM write 없음, Node === 및 focus/caret 유지. History와 양 영역 비교 oracle는 논리 구조를 비교하되 native 관계 검증을 별도로 둔다. 물리 값 차이가 예상된다는 이유로 id/for 검증 자체를 제거하지 않는다.
+
+### 영향 및 추가 완료 기준
+영향은 Phase 1 경계 관리, 공유 dom/patch/renderer의 선택적 context, Inspector의 logical selector/생성 경로 및 관련 테스트에 한정한다. 순수 diff와 Tree 형식, hooks/Phase 2 계획은 유지한다. 일반 CSS selector를 다루기 위한 대규모 parser/렌더링 재작성은 허용하지 않는다. 구현 방식이 이 경계를 벗어나야 하면 실제 변경안/비용을 기록하고 중단한다.
+추가 gate: 두 host에서 explicit label.control===자기 input, input.labels에 다른 host label 없음, 동일 접근성 이름 각각 유지, implicit/중첩/checkbox/radio/text/Space/focus 정상. 외부-only 참조가 native 연결/편집/Inspector를 침범하지 않음. 논리 id/for 및 ARIA IDREF round trip·Inspector 편집·삭제/재지정·History, 초기 source 참조·radio checked, no-op 쓰기0, 실제 외부 physical attr 거부를 unit/실제 Chromium으로 검증한다.
+기존 60 unit/14 E2E 및 QA06-001/002/004 회귀를 유지한다. 기존 DOM oracle 변경이 필요하면 물리 표현과 논리 구조의 독립 oracle 및 native 관계 assertion을 함께 제공하고 검증을 약화하지 않는다. 추가 테스트 작성은 이 Sol 결함 수정 범위에 포함되며 Astra QA는 제품/테스트를 직접 수정하지 않는다.

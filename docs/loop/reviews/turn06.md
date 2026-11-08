@@ -140,3 +140,130 @@ validatePatch에서 diff를 재계산하고 renderer/controller가 검증을 반
 현재 revision_count=0은 아직 완료된 수정→재검수 회수가 없다는 뜻이다. 이번 최초 반려 후 첫 재작업을 대기한다. 하네스 최대 2회 QA 재작업 규칙을 유지한다. TURN 07~12는 NOT_STARTED이며 07 승인 없음.
 
 기록 변경: docs/loop/reviews/turn06.md, STATE.md, HANDOFF.md, LOG.md, ISSUES.md. 실행 증거는 ignored output/playwright/turn06 및 Playwright artifacts에 보존. HEAD는 그대로이고 src/tests/phase1/scripts/package/설계의 변경 없음. 자동 Sol 실행·제품 수정·원격 작업 없이 인계 후 STOP.
+
+
+---
+
+# [TURN 06 — INDEPENDENT QA REPORT — 첫 재검수]
+DATE: 2026-11-07 20:20 Asia/Seoul
+STATUS: FAIL / REJECTED
+BASELINE HEAD: 612bea5448fb77f6fda6c807c6b4cdc0a45c1900
+PRODUCT COMMIT: ee14fc8235a7874643af26ef9374602fd6975659
+ORIGINAL REVIEW CHECKPOINT: b431784 (위 최초 REJECTED 보고 원문 보존)
+REVISION: 완료된 Sol 수정→Astra 재검수 1/2
+NEXT OWNER / ACTION: Sol / 동일 TURN 06 REVIEW_REWORK 2
+ARCHITECTURE: 아래 판정에 따른 Phase 1 ID 경계 보완 계약을 architecture.md 말미에 기록. 제품 구현 승인과 QA 승인을 구별한다.
+
+## 1. 종합 판정
+**FAIL / REJECTED. TURN 07 진입 불가.**
+
+QA06-001, QA06-002, QA06-004는 독립 재현과 회귀 검토로 해결을 확인했다. QA06-003은 기존 교차 클릭 활성화가 수정됐지만 native label 연결과 접근성 이름이 여전히 다른 영역에 결속된다. HIGH 1건이 남으므로 승인하지 않는다. 현재 수정은 “클릭 동작 복구”이며 “영역 내부 label 연결 보장” 완료로 인정할 수 없다.
+
+필수 문서(전용 지침 검색, AGENTS, 전체 하네스, STATE, HANDOFF, architecture, 최초 turn06, ISSUES, LOG, README)를 지정 순서로 읽었다. Astra 전용 별도 파일 없음. 실제 cwd/Git root는 지정 프로젝트, 시작 HEAD는 위 인계 SHA이며 작업 트리는 clean이었다. b431784→ee14fc8은 수정 코드/신규 회귀/README, ee14fc8→612bea5는 공통 기록 4개뿐이다. 검수 중 HEAD와 제품/테스트는 불변. 최종 기록 직전 다른 문서 4개의 SHA256도 시작과 일치했고 작업 변경은 Astra의 STATE 진행 표기뿐이었다.
+
+## 2. 요구사항 충족 상태
+| 범위 | 판정 | 실제 근거 |
+|---|---|---|
+| D01~D02 | 충족(확인 범위) | DOM 변환 기존 회귀, 초기 source Node ===, radio 초기 checked/논리 Tree 유지, input value/type 독립 31조건 통과 |
+| F01~F02 | 충족(확인 범위) | 순수 Diff 기존 unit, mixed keyed/unkeyed/text/comment 이동 및 이동 부모 내부 변경 독립 확인 |
+| P01~P03 | 충족(확인 범위) | 참조/연속 삽입·삭제/이벤트 교체·제거/제거 subtree 정리 기존 unit, 독립 교체 후 listener 호출 0회 추가 |
+| P04~P05 | 충족(확인 범위) | value projection 반복/no-op 0 writes/type 전환, 실제 외부 value/title/style/구조 변경 mutation 전 거부; focus/caret 및 stale/foreign/replayed 기존 회귀 |
+| H01 | 부분 충족 | 실제 edit DOM 재독해→공유 Patch와 radio 경계는 정상. 허용된 explicit label의 native 연결은 미충족(QA06-003) |
+| H02~H03 | 충족(확인 범위) | 분기/no-op Redo/draft/버튼 경계 기존 회귀; 별도 55회 적용→50개/최저 S6/최신 S55, 양 영역 실패 보존 및 부분 실패 잠금 |
+| H04 | 충족(입력 안전 범위) | 위험 속성/CSS 삽입 전 거부, plain paste/drop 기존 E2E; Inspector 5개 ID 충돌 회귀 및 UI 재현 통과 |
+| 허용 label/id/for의 영역 내 의미 | 미충족 | editor label.control=actual input, actual labels=2/editor labels=0, editor 접근성 이름 없음 |
+| 금지 런타임/엔진 우회 | 충족(현 Phase 1) | runtime dependency 없음. 수정은 shared dom/patch, Phase 1 경계와 고정 Inspector 참조. 별도 렌더러/actual 전체 재생성/managed 재채택 없음 |
+| Phase 2 | 범위 밖 | TURN 07~12 미착수. 이번 미구현 결함으로 계산하지 않음 |
+
+## 3. 결함별 재검수
+
+### QA06-001 — HIGH → RESOLVED (이 기준 코드에서)
+- 위치: src/mini-react/dom.js:6~12,25~27; src/mini-react/patch.js:19,60.
+- 원본 재현: checkbox/radio attrs.type + props.value를 동일 Tree로 두 번 render. 이제 성공하고 Node === 유지, no-op MutationObserver 0.
+- 독립 검증: 두 type 각각 value 없음/on/attrs+props 동시 지정/값 변경/props 제거/명시 attr 삭제, text→checkbox→radio→number→text 반복. 예상 live value/content attribute와 일치.
+- 외부 n.value='external'(reflected checkbox), value attr 삭제, title, 빈 style, child 추가는 모두 commit 전 거부. DOM 쓰기 0, revision 및 mutation 직전 DOM 보존.
+- 수정 적합성: Node WeakMap은 엔진 syncProps 직후의 logical/physical value만 추적한다. preflight가 그 projection을 사용하되 나머지 attrs 및 구조 검증을 유지한다. 매번 managed DOM을 채택하거나 현재 외부 속성을 무조건 정상화하는 경로 없음.
+- 증거: independent-values.log 31 PASS / 0 FAIL. 신규 unit/E2E 기대값도 실제 value/ref/쓰기/외부 거부를 검사한다.
+
+### QA06-002 — HIGH → RESOLVED (이 기준 코드에서)
+- 위치: src/phase1/boundaries.js:4~11; controller.js:10.
+- 원본 checked radio 복제 및 UI type/name→radio→Patch 재현은 기존/new E2E와 독립 fixture에서 정상.
+- 두 그룹/각 두 radio의 source 참조·초기 checked 유지, editor 선택만으로 actual 불변, apply 후 actual/editor/snapshot 일치, no-op, Undo/Redo+draft 폐기, 새 분기 Patch 확인.
+- wrapper는 host 밖이므로 readTree/History에 들어가지 않으며 source Node를 새로 만들지 않는다. 서로 다른 native form owner가 그룹을 분리한다.
+- 증거: independent-boundaries.log의 radio 7조건 PASS 및 14 E2E 중 radio 3경로 PASS. label 전역 ID 해석은 별도 QA06-003으로 남는다.
+
+### QA06-003 — HIGH — PARTIALLY FIXED / OPEN
+- 위치: src/phase1/boundaries.js:12~29 (특히 18~26); controller.js:10~13; tests/e2e/review06.spec.js:47; tests/unit/review06.test.js의 explicit/implicit label 시험.
+- 기대: 지원되는 label/for를 복제해도 각 host label의 native control이 같은 host input이어야 한다. 각 input.labels는 자기 영역 label만 포함하고, label로 주어지는 접근성 이름이 원본과 복제본에 각각 유지되어야 한다.
+- 실제: capture guard가 클릭을 로컬 input으로 전달하여 원본 교차 활성화는 해소했다. 그러나 duplicate id/for 그대로이므로 editorLabel.control===actualInput, actualInput.labels.length===2, editorInput.labels.length===0이다.
+- 접근성 트리 실제 결과:
+~~~text
+actual: checkbox "Local consent Local consent"
+        textbox "Local text Local text"
+editor: checkbox [checked]
+        textbox
+implicit checkbox는 양쪽 모두 "Implicit consent"
+~~~
+- 재현(연결된 Chromium 페이지에서 임시 fixture; 제품 파일 수정 없음):
+~~~js
+const {createPhase1}=await import('/src/phase1/controller.js');
+const a=document.createElement('div'), e=document.createElement('div');
+a.innerHTML='<label for="qa-native"><span>Local consent</span></label><input id="qa-native" type="checkbox">';
+document.body.append(a,e);
+const app=createPhase1(a,e);
+const ai=a.querySelector('input'), ei=e.querySelector('input'), el=e.querySelector('label');
+el.firstChild.click(); // actual=false/editor=true: 클릭 수정은 통과
+[el.control===ei, el.control===ai, ai.labels.length, ei.labels.length];
+// 기대 [true,false,1,1], 실제 [false,true,2,0]
+app.destroy();a.remove();e.remove();
+~~~
+- 증거: independent-boundaries.log 14 PASS/2 FAIL(두 실패는 이 결함의 서로 다른 조건), native-label-accessibility-result.log. CLI exit 0은 조사 실행 성공이지 기대값 PASS가 아니다.
+- 통과한 관련 범위: explicit/implicit 중첩 텍스트 클릭, 일반 input focus, control 직접 클릭, History 후 재클릭, 외부 Inspector에만 대상이 있을 때 클릭 억제. 기존 E2E의 Space 키 동작도 통과.
+- 정책 충분성 판단: 불충분. architecture §6의 허용 label/id/for와 최초 검수의 “영역 내부 label 연결” 요구를 클릭 처리에 한정하여 축소할 수 없다. 접근성 이름 손실은 실제 브라우저 트리에서 관찰한 기능 차이이며, 모든 보조기기 인증을 새로 요구하는 것이 아니다. native getter와 이름이 깨진 상태를 README 한계로 적는 것만으로 해결 승인하지 않는다.
+- 원인: form owner는 radio 그룹만 분리한다. 이벤트 preventDefault+control.click은 DOM의 for/ID 관계나 접근성 이름 계산을 바꾸지 않는다.
+- 권장 수정: logical id/for를 VDOM/History/Inspector에 보존하면서 Phase 1 host별 physical ID/IDREF를 격리한다. architecture 말미의 승인된 제한적 보완 계약을 따라 shared engine에 선택적 경계 context를 통합한다. 원본 Node ===, no-op, external mutation 검증, 일반 Phase 2/default renderer 계약을 유지한다.
+- 새 회귀는 native label.control / input.labels와 접근성 이름을 별도로 검증해야 한다. 현재 신규 테스트는 클릭/focus/checked만 검사하여 이 잔여 결함을 탐지하지 못한다. 기존 테스트를 약화시킨 것은 아니지만 게이트 완결성은 부족하다.
+
+### QA06-004 — MEDIUM → RESOLVED (이 기준 코드에서)
+- 위치: src/phase1/main.js:7~10.
+- 원본 UI: h3 id=edit-text 설정→Inspector 텍스트 변경→Patch 성공. Undo→Redo→텍스트 변경→다시 Patch도 성공, 실제/테스트 제목 일치.
+- 추가: 정규 E2E에서 edit-text/target/attr-name/attr-value/tag 각각 충돌 후 편집/Patch/Undo/Redo 통과.
+- 수정 적합성: 초기 Inspector Map 및 세 host 참조를 사용자 편집 전에 확보한다. 후속 edit callback은 고정 참조를 사용하며 사용자 id를 금지하지 않는다. 남은 getElementById는 bootstrap의 host 확보뿐이다.
+- 증거: inspector-id-ui.log, inspector-id-history.log, inspector-final.png(직접 시각 확인), test-e2e.log.
+
+## 4. 테스트 증거
+cwd: C:\Users\Leo\Desktop\API 1. 모든 필수 명령을 각각 직접 실행했다.
+
+| 명령 | 종료 코드 | PASS | FAIL | SKIP |
+|---|---:|---:|---:|---:|
+| npm run test:unit | 0 | 60 (5 files) | 0 | 0 |
+| npm run test:e2e | 0 | 14 Chromium | 0 | 0 |
+| npm run test:all | 0 | 60 unit + 14 Chromium | 0 | 0 |
+
+고유 정규 시험은 74개다. 반복 실행을 합산하지 않는다. output/playwright/turn06-rereview1/{test-unit,test-e2e,test-all}.log에 실제 출력 보존.
+독립 CLI probe는 value 31/0, boundary 14/2, 일반 회귀 8/0(모두 PASS/FAIL). 정규 시험 수와 혼합하지 않는다. source가 각 로그에 있어 비영속 재실행 가능하다. Chrome/157.0.0.0 실제 브라우저를 Playwright Skill/CLI로 사용했다.
+
+기존 output/playwright/turn06/, turn06-rework1/는 보존했다. 실행 전 playwright-report/test-results를 새 증거 경로의 prior-*에 복사했다.
+기존 53 unit/8 E2E 및 속성 순서 무시 DOM oracle는 수정 커밋에서 변경되지 않았다. 현재 oracle는 독립 nodeType/text/tag/정렬 attrs/live props/재귀 children을 비교하고 Node ===를 별도로 확인한다. 속성 순서 문자열 오탐 수정은 타당하며 이름/연결 누락은 별도 추가 시험 대상이다.
+
+screenshot 독립 확인: 촬영 직전 두 input에 style 없음 → CLI 기본 screenshot 뒤 두 input에 style="" → Patch External DOM change: attrs/children, History 3/3 유지. reload 후 style 없음/정상 no-op/alert 없음. screenshot-before.log, screenshot-after.log, screenshot-reload-recovery.log. 도구가 만든 mutation이며 검증 완화나 제품 결함으로 처리하지 않는다.
+
+미검증: Firefox/WebKit, 실제 스크린리더 운용, clean dependency reinstall, Phase 2. 브라우저 접근성 snapshot을 실제 스크린리더 검증으로 주장하지 않는다. 필수 검증은 실행 가능했으므로 TEST_BLOCKED가 아니다. inline handler 위험 후보를 의도적으로 주입한 probe에서 CSP 차단 console 1건은 입력 거부 조사에 따른 것으로 정상 UI 오류와 구별한다.
+검수 중 서버 시작 1회는 자동 승인 심사 사용량 한도로 실행되지 않았으나 사용자 재개 후 동일 승인 절차로 정상 실행했다. 회피 실행 없음. CLI 낡은 ref와 console 반환 방식 시행착오는 재실행으로 정정했으며 기능 PASS 수에 포함하지 않는다.
+
+## 5. 구조적 평가
+value projection, 외부 form owner, Inspector 초기 참조는 수정 범위가 작고 기존 공유 엔진을 유지한다. 실제 외부 속성 오염을 무시하는 우회는 확인되지 않았다.
+label guard는 DOM 관계와 클릭 동작을 두 정책으로 나누고 browser semantics를 수동 복제하므로 불완전하다. 물리 ID 경계로 native 관계를 복원하는 편이 적합하다. 이는 Phase 1 DOM 입출력/검증/Inspector selector에 국한한 계약 보완이며 새 Diff/Patch 또는 UI 런타임을 도입할 이유가 없다.
+대안 비교: 클릭 guard 유지 비용은 작으나 이미 재현된 이름/관계 결함을 해결하지 못한다. 별도 document/iframe은 ID tree를 분리하나 focus/selection/문서 소유권/UI 시험 범위가 커진다. Shadow DOM은 기존 범위 밖이다. Phase 1 physical ID mapping의 제한적 보완을 우선 채택한다. 대규모 엔진 재작성은 승인하지 않는다.
+
+## 6. Sol에 전달할 수정 지시
+1. 같은 TURN 06 REVIEW_REWORK 2로 진입한다. QA06-003의 native 관계/접근성 이름 실패 시험을 먼저 확보한다. 클릭 성공만으로 이슈를 닫지 않는다.
+2. architecture 말미의 제한적 ID 경계 계약을 구현한다. 논리 Tree/id/for 유지, host 간/Inspector 간 native 연결 격리, shared Patch/사전 검증/Node 참조 유지. 정책 범위 축소, ARIA 이름만 덧씌우기, prototype getter 조작, managed DOM 재채택으로 숨기기 금지.
+3. id/for 및 ARIA IDREF 편집·삭제·재지정, 명시/암시 label, checkbox/radio/text, 바깥에만 있는 참조, Patch/no-op/Undo/Redo/draft, Inspector ID 충돌, 실제 외부 physical attr 변경 거부를 검사한다. Phase 2/default renderer는 기존 계약을 유지한다.
+4. 기존 60 unit/14 E2E 및 새 실패 회귀를 모두 실행한다. no-op/History/preflight/부분 실패 잠금/초기 참조를 유지하며 결과를 명령·exit·pass/fail/skip과 수정 SHA로 인계한다.
+5. 기존 증거/보고는 보존하고 새 rework2 경로를 사용한다. screenshot 마지막 또는 reload 후 후속 시험. 자체 PASS를 독립 승인으로 바꾸지 말고 Astra 동일 TURN 06 두 번째 재검수를 요청한 뒤 STOP.
+
+## 7. 다음 단계 승인
+**REJECTED. 다음 담당 Sol / TURN 06 REVIEW_REWORK 2. TURN 07은 NOT_STARTED 유지.**
+revision_count=1은 첫 수정→첫 재검수가 완료됐다는 뜻이다. 최대 2회 중 한 회가 남는다. 두 번째 수정→재검수에도 주요 결함이 남으면 하네스에 따라 BLOCKED로 멈추고 사람이 방향을 결정한다.
+이번 작성 범위는 리뷰/STATE/HANDOFF/LOG/ISSUES 및 필요한 architecture 보완 계약이다. 제품·기존 테스트·README 수정 없음. 다른 세션/다음 TURN 실행 없음. 검수용 브라우저와 직접 시작한 서버 종료 후 인계 STOP.

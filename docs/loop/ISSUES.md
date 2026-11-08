@@ -1,3 +1,21 @@
+# TURN 06 첫 재검수 — 현재 독립 판정 (2026-11-07 20:20)
+기준 HEAD 612bea5448fb77f6fda6c807c6b4cdc0a45c1900 / 제품 ee14fc8235a7874643af26ef9374602fd6975659.
+**FAIL / REJECTED. HIGH 1건 OPEN. revision_count=1/2. Sol REVIEW_REWORK 2, TURN 07 금지.**
+
+| ID | 기존 심각도 | Astra 재검수 상태 | 근거 및 잔여 작업 |
+|---|---|---|---|
+| QA06-001 | HIGH | RESOLVED | dom.js:6~12,25~27/patch.js:19,60. 독립 value/type/attrs+props/no-op/제어권 제거/외부 mutation 31조건 PASS. independent-values.log |
+| QA06-002 | HIGH | RESOLVED | boundaries.js:4~11. 두 그룹 초기 source ===·checked, draft/apply/snapshot/History/branch 7조건 PASS. independent-boundaries.log |
+| QA06-003 | HIGH | PARTIALLY FIXED / OPEN | boundaries.js:12~29. 클릭/키보드/focus 회귀는 PASS이나 native label.control은 actual을 가리킴. actual labels=2/editor labels=0, 접근성 이름 actual 중복/editor 없음. native-label-accessibility-result.log 및 boundaries 2 FAIL. host별 logical/physical ID 경계 보완 필요 |
+| QA06-004 | MEDIUM | RESOLVED | main.js:7~10. 초기 참조 Map. Inspector ID 5개 기존 E2E 및 원본 UI 편집→Patch→Undo/Redo→재편집 성공. inspector-id-ui/history.log |
+
+증거 루트 output/playwright/turn06-rereview1/. 실제 명령 모두 exit 0: unit 60/0/0, E2E 14/0/0, all 60+14/0/0 (PASS/FAIL/SKIP).
+QA06-003 재현·기대/실제·원인·수정 지시는 reviews/turn06.md의 첫 재검수 §3, 추가 승인 설계 계약은 architecture.md 말미. 해결 승인은 클릭 성공과 native 관계/이름 성공을 분리한다. 실제 스크린리더 전체 검증은 미실시.
+최초 REJECTED 보고와 이하 Sol 이력은 보존하며, 과거 “수정 완료/재검수 대기”를 현재 독립 승인으로 해석하지 않는다.
+
+---
+## 이전 이슈 기록 (원문 보존)
+
 # TURN 06 — Sol 수정 완료 / Astra 재검수 대기
 기준 HEAD: 90fc52b63099f537a7be319eef6b0db449afdad4 / 제품 83b1711ae13a63fba6cb38eaf6cb5162c12bc7ec.
 판정 REJECTED. 상세 재현·기대/실제·원인·수정 지시는 reviews/turn06.md 3절에 기록했다.

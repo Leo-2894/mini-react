@@ -115,3 +115,26 @@
 - git diff --check exit 0. 수정 코드 커밋 ee14fc8235a7874643af26ef9374602fd6975659; Astra 산출물 보존 checkpoint b431784.
 - 제품 수정 시도 1회. 완료된 QA 재검수는 0회, 첫 재검수 대기. label activation 정책/native ID getter 한계와 대안은 README/HANDOFF/ISSUES에 명시. 공개 엔진 API/VDOM 변경 없음.
 - STATE: 06 REVIEW_REWORK / next_owner Astra / rework_status AWAITING_ASTRA_REVIEW. 원본 독립 review_status REJECTED 유지. TURN 07 미착수. 공통 기록 커밋 후 최종 작업 트리 확인하고 STOP.
+
+
+## 2026-11-07 20:20 Asia/Seoul — Astra TURN 06 첫 재검수 완료
+- 시작: 지정 문서 전체/전용 Astra 지침 검색/실제 cwd·Git root·HEAD·status 확인. HEAD 612bea5448fb77f6fda6c807c6b4cdc0a45c1900, clean. 제품 ee14fc8, 최초 보고 보존 b431784. 제품 수정 diff 8개 파일과 최종 인계 docs-only 확인.
+- 상태를 IN_PROGRESS로 표기하고 기존 REJECTED는 유지. Playwright Skill/CLI reference 읽고 로컬 CLI/npx 확인. 다른 세션 실행/제품·기존 테스트 수정 없음.
+- 증거 경로 output/playwright/turn06-rereview1 신규 생성. 기존 playwright-report/test-results를 그 아래 prior-*로 복사 보존; 최초 turn06 및 Sol turn06-rework1 경로 쓰기 없음.
+- 직접 실행 npm run test:unit exit 0, 5 files/60 PASS/0 FAIL/0 SKIP.
+- 직접 실행 npm run test:e2e exit 0, Chromium 14 PASS/0 FAIL/0 SKIP.
+- 직접 실행 npm run test:all exit 0, 60 unit +14 Chromium PASS/0 FAIL/0 SKIP. 고유 74개, 중복 합산 금지. 각각 test-unit.log/test-e2e.log/test-all.log.
+- 자동 E2E 서버가 끝난 뒤 수동 dev 서버를 시작하려던 1회는 자동 승인 심사 사용량 한도로 미실행. 사용자 “작업 이어서 해” 후 동일 승인 절차로 재시도 성공. 승인 회피 없음. 재개 시 HEAD/status 재확인.
+- Playwright CLI astra-rereview1, 실제 Chrome/157.0.0.0 사용. 독립 value probe 31 PASS/0 FAIL: 반복/no-op mutations0/Node ===/default on/attrs+props/type/삭제/제어권 제거/외부 value/title/style/구조 사전 거부.
+- independent-boundaries.log 14 PASS/2 FAIL. radio 초기 참조/form owner/2그룹/Patch/History/draft/branch 정상. label explicit/implicit click/일반 input focus/direct click/History/외부-only 억제 정상. native label.control 및 input.labels 두 조건 FAIL.
+- native-label-accessibility-result.log: actual checkbox "Local consent Local consent", textbox "Local text Local text"; editor checkbox/textbox 이름 없음. implicit label 이름은 각각 정상. native 관계 결함이며 실제 스크린리더 시험으로 과장하지 않음.
+- independent-regression.log 8 PASS/0 FAIL: 55번 적용→50개/oldest S6/cursor49, 양 영역 oldest/latest 복원 및 source 참조, actual 외부/unsafe edit preflight DOM·cursor 보존, 두 번째 host fault injection 후 실제 부분 적용·cursor 유지·잠금, mixed 이동/focus/caret/descendant 참조, 제거 subtree listener 정리.
+- unsafe onclick 후보 의도적 주입으로 CSP 차단 console 1건. 정상 UI 오류와 구별. optional unit 경로 phase1.test.js는 없었고 rg로 실제 history.test.js를 찾아 읽음; 필수 문서 읽기 실패 아님.
+- 기존/new 회귀 기대값 직접 검토. 기존 DOM oracle는 nodeType/text/tag/정렬 attrs/live props/children을 비교하고 참조 별도 확인. 변경 전후 기존 53 unit/8 E2E 불변. 신규 label 시험에는 native 관계/이름 assertion 누락.
+- UI 원본 Inspector id=edit-text 재현: 텍스트 변경→Patch 성공, Undo→Redo→텍스트 변경→Patch 성공. 로그 inspector-id-ui.log/inspector-id-history.log. inspector-final.png 시각 확인. 다른 네 ID는 정규 신규 E2E로 확인.
+- 초기 UI refs는 probe 후 낡아 실패했으므로 새 snapshot을 얻어 동일 조작 성공. run-code의 console 출력이 결과에 없어서 return으로 재실행해 접근성 snapshot 확보. 이 도구 시행착오를 제품 실패나 PASS 수로 세지 않음.
+- screenshot-before/after.log: actual/edit text input style 없음→기본 screenshot 뒤 style="", Patch External DOM change, History 3/3 유지. reload 후 style 없음/정상 no-op/alert null (screenshot-reload-recovery.log). 제품 검증 완화 없음.
+- 최종 작성 전 HEAD 불변, 제품/tests diff 없음, 기존 review/HANDOFF/LOG/ISSUES SHA256 시작과 동일, 변경은 자체 STATE 2줄뿐. 동시 수정 흔적 없음.
+- QA06-001/002/004 RESOLVED, QA06-003 HIGH PARTIALLY FIXED/OPEN. FAIL/REJECTED. 첫 수정→첫 재검수 완료 revision_count=1. 다음 Sol 동일 TURN 06 REVIEW_REWORK 2; TURN 07 NOT_STARTED.
+- 하네스 §4.3의 계약 변경안/영향/추가 시험 기록 요구에 따라 architecture.md 말미에 제한적 Phase 1 ID 경계 설계 승인(구현/QA 미승인)을 추가. 원본 architecture/최초 turn06 보고 내용 보존. review/STATE/HANDOFF/LOG/ISSUES 갱신.
+- 검수 CLI 브라우저 close, 직접 시작한 dev 서버 Ctrl+C 종료(exit 1은 의도한 중단); 4173 listener 없음 확인. 필수 테스트 차단 없음. Firefox/WebKit/실제 스크린리더/clean reinstall/Phase 2 미검증. Sol 세션 자동 실행 없이 STOP.
