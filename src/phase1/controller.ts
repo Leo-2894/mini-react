@@ -1,3 +1,4 @@
+import type { Tree } from '../mini-react/types.js';
 import { createRenderer } from '../mini-react/renderer.js';
 import { readTree } from '../mini-react/dom.js';
 import { validatePatch } from '../mini-react/patch.js';
@@ -5,7 +6,7 @@ import { validatePolicy } from './html-policy.js';
 import { createHistory } from './history.js';
 import { createDOMScope } from '../mini-react/scope.js';
 import { isolateHost } from './boundaries.js';
-export function createPhase1(actualHost, editHost) {
+export function createPhase1(actualHost: HTMLElement, editHost: HTMLElement) {
   const document = actualHost.ownerDocument;
   const initial = validatePolicy(readTree(actualHost), document);
   const actualScope = createDOMScope(actualHost), editScope = createDOMScope(editHost);
@@ -18,7 +19,7 @@ export function createPhase1(actualHost, editHost) {
   const history = createHistory(initial);
   let locked = false;
   const guard = () => { if (locked) throw Error('부분 적용 오류로 잠겼습니다. 페이지를 새로고침해 복구하세요.'); };
-  const candidate = () => { const next = validatePolicy(readTree(editHost, editScope), document); editScope.validateTree(next); return next; };
+  const candidate = (): Tree => { const next = validatePolicy(readTree(editHost, editScope), document); editScope.validateTree(next); return next; };
   return {
     history, actualScope, editScope,
     get locked() { return locked; },
@@ -30,7 +31,7 @@ export function createPhase1(actualHost, editHost) {
       const changed = history.append(next, `${plan.operations.length}개 변경 명령`);
       return { changed, operations: plan.operations };
     },
-    travel(index) {
+    travel(index: number) {
       guard();
       const entry = history.entries[index];
       if (!entry) throw Error('Invalid history cursor');

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { createPhase1 } from '../../src/phase1/controller.js';
+import { createPhase1 } from '../../src/phase1/controller.ts';
 afterEach(() => document.body.replaceChildren());
 function setup() {
   const actual=document.createElement('div'), editor=document.createElement('div');

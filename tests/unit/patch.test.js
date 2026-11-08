@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
-import { h, tree, text, comment } from '../../src/mini-react/vnode.js';
-import { diff } from '../../src/mini-react/diff.js';
-import { patch } from '../../src/mini-react/patch.js';
-import { createRenderer } from '../../src/mini-react/renderer.js';
-import { readTree } from '../../src/mini-react/dom.js';
+import { h, tree, text, comment } from '../../src/mini-react/vnode.ts';
+import { diff } from '../../src/mini-react/diff.ts';
+import { patch } from '../../src/mini-react/patch.ts';
+import { createRenderer } from '../../src/mini-react/renderer.ts';
+import { readTree } from '../../src/mini-react/dom.ts';
 function setup(initial = tree()) {
   const host = document.createElement('div'); document.body.append(host);
   const renderer = createRenderer(host); renderer.render(initial);

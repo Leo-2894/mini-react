@@ -1,6 +1,6 @@
 import {describe,it,expect} from 'vitest';
-import {historyEntry,sanitizeURL,reuseHistory} from '../../src/api/history.js';
-import {buildRequest} from '../../src/api/request.js';
+import {historyEntry,sanitizeURL,reuseHistory} from '../../src/api/history.ts';
+import {buildRequest} from '../../src/api/request.ts';
 describe('QA12-001 raw segment boundary and encoded base64',()=>{
  it.each(['%2F','%2f'])('redacts one long base64 segment containing %s',slash=>{
   const token='abcdefghijklmnopqrstuvwx/abc';

@@ -1,7 +1,7 @@
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
-const root = process.cwd();
+const root = path.resolve(import.meta.dirname, '../dist');
 const port = Number(process.env.PORT || 4173);
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml' };
 http.createServer(async (req, res) => {

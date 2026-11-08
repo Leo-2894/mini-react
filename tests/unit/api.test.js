@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { buildRequest, sendRequest } from '../../src/api/request.js';
-import { parseResponse, displayBody } from '../../src/api/response.js';
-import { sanitizeURL, historyEntry, appendHistory, reuseHistory } from '../../src/api/history.js';
+import { buildRequest, sendRequest } from '../../src/api/request.ts';
+import { parseResponse, displayBody } from '../../src/api/response.ts';
+import { sanitizeURL, historyEntry, appendHistory, reuseHistory } from '../../src/api/history.ts';
 const draft=extra=>({method:'GET',url:'https://example.test/items?old=a%20b',params:[],headers:[],body:'',...extra});
 afterEach(()=>vi.useRealTimers());
 describe('A01 request validation',()=>{

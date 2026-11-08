@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { h, tree } from '../../src/mini-react/vnode.js';
-import { readTree } from '../../src/mini-react/dom.js';
-import { createPhase1 } from '../../src/phase1/controller.js';
-import { createHistory } from '../../src/phase1/history.js';
-import { validatePolicy, protectEditor } from '../../src/phase1/html-policy.js';
+import { h, tree } from '../../src/mini-react/vnode.ts';
+import { readTree } from '../../src/mini-react/dom.ts';
+import { createPhase1 } from '../../src/phase1/controller.ts';
+import { createHistory } from '../../src/phase1/history.ts';
+import { validatePolicy, protectEditor } from '../../src/phase1/html-policy.ts';
 const t = value => tree(h('p', {}, value));
 function setup() {
   const actual = document.createElement('div'), editor = document.createElement('div');

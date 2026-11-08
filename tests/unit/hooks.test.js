@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FunctionComponent } from '../../src/mini-react/component.js';
-import { useState, useEffect, useMemo } from '../../src/mini-react/hooks.js';
-import { h } from '../../src/mini-react/vnode.js';
+import { FunctionComponent } from '../../src/mini-react/component.ts';
+import { useState, useEffect, useMemo } from '../../src/mini-react/hooks.ts';
+import { h } from '../../src/mini-react/vnode.ts';
 const roots=[];const tick=async(n=4)=>{for(let i=0;i<n;i++)await Promise.resolve();};
 function mount(App,props={}) {const host=document.createElement('div');document.body.append(host);const root=new FunctionComponent(App,props);roots.push(root);root.mount(host);return{root,host};}
 afterEach(()=>{for(const root of roots.splice(0))root.unmount();document.body.replaceChildren();vi.restoreAllMocks();});

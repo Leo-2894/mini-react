@@ -1,8 +1,8 @@
-import {historyEntry} from '../../src/api/history.js';
+import {historyEntry} from '../../src/api/history.ts';
 import {afterEach,it,expect,vi} from 'vitest';
-import {FunctionComponent} from '../../src/mini-react/component.js';
-import {useState,useEffect} from '../../src/mini-react/hooks.js';
-import {h} from '../../src/mini-react/vnode.js';
+import {FunctionComponent} from '../../src/mini-react/component.ts';
+import {useState,useEffect} from '../../src/mini-react/hooks.ts';
+import {h} from '../../src/mini-react/vnode.ts';
 const roots=[];function mount(App){const host=document.createElement('div'),root=new FunctionComponent(App);roots.push(root);root.mount(host);return{root,host};}
 afterEach(()=>{for(const root of roots.splice(0))root.unmount();vi.restoreAllMocks();});
 it('does not render a batch whose intermediate values return to the committed state',async()=>{

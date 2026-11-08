@@ -1,11 +1,13 @@
+import { isRecord } from '../mini-react/types.js';
+import type { Tree, VNode } from '../mini-react/types.js';
 import { validateTree } from '../mini-react/vnode.js';
 const tags = new Set('div span p section article header footer main nav aside h1 h2 h3 h4 h5 h6 ul ol li strong em b i small code pre blockquote br hr table thead tbody tfoot tr th td caption label input textarea button select option'.split(' '));
 const common = new Set('class id title role lang dir hidden tabindex'.split(' '));
 const form = new Set('type name value checked selected disabled placeholder readonly min max step rows cols'.split(' '));
 const css = new Set('color background-color font-size font-weight text-align margin padding border'.split(' '));
-export function validatePolicy(value, document = globalThis.document) {
+export function validatePolicy(value: Tree, document: Document = globalThis.document): Tree {
   validateTree(value);
-  function visit(node) {
+  function visit(node: VNode): void {
     if (node.kind !== 'element') return;
     if (!tags.has(node.tag)) throw Error(`편집에서 허용하지 않는 태그: ${node.tag}`);
     for (const [name, value] of Object.entries(node.attrs)) {
@@ -30,7 +32,7 @@ export function validatePolicy(value, document = globalThis.document) {
   return value;
 }
 // Used only on the editable host; paste/drop HTML never reaches the DOM.
-export function insertPlainText(host, value) {
+export function insertPlainText(host: HTMLElement, value: string): void {
   const selection = host.ownerDocument.getSelection();
   if (selection?.rangeCount && host.contains(selection.getRangeAt(0).commonAncestorContainer)) {
     const range = selection.getRangeAt(0); range.deleteContents();
@@ -38,11 +40,12 @@ export function insertPlainText(host, value) {
     range.setStartAfter(node); range.collapse(true); selection.removeAllRanges(); selection.addRange(range);
   } else host.append(host.ownerDocument.createTextNode(value));
 }
-export function protectEditor(host, changed = () => {}) {
-  const handler = event => {
+export function protectEditor(host: HTMLElement, changed: () => void = () => {}) {
+  const handler = (event: Event) => {
     event.preventDefault();
-    const transfer = event.clipboardData || event.dataTransfer;
-    insertPlainText(host, transfer?.getData('text/plain') || '');
+    const transfer: unknown = Reflect.get(event, 'clipboardData') || Reflect.get(event, 'dataTransfer');
+    const plain: unknown = isRecord(transfer) && typeof transfer.getData === 'function' ? transfer.getData('text/plain') : '';
+    insertPlainText(host, typeof plain === 'string' ? plain : '');
     changed();
   };
   host.addEventListener('paste', handler); host.addEventListener('drop', handler);

@@ -1,8 +1,8 @@
 import { afterEach, describe, it, expect } from 'vitest';
-import { h, tree } from '../../src/mini-react/vnode.js';
-import { createRenderer } from '../../src/mini-react/renderer.js';
-import { readTree } from '../../src/mini-react/dom.js';
-import { createPhase1 } from '../../src/phase1/controller.js';
+import { h, tree } from '../../src/mini-react/vnode.ts';
+import { createRenderer } from '../../src/mini-react/renderer.ts';
+import { readTree } from '../../src/mini-react/dom.ts';
+import { createPhase1 } from '../../src/phase1/controller.ts';
 afterEach(() => { document.body.replaceChildren(); });
 function setup() { const host = document.createElement('div'); document.body.append(host); return { host, renderer: createRenderer(host) }; }
 function pair(markup) {

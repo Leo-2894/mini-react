@@ -4,11 +4,11 @@
 
 ## DOM → VDOM → Diff → Patch
 
-- vnode.js는 element/text/comment/root Tree를 구별하고 속성/live props/events를 분리한다. h(Child, props)는 wrapper DOM 없이 순수 함수 결과를 검증하며 Hook 권한을 잠시 차단한다.
-- dom.js는 childNodes를 읽어 공백·주석과 입력 live 값을 보존한다. 이벤트는 역추출하지 않고 엔진 소유 WeakMap/committedTree에서 관리한다.
-- diff.js는 이전 Tree의 preorder Ref와 CREATE/TEXT/ATTRS/EVENTS/CHILDREN/PROPS 계획을 만든다. key가 있으면 key, 없으면 unkeyed 순서로 대응한다. 입력 Tree와 DOM은 수정하지 않는다.
-- patch.js는 모든 이전 참조와 외부 구조/속성을 먼저 검증한다. 깊은 부모부터 CHILDREN을 적용하고 살아 있는 노드 cursor로 이동하므로 삭제된 형제 인덱스로 다시 조회하지 않는다. 불변 Node와 listener/focus/caret을 보존한다. 전체 최단 편집/LIS는 보장하지 않는다.
-- renderer.js는 계획 발급자와 revision을 검증해 stale/foreign/replayed 계획을 거부한다. Phase1 actual과 Phase2는 managed이고 editable만 명시적 DOM 채택이 가능하다.
+- vnode.ts는 element/text/comment/root Tree를 구별하고 속성/live props/events를 분리한다. h(Child, props)는 wrapper DOM 없이 순수 함수 결과를 검증하며 Hook 권한을 잠시 차단한다.
+- dom.ts는 childNodes를 읽어 공백·주석과 입력 live 값을 보존한다. 이벤트는 역추출하지 않고 엔진 소유 WeakMap/committedTree에서 관리한다.
+- diff.ts는 이전 Tree의 preorder Ref와 CREATE/TEXT/ATTRS/EVENTS/CHILDREN/PROPS 계획을 만든다. key가 있으면 key, 없으면 unkeyed 순서로 대응한다. 입력 Tree와 DOM은 수정하지 않는다.
+- patch.ts는 모든 이전 참조와 외부 구조/속성을 먼저 검증한다. 깊은 부모부터 CHILDREN을 적용하고 살아 있는 노드 cursor로 이동하므로 삭제된 형제 인덱스로 다시 조회하지 않는다. 불변 Node와 listener/focus/caret을 보존한다. 전체 최단 편집/LIS는 보장하지 않는다.
+- renderer.ts는 계획 발급자와 revision을 검증해 stale/foreign/replayed 계획을 거부한다. Phase1 actual과 Phase2는 managed이고 editable만 명시적 DOM 채택이 가능하다.
 
 ## Phase1 History와 ID 경계
 
@@ -39,7 +39,7 @@ App의 draft/검증 memo → Send에서 immutable snapshot/job.id → useEffect(
 
 buildRequest는 URL/query/header/JSON을 전송 전에 검증한다. Fetch는 credentials:omit, 기본 30초 timeout이며 CORS를 우회하지 않는다. 4xx/5xx는 HTTP 응답으로 유지하고 잘못된 JSON은 raw fallback, 네트워크/CORS/DNS는 단정하지 않은 별도 오류다. Cookie/Host 같은 금지 헤더는 브라우저가 제어한다.
 
-History는 20개 세션 메모리이며 query/hash/userinfo/민감 경로를 제거한 URL과 method/id/time/status/elapsed만 저장한다. raw headers/body/response/snapshot/localStorage 저장은 없다. 긴 segment는 24자 이상의 영숫자·_+=.-를 대상으로 JWT/base64형을 포함한다. 경로 정제는 heuristic이며 임의 비밀을 모두 발견하는 보장은 없다. 재사용은 인증·Params·Body를 지우며 자동 Send하지 않는다.
+History는 20개 세션 메모리이며 query/hash/userinfo/민감 경로를 제거한 URL과 method/id/time/status/elapsed만 저장한다. raw headers/body/response/snapshot/localStorage 저장은 없다. 긴 segment는 24자 이상의 영숫자·_+=./-를 대상으로 JWT/base64형을 포함한다. 경로 정제는 heuristic이며 임의 비밀을 모두 발견하는 보장은 없다. 재사용은 인증·Params·Body를 지우며 자동 Send하지 않는다.
 
 JSON은 VDOM text만 사용한다. 트리 200개/8단계, scalar 생략 안내, pretty/raw 100000자 제한을 제공한다. 전체 응답 수신 메모리 제한은 보장하지 않는다.
 
@@ -53,3 +53,19 @@ JSON은 VDOM text만 사용한다. 트리 200개/8단계, scalar 생략 안내, 
 - A06: main→App→component→renderer→diff/patch 경로와 의존성/직접 DOM 우회 정적 자체 검토, 두 페이지 이동 및 내부 경로 차단 E2E.
 
 수치는 README와 loop의 최신 기록을 따른다. 기존 독립 보고를 수정하지 않으며 최종 제품 승인 여부는 TURN12 독립 검수에서 결정한다.
+
+
+## TURN12 TypeScript 전환과 빌드
+최신 사용자 지시로 제품 소스19개를 .ts로 전환하고 mini-react/types.ts와 api/types.ts를 추가했다. 기존 .js source는 없고 dist/src/*.js는 tsc가 생성한다. HTML/CSS와 브라우저 URL은 유지한다. 언어 변경은 사용자가 승인했으며 제품 독립 승인과 별개다.
+- strict TypeScript7.0.2, NodeNext/ES2022, DOM 환경, noEmitOnError를 적용했다. VNode/Operation/Hook/요청결과 union과 컴포넌트 props/Event를 명시한다.
+- 외부 JSON과 VNode 검증 입력은 unknown으로 받고 실제 값/노드 종류를 확인한다. Hook positional cache/clone의 내부 generic erasure 경계 외에 무더기 단언을 두지 않는다.
+- Node scripts/build.js는 안전하게 dist만 재생성하고 tsc 출력과 HTML/CSS/SVG를 배치한다. scripts/server.js는 dist만 제공한다. 제품 API backend는 없다.
+- npm run dev는 초기 build를 자동 수행한다. watch는 없으며 수정 후 npm run build와 reload를 사용한다. E2E 자체 서버도 dev 명령으로 최신 생성물을 준비한다.
+- JS unit은 .ts 원본을 직접 import한다. 브라우저 /src/...js는 dist/src로 연결된다. build-info.json/해시 E2E로 source와 생성물 대응을 확인한다.
+- QA12-001은 raw segment 경계를 보존한 decode 후 base64 slash 판별을 최소 보완했다. unit2FAIL/UI2FAIL을 먼저 기록한 뒤 unit8/UI2PASS, 이후 TS 원본/컴파일 결과에서도 재검증한다.
+
+
+### TURN12 최종 자체 검증
+strict 타입 검사·빌드 각각 exit0, unit161/0/0 및 Chromium62/0/0, test:all도 동일 수치 exit0. 고유223개이며 반복 합산하지 않는다. 기존211개 검증 조건을 보존했다. unit/typescript.test.js는 잘못된 projection 노드의 명시적 오류 거부를, e2e/typescript.spec.js는 TS 원본 hash/컴파일러 버전·생성 JS MIME·TS 원문404·두 페이지를 검증한다. 이 projection 거부는 TS 전환 자체 리뷰에서 red→green으로 복원한 기존 동작이다.
+
+privacy12 unit8/E2E2에는 encoded slash 대소문자·기존 토큰 변형·정상 경로·History 접근성 이름/Reuse/Send 차단을 literal로 검증한다. 수정 전 red-unit 6PASS/2FAIL, red-e2e 0PASS/2FAIL; 수정 후 모두 PASS. 같은 fixture/expectation을 사용한다. test:all은 타입 검사·build·unit·자동 서버 E2E를 순차 실행한다. 상세 로그와 원본 보존 감사는 output/playwright/turn12-rework1/를 참고한다. 독립 재검수는 아직 수행하지 않았다.

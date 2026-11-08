@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FunctionComponent } from '../../src/mini-react/component.js';
-import { useState } from '../../src/mini-react/hooks.js';
-import { h } from '../../src/mini-react/vnode.js';
+import { FunctionComponent } from '../../src/mini-react/component.ts';
+import { useState } from '../../src/mini-react/hooks.ts';
+import { h } from '../../src/mini-react/vnode.ts';
 const roots = [];
 const tick = () => Promise.resolve();
 function mount(App, props) {

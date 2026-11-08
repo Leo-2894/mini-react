@@ -1,8 +1,10 @@
+import type { Method, RequestDraft, RequestSnapshot, RequestResult } from './types.js';
 import { parseResponse } from './response.js';
 const methods = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
-export function buildRequest(draft) {
+function isMethod(value: string): value is Method { return methods.has(value); }
+export function buildRequest(draft: RequestDraft): RequestSnapshot {
   const method = String(draft.method || '').toUpperCase();
-  if (!methods.has(method)) throw Error('Unsupported HTTP method');
+  if (!isMethod(method)) throw Error('Unsupported HTTP method');
   let url;
   try { url = new URL(draft.url); } catch { throw Error('URL must be absolute HTTP(S)'); }
   if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw Error('URL must be HTTP(S) without user credentials');
@@ -27,7 +29,7 @@ export function buildRequest(draft) {
   url.hash = '';
   return Object.freeze({ method, url: url.href, headers: Object.freeze(Object.fromEntries(headers)), body });
 }
-export async function sendRequest(snapshot, { signal, timeout = 30000, fetchImpl = globalThis.fetch, now = () => performance.now() } = {}) {
+export async function sendRequest(snapshot: RequestSnapshot, { signal, timeout = 30000, fetchImpl = globalThis.fetch, now = () => performance.now() }: { signal?: AbortSignal; timeout?: number; fetchImpl?: typeof globalThis.fetch; now?: () => number } = {}): Promise<RequestResult> {
   if (!Number.isFinite(timeout) || timeout <= 0) throw Error('Timeout must be positive');
   const controller = new AbortController();
   const forwardAbort = () => controller.abort();

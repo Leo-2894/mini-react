@@ -1,9 +1,9 @@
 import { afterEach, it, expect } from 'vitest';
-import { h, tree } from '../../src/mini-react/vnode.js';
-import { readTree, domToVNode, createDOM } from '../../src/mini-react/dom.js';
-import { createDOMScope, IDREF_ATTRS } from '../../src/mini-react/scope.js';
-import { createRenderer } from '../../src/mini-react/renderer.js';
-import { createPhase1 } from '../../src/phase1/controller.js';
+import { h, tree } from '../../src/mini-react/vnode.ts';
+import { readTree, domToVNode, createDOM } from '../../src/mini-react/dom.ts';
+import { createDOMScope, IDREF_ATTRS } from '../../src/mini-react/scope.ts';
+import { createRenderer } from '../../src/mini-react/renderer.ts';
+import { createPhase1 } from '../../src/phase1/controller.ts';
 afterEach(() => document.body.replaceChildren());
 it.each(['checkbox', 'radio', 'text'])('QA06-003 native %s label/control/labels remain within each host', type => {
   const actual = document.createElement('div'), edit = document.createElement('div');

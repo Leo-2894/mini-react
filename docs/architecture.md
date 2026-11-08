@@ -1,4 +1,6 @@
 # API Studio — 아키텍처 계약 v2.0
+
+> 최신 사용자 승인(2026-11-08): 제품 src 전체는 strict TypeScript로 전환한다. 아래 JavaScript 통일·무빌드 설명의 언어/도구 부분은 말미 TURN12 TypeScript 보완 계약으로 대체된다. 동작 계약과 과거 승인 기록은 보존한다.
 기준일: 2026-11-07 (Asia/Seoul) · 소유: Astra TURN 01 · 상위 규약: CODEX_LOOP_HARNESS.md v2.0
 
 ## 1. 적용 범위와 기존 설계 변경
@@ -267,3 +269,35 @@ Phase 1 host별 물리 ID/IDREF 격리를 채택한다. 클릭 우회만 유지�
 영향은 Phase 1 경계 관리, 공유 dom/patch/renderer의 선택적 context, Inspector의 logical selector/생성 경로 및 관련 테스트에 한정한다. 순수 diff와 Tree 형식, hooks/Phase 2 계획은 유지한다. 일반 CSS selector를 다루기 위한 대규모 parser/렌더링 재작성은 허용하지 않는다. 구현 방식이 이 경계를 벗어나야 하면 실제 변경안/비용을 기록하고 중단한다.
 추가 gate: 두 host에서 explicit label.control===자기 input, input.labels에 다른 host label 없음, 동일 접근성 이름 각각 유지, implicit/중첩/checkbox/radio/text/Space/focus 정상. 외부-only 참조가 native 연결/편집/Inspector를 침범하지 않음. 논리 id/for 및 ARIA IDREF round trip·Inspector 편집·삭제/재지정·History, 초기 source 참조·radio checked, no-op 쓰기0, 실제 외부 physical attr 거부를 unit/실제 Chromium으로 검증한다.
 기존 60 unit/14 E2E 및 QA06-001/002/004 회귀를 유지한다. 기존 DOM oracle 변경이 필요하면 물리 표현과 논리 구조의 독립 oracle 및 native 관계 assertion을 함께 제공하고 검증을 약화하지 않는다. 추가 테스트 작성은 이 Sol 결함 수정 범위에 포함되며 Astra QA는 제품/테스트를 직접 수정하지 않는다.
+
+
+---
+
+## TURN12 사용자 승인 보완 계약 — strict TypeScript 전환 (2026-11-08)
+근거: 사용자가 QA12-001 수정과 “제품 프런트엔드 구현 언어를 JavaScript에서 TypeScript로 전환”을 명시 승인했다. 언어·빌드 변경 승인이며 제품의 독립 QA 승인이 아니다. 기존 TURN12 REJECTED 보고 원문을 유지하고 같은 TURN12 별도 독립 재검수로 인계한다.
+
+### 변경 범위와 불변식
+- 기존 제품 src의19개 JS 모듈을 같은 위치의 .ts로 전환하고 공통 타입2개(types.ts)를 둔다. HTML/CSS와 UI 구조·행동은 유지한다. 이전 .js는 src에 중복 관리하지 않는다.
+- Node 도구·테스트는 JavaScript로 유지한다. 브라우저는 .ts가 아닌 dist/src의 컴파일된 .js를 native ES modules로 실행한다. Node는 개발 정적 서버/tsc 빌드/시험·HTTP fixture에 사용하며 실제 제품 API backend는 없다.
+- TypeScript7.0.2를 정확한 devDependency로 사용한다. tsconfig strict=true/NodeNext/ES2022, DOM libs, types=[](브라우저 환경), noEmitOnError=true. 외부 UI/VDOM/Hooks/상태관리 프레임워크나 번들러를 추가하지 않는다.
+- 같은 h/Tree/Diff/Patch/renderer와 루트 전용 Hook 구조를 유지한다. 필요한 DOM/unknown narrowing은 실제 노드 종류/값을 검증한다. 광범위 any/ts-nocheck로 오류를 숨기지 않는다.
+
+### 타입과 모듈 경계
+- mini-react/types.ts: VNode/Tree discriminated union, FormProps/Events, PatchPlan/Operation/Ref, Renderer/DOMScope, HookSlot/state queue/effect cleanup와 DOM discriminator.
+- api/types.ts: raw RequestDraft(method string)와 검증된 RequestSnapshot(Method union), ResponseData/RequestResult, HistoryEntry/AppState. 서버 JSON은 unknown으로 받고 Viewer에서 실제 종류를 검사한다.
+- component/hooks: generic props/useState/useMemo 및 인스턴스별 상태. 내부 positional slot/cache와 구조 clone의 제한된 generic 경계에만 타입 단언을 둔다. 사용자 입력은 이 단언으로 승인하지 않는다.
+- panels.ts: 순수 자식 props 및 DOM Event/KeyboardEvent 경계를 명시한다. Phase1 Inspector는 초기 고정 참조를 유지하고 input 값과 편집 경로를 실제 DOM 종류로 좁힌다.
+
+### 빌드·시험 경로
+- npm run typecheck → tsc --noEmit. npm run build → scripts/build.js에서 tsc 및 HTML/CSS/SVG 복사.
+- 생성물은 프로젝트 내부 명시된 dist/만 재생성한다. 절대 경로/부모 확인과 symlink 거부 후 해당 생성물만 삭제한다. 원본·시험·검수 증거는 삭제하지 않는다.
+- npm run dev는 초기 빌드를 자동 수행한 뒤 dist만 서빙한다. source watch는 없으며 소스를 수정하면 npm run build 후 reload한다.
+- /, /phase1/, /src/...js 브라우저 URL과 HTML script 경로는 유지한다. TS 상대 import의 .js는 생성 ES module URL을 위한 것이며 컴파일러는 원본 .ts로 해석한다.
+- 단위 JS 시험의 제품 import만 .ts로 변경해 현재 TS 원본을 검사한다. 기존 assertion은 유지한다. 브라우저 시험은 자동 빌드의 최신 JS를 검사한다.
+- build-info.json의 모든 원본 TS 해시를 실제 파일과 독립 대조하는 E2E를 추가했다. .ts 원문은 정적 서버에서 제공하지 않는다.
+
+### QA12-001
+raw pathname을 /로 나눈 segment 각각을 decode한 뒤,24자 이상 token 판별에 표준 base64 slash도 포함한다. decode된 slash를 다시 경로 경계로 나누지 않는다. 일반 경로/기존 JWT·plus·underscore·hyphen·padding 정책을 유지하며 모든 임의 비밀 탐지를 보장하지 않는다.
+
+추가 gate: typecheck/build, 기존211개 및 privacy unit8/E2E2+빌드E2E1, 두 페이지 실제 조작. 타입/빌드 경로도 독립 재검수 대상이다.
+설정 참고: [TypeScript strict](https://www.typescriptlang.org/tsconfig/strict.html), [ES module/import 해석](https://www.typescriptlang.org/docs/handbook/modules/reference.html).

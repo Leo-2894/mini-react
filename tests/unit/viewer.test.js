@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
-import {JsonViewer} from '../../src/components/panels.js';
-import {createRenderer} from '../../src/mini-react/renderer.js';
-import {tree} from '../../src/mini-react/vnode.js';
+import {JsonViewer} from '../../src/components/panels.ts';
+import {createRenderer} from '../../src/mini-react/renderer.ts';
+import {tree} from '../../src/mini-react/vnode.ts';
 function render(value,extra={}){const host=document.createElement('div');createRenderer(host).render(tree(JsonViewer({value,expanded:{},onToggle:()=>{},...extra})));return host;}
 describe('JSON viewer pure children',()=>{
  it('renders primitive values and hostile strings as text',()=>{const host=render({a:1,b:true,c:null,d:'<img src=x onerror=alert(1)>'});expect(host.textContent).toContain('true');expect(host.textContent).toContain('null');expect(host.querySelector('img')).toBeNull();});

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { h, tree, text } from '../../src/mini-react/vnode.js';
-import { diff } from '../../src/mini-react/diff.js';
+import { h, tree, text } from '../../src/mini-react/vnode.ts';
+import { diff } from '../../src/mini-react/diff.ts';
 const p = (key, label = key, tag = 'p') => h(tag, { key }, label);
 const frozen = obj => { if (obj && typeof obj === 'object') { Object.values(obj).forEach(frozen); Object.freeze(obj); } return obj; };
 describe('F01/F02 pure diff plans', () => {

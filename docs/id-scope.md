@@ -4,7 +4,7 @@
 
 ## 선택적 API
 
-- createDOMScope(host): src/mini-react/scope.js. host에 결속된 경계 context.
+- createDOMScope(host): src/mini-react/scope.ts. host에 결속된 경계 context.
 - domToVNode(node, scope?), readTree(host, scope?): Node에 이 scope가 직접 쓴 physical 값과 현재 값이 정확히 같을 때만 logical 값으로 복원.
 - createDOM(vnode, document?, scope?): detached Node에 physical attrs를 설치한다. caller는 전체 logical Tree를 scope.validateTree로 검증한다.
 - createRenderer(host, {role, scope?}), validatePatch(host, plan, scope?), patch(host, plan, scope?): 동일 Diff/Patch에 context를 전달한다. scope가 없으면 이전 API 동작 그대로다.
@@ -43,3 +43,5 @@ unit/id-scope.test.js는 literal logical 값, 소유권 read-back, 전 IDREF 목
 e2e/id-scope.spec.js는 checkbox/radio/text의 native 관계·이름, Chrome CDP Accessibility 트리, 외부-only 격리, IDREF 편집/삭제·독립 논리 oracle·snapshot/History, 초기 source/focus/caret, physical 오염, Inspector logical selector를 검사한다. 기존 회귀도 유지한다.
 
 지원 경계: Phase 1 전용 context이며 default renderer/Phase 2 계약은 바꾸지 않는다. 모든 스크린리더/Firefox/WebKit 인증이나 임의 외부 스크립트가 나중에 복제 physical ID를 고의 삽입하는 상황을 보장하지 않는다. Inspector의 selector view는 구조/속성 선택용이며 live focus 상태를 복제하지 않는다. 허용하지 않은 HTML URL/resource 참조나 임의 stylesheet ID selector를 재작성하는 기능은 없다.
+
+TURN12 사용자 승인에 따라 제품 원본은 .ts이며 브라우저 API URL의 .js는 dist/src의 컴파일 결과다. 언어 변경은 위 logical/physical ID 및 오류 보호 계약을 변경하지 않는다.

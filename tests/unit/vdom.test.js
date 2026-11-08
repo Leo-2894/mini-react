@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { h, text, comment, tree, validateTree } from '../../src/mini-react/vnode.js';
-import { readTree, domToVNode, createDOM } from '../../src/mini-react/dom.js';
+import { h, text, comment, tree, validateTree } from '../../src/mini-react/vnode.ts';
+import { readTree, domToVNode, createDOM } from '../../src/mini-react/dom.ts';
 const host = html => { const el = document.createElement('div'); el.innerHTML = html; return el; };
 describe('D01/D02 DOM and VDOM', () => {
   it('reads independent literal shape and preserves original DOM references', () => {
