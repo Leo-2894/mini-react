@@ -1,3 +1,4 @@
+import { withoutHooks } from './hooks.js';
 const booleans = new Set('allowfullscreen async autofocus autoplay checked controls default defer disabled formnovalidate hidden inert ismap itemscope loop multiple muted nomodule novalidate open playsinline readonly required reversed selected'.split(' '));
 const unsupported = new Set(['svg', 'math', 'template']);
 export const text = value => ({ kind: 'text', text: String(value) });
@@ -23,7 +24,7 @@ export function normalizeChildren(values) {
 export function h(tag, options = {}, ...children) {
   options ??= {};
   if (typeof tag === 'function') {
-    const node = tag({ ...options, children: normalizeChildren(children) });
+    const node = withoutHooks(() => tag({ ...options, children: normalizeChildren(children) }));
     if (node == null) return null;
     const result = options.key != null ? { ...node, key: String(options.key) } : node;
     validateVNode(result);
