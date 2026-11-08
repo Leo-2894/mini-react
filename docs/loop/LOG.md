@@ -264,3 +264,22 @@
 - 실제 네트워크5 methods/query/header/body, 400/500/204/invalidJSON/text/HTML문자열, CORS 허용4174/미허용4175, timeout/retry, slowA→fastB/Cancel/unmount 및 늦은응답/이력 오염 방지, header마스킹/안전재사용/Clear, caret/Node/단축키/모바일 PASS.
 - CLI 실제 URL입력→Send→JSON확장→snapshot. desktop.png 시각확인. screenshot 후 reload한 다음 모바일 검증/촬영, mobile-after-fix.log width390=viewport/history flex. mobile.png 시각확인. 모든 수동 서버/브라우저 종료, 최종 E2E와 충돌 없음.
 - git diff --check PASS. 계약 변경 없음. 본문100k/트리200개8단계/민감경로heuristic 한계 README 명시. 다음 TURN11 통합 마감/독립검수 인계.
+
+## TURN 11 — 자체 PASS / 최종 독립 검수 인계
+- 시작 기존 TURN10 gate PASS 확인, STATE11 IN_PROGRESS 및 prior reports 보존. 별도 독립 TURN12는 수행하지 않음.
+- 제품/문서 코드 9c53b3a6f668e54e90c2702be301c12561c1a858: Phase1 복귀 링크·오래된 pending footer 수정, 긴 JWT/base64 경로 privacy 정제 보완, 신규 integration unit4/E2E6, 기존 timeout 시험의 결정성 보강, README/implementation 설명.
+- SOL-011-01: DOM Lab 복귀 href가 ./index.html로 같은 페이지를 재로드. red-navigation.log exit1 0/1/0 → ../ 수정 후 신규6E2E 6/0/0 exit0. 원본 screenshot/trace red-navigation-test-results 보존.
+- 신규 integration unit 초기3/0/0 exit0: 최종값 no-op batch/cross-root render setter 거부/cleanup 예외 뒤 나머지 cleanup1회.
+- 신규6E2E: 취소 signal을 무시하는 실제 fetch transport 대조에서도 늦은A 폐기, 실제 UI22회완료→History20개/reload소멸, 정제 URL 수정전 Send차단, invalidJSON 사전차단/동적행 Node보존, 두 페이지왕복, / 및 내부/탈출경로 경계 PASS.
+- 기존 timeout E2E는 60ms와200ms지연 대조를 유지하고 기본30초로 복구한 뒤 재전송한다. 환경부하로 정상 echo가 짧은 제한에 우연히 걸리는 시험 불안정을 피함. assertion 삭제/완화/skip 없음.
+- 전체151unit+59Chromium 3명령 통과 뒤 개인정보 경계 자체리뷰에서 SOL-011-02 확인: JWT의 점/base64의+가 긴경로 정제 문자집합에 없어 metadata에 잔존. 가짜 토큰 literal 기대값으로 red-token-path.log exit1 3/1/0 확보.
+- 구현시도2: 긴토큰 패턴을 영숫자/_+=.-로 최소 확장, 원본실패 assertion 유지. green-token-path.log exit0 4/0/0. 24자 한계/heuristic 한계 문서화. 기존 첫 전체 통과 로그/보고서 pre-privacy-*에 보존.
+- 최종 npm run test:unit exit0: 12 files/152 PASS/0 FAIL/0 SKIP.
+- 최종 npm run test:e2e exit0: Chromium59 PASS/0 FAIL/0 SKIP.
+- 최종 npm run test:all exit0: unit152+Chromium59 PASS/0 FAIL/0 SKIP. 고유211개, 반복/진단 합산 없음. output/playwright/turn11/test-unit.log/test-e2e.log/test-all.log/results.json/final-*.
+- 정적 자체검토 source-audit.py/json: App→component→기존renderer→diff/patch/dom, 순수자식 Hook없음/직접DOM갱신없음, runtime dependencies없음, 시험skip/only없음. 기존 승인·설계·원본시험·과거증거287개 hash보존, 기존 vnode만 함수자식 경계 확장. 초회 보조 audit 정규식 인용 오류는 스크립트 수정 후 성공했으며 제품수정시도로 세지 않음.
+- Node v24.22.1/npm11.19.1 실제 확인. git diff --check PASS. 외부API/운영데이터 접근 없음, loopback fixture만 실제전송. Playwright Skill은 TURN07/10 CLI 및 정규E2E에 사용, screenshot은 마지막 또는 reload후 후속검증. 브라우저/수동서버 종료.
+- 계약 변경 없음: 승인된 R01~R05/A01~A06 구현. metadata 긴token 보완은 기존 privacy 요구 구현 누락 수정. architecture/turn06 리뷰 원문 불변.
+- 문서 STATE/HANDOFF/ISSUES 갱신, TURN11 자체PASS와 TURN12 독립PENDING 구분. TURN06 counter 이력 별도보존, TURN12 counter0은 신규 마일스톤 초기값.
+- 미검증 Firefox/WebKit/실제스크린리더/clean reinstall/실제외부API가용성·CORS/예외자연발생빈도. 원자rollback/전체메모리한도/모든비밀자동탐지/모든조건부Hook자동탐지 주장 없음.
+- 최종 작업트리/인계HEAD는 handoff-receipt.json/최종응답. 다음 담당 별도 Sol6.1HIGH 독립검수 TURN12, 사용자 시작 전 자동실행 없음. 인계 후 즉시 STOP.

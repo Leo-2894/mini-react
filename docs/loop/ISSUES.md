@@ -1,3 +1,20 @@
+# TURN 11 — 구현 자체 PASS / 최종 독립 검수 대기
+CODE: 9c53b3a6f668e54e90c2702be301c12561c1a858. 최종 unit152/E2E59, 필수3명령 exit0/FAIL0/SKIP0. 고유211개.
+자체 확인 범위 신규 확정 미해결 없음. 전체 제품 독립 승인은 TURN12 NOT_STARTED/PENDING이며 구현 세션이 승인하지 않는다.
+
+| ID | 상태 | 근거 |
+|---|---|---|
+| SOL-011-01 / LOW | Sol RESOLVED | DOM Lab 복귀 링크 오류: red-navigation 1FAIL→동일 기대와 왕복시험 PASS, phase1/index.html ../ |
+| SOL-011-02 / HIGH | Sol RESOLVED / TURN12 독립 확인 필요 | 긴 JWT/base64 경로의 정제 누락: integration unit3/1 red→4/0 green. history.js 문자집합 확장, 최종 전체 PASS |
+| QA06-001~005 | TURN06 독립 RESOLVED 원문 유지 | 당시 SHA 승인. 현재 회귀 전체 통과를 새 독립 승인으로 확대하지 않음 |
+| TURN12 | UNVERIFIED / 별도 세션 대기 | R/A 전체 경계의 최종 독립 검수 미실시 |
+
+증거 output/playwright/turn11/red-navigation.log, red-token-path.log, green-token-path.log, test-*.log, source-audit.json.
+미검증/한계는 README/implementation 및 HANDOFF 참조. 과거 OPEN/REJECTED 판정은 아래 역사 기록으로 보존한다.
+
+---
+## 이전 기록 보존
+
 # TURN 10 — 자체 검증 완료
 SOL-010-01 / HIGH / RESOLVED: 정적 server가 / 루트를404 처리. root 자체 허용으로 수정하되 경로 이탈 검사는 유지. 최초 GET1FAIL→신규17E2E/전체53E2E PASS.
 SOL-010-02 / MEDIUM / RESOLVED: 모바일에서 History CSS 숨김. 세로배치 및 실제 모바일 재사용 assertion 추가. CLI display none→flex/width390 유지, E2E PASS.

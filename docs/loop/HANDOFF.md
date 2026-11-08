@@ -1,3 +1,66 @@
+# [HANDOFF — 2026-11-08 16:25 Asia/Seoul — TURN 11 완료]
+FROM: Sol — 구현 세션
+TO: Sol 6.1 / HIGH — 별도 독립 검수 세션
+CURRENT TURN: 11 완료 / NEXT TURN: 12 미착수
+STATUS: 구현 자체 PASS / AWAITING_INDEPENDENT_REVIEW
+PRODUCT CODE / LAST VERIFIED COMMIT: 9c53b3a6f668e54e90c2702be301c12561c1a858
+FINAL HANDOFF HEAD: 이 문서를 포함한 docs-only 인계 commit. 실제 전체 SHA/clean 상태는 output/playwright/turn11/handoff-receipt.json 및 구현 세션 최종 응답, git rev-parse HEAD로 대조.
+WORKTREE: 코드 commit 뒤 공통기록4개만 docs-only commit 후 clean 확인. 원격/세션 자동실행 없음.
+INDEPENDENT APPROVAL: TURN06 d7ec63024c24571caa22080dd345fc2afd97470a / 당시 제품 ff2a689162c2d6129749f400810846fbee50e736만 APPROVED. 이후 코드 전체/Phase2 최종 승인 아님.
+NEXT ALLOWED ACTION: 사용자가 별도 독립 세션에서 TURN12를 시작. 실제 Git/문서/코드/시험을 대조하고 최종 APPROVED 또는 REJECTED 판정 → 기록 → STOP.
+DO NOT: 구현 세션 자체 독립승인, TURN12 대리수행, 다른 세션 자동실행, 기존 보고/증거 덮어쓰기, push/PR/배포.
+
+## 이번 구현 범위와 코드 checkpoint
+
+| TURN | 코드 | 실제 자체 게이트 |
+|---|---|---|
+| 07 | aade8bd | FunctionComponent/루트useState, 102unit+35Chromium |
+| 08 | 6dab819 | effect/memo/cleanup/실패cache, 118+36 |
+| 09 | 16f3f9d | Fetch/URL/header/body/response/정제History, 144+36 |
+| 10 | 4143dec | App/순수자식/JSON/반응형/실제HTTP·CORS, 148+53 |
+| 11 | 9c53b3a | 최종privacy/통합/두페이지/README·구현설명, 152+59 |
+
+각 단계는 unit/e2e/all 각각 exit0/FAIL0/SKIP0 후 다음 단계 진행. 단계별 수치나 재실행을 합산하지 않으며 현재 고유211개다.
+주요 파일: src/mini-react/component.js/hooks.js/vnode.js, src/api/request.js/response.js/history.js, src/App.js/main.js/components/panels.js/styles.css, index.html, tests/unit/component/hooks/api/viewer/integration 및 tests/e2e/component/hooks/studio/integration, tests/fixtures/server.js, playwright.config.js, scripts/server.js, README/docs/implementation.md.
+TURN11 제품 수정은 phase1/index.html의 복귀/표시와 api/history.js 긴토큰 정제에 제한. 기존 timeout 시험은60ms/200ms 대조 후 기본30초로 복구하는 결정성 보강. 기존 Phase1 시험/expectation 삭제·skip·완화 없음.
+
+## 최종 실제 명령과 증거
+
+기준 output/playwright/turn11/:
+
+| 명령 | exit | PASS | FAIL | SKIP |
+|---|---:|---:|---:|---:|
+| npm run test:unit | 0 | 152 / 12 files | 0 | 0 |
+| npm run test:e2e | 0 | 59 Chromium | 0 | 0 |
+| npm run test:all | 0 | 152 unit +59 Chromium | 0 | 0 |
+
+test-unit.log/test-e2e.log/test-all.log, results.json, final-test-results/, final-playwright-report/.
+동일 조건의 반복 시험은 고유 수에 합산하지 않는다. TURN07~10 증거도 각 turn 디렉터리에 보존.
+최초 TURN11 전체151+59 통과 뒤 privacy 반례를 추가했다. 이전 로그·reports는 pre-privacy-* 보존, 최종 결과는152+59다.
+
+## 실패 → 수정 및 자체 리뷰
+- TURN07 슬롯 종류 손상이 no-op 필터에 가려지는 guard: 신규16/1→17/0, queue 종류 검사. TURN08 신규16unit 첫 통과.
+- TURN09 정제한 값 다음 정상경로 과잉 정제:24/1→26/0(깊은JSON fallback 포함). 보조UTF8 스크립트 오류는 제품과 구분해 기록.
+- TURN10 최초 / 페이지404: GET1FAIL 후 진단중단→server root 자체 허용, 경계유지. 모바일 History숨김/긴scalar 안내: CLI none→flex 및unit3/1→4/0. 구현시도3 내 최종 gate통과.
+- TURN11 SOL-011-01 DOM Lab 복귀: red-navigation 0/1 exit1→수정 후6E2E PASS. 원본 screenshot/trace 보존.
+- TURN11 SOL-011-02 긴 JWT/base64 경로 정제: red-token-path 3/1 exit1→green-token-path4/0 exit0. 가짜 토큰으로 재현, metadata 문자집합만 최소 보완. 기존 privacy 계약 구현 누락 수정이며 독립 해결 승인 아님.
+- 최종 source-audit.py/json: App→component→동일renderer→diff/patch/dom, 자식Hook/직접DOM우회/런타임의존성/시험skip·only 없음. 기존 승인·설계·원본시험·과거증거287개 hash 유지, 기존 vnode 함수자식 Hook경계 확장만 예상 변경. architecture/reviews/turn06.md 원문 불변.
+- R01~R05의 상태/queue/노드/초기화/Hook규칙/cleanup/실패memo 보존, QA06-001~005 포함 Phase1 회귀 PASS.
+- 실제 HTTP5 methods/query/header/body,400/500/204/invalidJSON/text/HTML문자열,4174허용CORS/4175미허용,timeout/retry/Cancel/unmount/slowA→fastB PASS.
+- 취소신호를 무시하는 fetch에서도 늦은결과/History오염 없음, 실제UI22회→20개/reload제거,redacted URL 차단,동적행Node/caret/모바일History/keyboard PASS.
+- 수동 CLI open→snapshot→Send→JSON확장→snapshot, desktop/mobile 이미지 시각확인(TURN10). screenshot 마지막 또는reload뒤 후속검증. 서버/브라우저 종료. 최종 E2E는 자체 서버만 사용.
+
+## 계약·한계·독립 검수 초점
+공개 승인 계약 변경 없음. 인스턴스 state/루트Hook/순수자식 및 같은 Diff/Patch 경로 유지. metadata heuristic은24자 영숫자/_+=.-의 JWT/base64형을 포함하지만 모든 임의 비밀 탐지는 보장하지 않는다.
+HTTP body표시100000자/JSON트리200개8단계, 전체 수신 메모리 제한 없음. 원자rollback/전체React/Fiber/모든조건부Hook탐지 보장 없음. failed render와 post-commit effect/부분DOM 오류를 구분해 docs/implementation.md 및 README에 설명했다.
+미검증 Firefox/WebKit·실제스크린리더·clean reinstall·실제외부API가용성/CORS·예외자연발생빈도.
+독립 TURN12는 구현 보고를 정답으로 삼지 말고 R/A 경계와 개인정보/race/오류/엔진재사용을 직접 확인할 것. 검수 담당은 사용자 변경에 따라 Sol6.1HIGH 별도 세션이며 기존 Astra 보고의 모델명 때문에 승인무효로 처리하지 않는다.
+TURN06 한도 이력(이전주기완료2,새주기완료1/2,전체재작업3)은 보존. TURN12 revision_count=0은 새 마일스톤 미착수이며 과거 한도를 삭제하거나 추가재작업을 자체 허용한 것이 아니다.
+필수검증 실행 가능했으며 TEST_BLOCKED 없음. 구현은 인계 후 STOP.
+
+---
+## 이전 인계 원문 보존
+
 # TURN 10 — 자체 PASS / 다음 TURN 11
 CODE: 4143dec271011fb10f4b2a30c24b6235f4a3248b
 SCOPE: App 루트 Hooks+순수 Request/Response/Sidebar/JSON, 실제 Fetch/취소/이력/반응형 UI.
