@@ -1,3 +1,16 @@
+# TURN 06 추가 독립 재검수 — PASS / APPROVED (2026-11-08)
+검수 담당: Sol 6.1 / HIGH — 독립 검수 세션 (최신 사용자 지시).
+HEAD d7ec63024c24571caa22080dd345fc2afd97470a / 제품 ff2a689162c2d6129749f400810846fbee50e736.
+QA06-001/002/003/004 RESOLVED 유지, **QA06-005 HIGH → RESOLVED**. 신규 확정 결함 없음.
+controller.js의 travel/restoreDraft 첫 projection부터 준비·commit까지 오류 보호, 읽기 전용 candidate/초기 actual preflight 비잠금 유지 확인.
+독립 브라우저 10/0 PASS/FAIL: 부분 projection 3 + 후속 preview 2 + candidate/preflight 5. 원본 오류 identity/MutationObserver/History identity·cursor/세 조작 차단/정상 재시도 검사.
+증거 output/playwright/turn06-rereview3/independent-projection.js/log 및 세 필수 테스트 로그. unit85/E2E32/all85+32 모두 exit0, FAIL0/SKIP0. 기존 103개 시험 수정 없음.
+limit_cycle=2 / revision_count=1/2, 이전 주기 완료 2회 보존. 다음 Sol 구현 세션 TURN 07 허용. 과거 OPEN/REJECTED는 아래 역사 기록이며 현재 승인 상태를 덮어쓰지 않는다.
+미검증 Firefox/WebKit/실제 스크린리더/clean install/Phase 2/예외 자연 발생 빈도. 정규 Chrome AX 통과를 실제 스크린리더 인증으로 주장하지 않음.
+
+---
+## 이전 이슈 원문 (역사 기록 보존)
+
 # TURN 06 QA06-005 — Sol 추가 수정 완료 / Astra 독립 재검수 대기
 CODE: ff2a689162c2d6129749f400810846fbee50e736. 독립 review_status=REJECTED 유지. 한도 재설정은 제품 승인이 아니다.
 사용자 "다시 한도 재설정 됐어"에 따라 새 limit_cycle=2, revision_count=0/2, active_rework_round=1(전체 3회차). 이전 완료 2회/REJECTED 원문은 아래 보존. 다음 담당은 Astra 동일 TURN 06 추가 독립 재검수.

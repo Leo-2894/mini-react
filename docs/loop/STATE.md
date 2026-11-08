@@ -1,30 +1,33 @@
 # API Studio loop state
 current_turn: 06
+next_turn: 07
 limit_cycle: 2
 revision_limit: 2
 previous_cycle_completed_reviews: 2
 lifetime_rework_round: 3
-limit_reset_reason: 사용자 명시 지시 "다시 한도 재설정 됐어" (QA06-005 추가 수정 허용)
-next_owner: Astra
-revision_count: 0
-review_status: REJECTED
-operational_status: AWAITING_ASTRA_REVIEW
-next_action: ASTRA_TURN06_ADDITIONAL_REVIEW_QA06_005
-rework_status: SOL_FIXED_AWAITING_REVIEW
+limit_reset_reason: 사용자 명시 지시 "다시 한도 재설정 됐어"
+next_owner: Sol
+next_role: Implementation
+reviewer: Sol 6.1 / HIGH — 독립 검수 세션
+reviewer_change_reason: 최신 사용자 명시 지시로 독립 검수 모델 변경; 구현 세션과 역할 분리
+revision_count: 1
+review_status: PASS
+approval_status: APPROVED
+operational_status: HANDOFF_READY
+next_action: SOL_IMPLEMENTATION_TURN07
+rework_status: COMPLETED_APPROVED
 active_rework_round: 1
 implementation_attempts: 1
-last_verified_commit: ff2a689162c2d6129749f400810846fbee50e736
-last_independently_reviewed_head: 7efb498ec1877ff8a0f791264f1d51f0ee6fdf2f
+last_verified_commit: d7ec63024c24571caa22080dd345fc2afd97470a
+last_independently_reviewed_head: d7ec63024c24571caa22080dd345fc2afd97470a
 product_commit: ff2a689162c2d6129749f400810846fbee50e736
-last_updated: 2026-11-08 Asia/Seoul
+last_updated: 2026-11-08 15:19 Asia/Seoul
 
-이전 주기: 두 번째 독립 재검수 FAIL / REJECTED, 완료 2회 및 한도 도달 BLOCKED 기록을 보존한다.
-현재: 사용자 명시 한도 재설정으로 운영 BLOCKED만 해제. QA06-005는 Sol 수정 완료 / Astra 추가 독립 재검수 대기. 독립 review_status=REJECTED 유지.
-새 주기 2회 한도, 완료된 재검수 revision_count=0. active_rework_round=1은 새 주기 기준이며 전체 이력상 재작업 3회차다. Sol 완료만으로 count 증가 없음. TURN 07 미승인.
-QA06-001/002/003/004의 독립 RESOLVED 유지. QA06-005는 독립 RESOLVED가 아니다.
-검증된 제품/신규 시험 ff2a689: controller 오류 보호 범위 및 신규 unit 10/E2E 4만 변경. 기존 시험·ID scope·default renderer/Phase 2 계약 불변.
-필수 명령 각각 exit 0: unit 85 PASS, Chromium E2E 32 PASS, test:all 85+32 PASS. 모두 FAIL 0/SKIP 0, 고유 117개. 증거 output/playwright/turn06-rework3/.
-기존 검수 산출물 5개는 checkpoint 8076542에 보존. 기존 증거/검수·설계·비수정 소스·기존 시험 201개 파일 hash 불변. 별도 CLI/서버 종료, 인계 후 STOP.
+TURN 06 추가 독립 재검수 PASS / APPROVED. QA06-001~005 RESOLVED, 확인 범위 CRITICAL/HIGH 잔존 없음. 다음 담당은 Sol 구현 세션의 TURN 07. 이번 검수 세션은 구현하지 않는다.
+새 주기 첫 수정→독립 재검수 완료 revision_count=1/2. 이전 주기 완료2회/REJECTED/BLOCKED 이력은 보존하며 새 한도와 합산하지 않는다.
+실제 독립 unit85/E2E32/all85+32 모두 exit0, FAIL0/SKIP0. 별도 projection/preparation/읽기전용10조건 PASS, UI Patch/Undo/Redo/참조 정상. 증거 output/playwright/turn06-rereview3/.
+검수 담당 변경은 최신 사용자 지시에 따른 명시적 예외다. 이전 Astra 보고/작성자/판정과 하네스는 소급 변경하지 않았다. 제품/정규시험 수정 없음, 검수 기록5개만 갱신.
+미검증 Firefox/WebKit/실제 스크린리더/clean reinstall/Phase2/예외 자연발생 빈도. TURN06 승인은 최종 제품 승인과 구별한다.
 
 | TURN | Owner | Status | Evidence | Commit |
 |---|---|---|---|---|
@@ -33,13 +36,16 @@ QA06-001/002/003/004의 독립 RESOLVED 유지. QA06-005는 독립 RESOLVED가 �
 | 03 | Sol | PASS | Sol 자체: F01/F02 누적 20 unit | 601b091 |
 | 04 | Sol | PASS | Sol 자체: P01~P05 누적 32 unit | 07a20db |
 | 05 | Sol | PASS | Sol 자체: 53 unit + 8 Chromium E2E; 독립 결함은 06 참조 | 83b1711 |
-| 06 | Astra | REJECTED | QA06-005 Sol 수정 완료; 추가 독립 재검수 대기. 새 주기 0/2 | ff2a689 |
-| 07 | Sol | NOT_STARTED | TURN 06 PASS 전 진입 금지 | none |
+| 06 | Sol 6.1 독립 QA | PASS | QA06-001~005 RESOLVED, 추가 독립 재검수 APPROVED | d7ec630 |
+| 07 | Sol | NOT_STARTED | TURN 06 승인 완료; 구현 세션에서 시작 | none |
 | 08 | Sol | NOT_STARTED | — | none |
 | 09 | Sol | NOT_STARTED | — | none |
 | 10 | Sol | NOT_STARTED | — | none |
 | 11 | Sol | NOT_STARTED | — | none |
 | 12 | Astra | NOT_STARTED | 최종 승인 전 | none |
+
+## 이전 검증 기록 (역사 기록; 현재 상태는 위 PASS/APPROVED)
+
 
 ## 이전 검증 기록 (역사 기록; 현재 판정과 한도 주기는 위 메타데이터)
 

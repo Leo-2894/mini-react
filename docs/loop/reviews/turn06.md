@@ -385,3 +385,71 @@ ID scope는 승인된 선택적 context 범위에서 기존 공유 엔진에 통
 **REJECTED / BLOCKED. revision_count=2, active_rework_round=2 완료.**
 QA06-003은 RESOLVED로 기록하되 QA06-005 HIGH가 남아 TURN 07을 승인하지 않는다. 다음 담당은 사람의 방향 결정이며 자동 REVIEW_REWORK 3 없음.
 기록 변경은 turn06 review/STATE/HANDOFF/LOG/ISSUES 5개만. 제품·기존 테스트·architecture·README 불변. 검수 브라우저와 직접 시작한 dev 서버 종료. 커밋/원격 작업/다른 세션 실행 없음. 원본 두 보고를 보존하고 이 결과를 추가했다.
+
+
+---
+
+# [TURN 06 — INDEPENDENT QA REPORT — 추가 재검수 QA06-005]
+DATE: 2026-11-08 (Asia/Seoul)
+REVIEWER: **Sol 6.1 / HIGH — 독립 검수 세션**
+STATUS: **PASS / APPROVED**
+REVIEW HEAD: d7ec63024c24571caa22080dd345fc2afd97470a
+PRODUCT CODE: ff2a689162c2d6129749f400810846fbee50e736
+PRESERVED ASTRA REPORTS: 8076542bf2c46bf9e42cdedeb928dd7425889fe0
+LIMIT: limit_cycle=2 / revision_limit=2 / revision_count=1 / active_rework_round=1 / lifetime_rework_round=3
+NEXT: Sol 구현 세션 / TURN 07
+
+## 1. 종합 판정
+**TURN 06 PASS / APPROVED. QA06-005 독립 RESOLVED.**
+원본 projection 부분 쓰기 실패, 후속 준비 단계 실패, 읽기 전용 거부를 별도 브라우저 진단에서 직접 대조했다. 오류 전달·잠금·후속 거부·History 보존 및 비잠금 재시도 계약을 충족한다. 기존 필수 회귀 117개도 모두 통과했다. 확인 범위에서 CRITICAL/HIGH 미해결 없음.
+
+최신 사용자 지시로 이번 독립 검수 담당은 Sol 6.1 / HIGH다. 구현 세션과 역할을 분리했으며 기존 Astra 작성자/판정/원문을 수정하지 않았다. 에이전트 지침/하네스의 기존 모델명은 역사적 담당 명칭으로 해석하고 일괄 변경하지 않았다. 사용자 명시 한도 재설정의 새 주기 첫 재검수를 완료했으므로 revision_count=1이며, 이전 주기의 완료 2회와 합산하지 않는다.
+
+## 2. 요구사항 충족 상태
+- D01~D02 / F01~F02 / P01~P05 / H01~H04: 기존 시험 유지 및 전체 재실행 통과. source 참조, 순수 Diff, 공유 Patch, listener/controlled props/focus/caret, stale/foreign/replayed 계획, History/입력 안전 회귀 포함.
+- QA06-001/002/003/004: 독립 RESOLVED 유지. 정규 회귀의 value/type/외부 변경 거부, radio ownership/History, native label/Chrome AX 이름 3타입, Inspector ID 충돌 통과.
+- H03 예외 경계: 이번 독립 진단으로 QA06-005 해결 확인.
+- Phase 2: 아직 범위 밖이며 제품 구현이나 최종 포트폴리오 승인을 주장하지 않는다. TURN 07 진입만 승인한다.
+
+## 3. 결함 결과 및 수정 적합성
+### QA06-005 — 기존 HIGH → RESOLVED
+대상 src/phase1/controller.js:40~59 부근의 travel/restoreDraft 오류 보호 경계.
+실제 diff는 두 메서드의 첫 projectTree부터 adopt/preview/재검증/commit까지 같은 catch에 포함한다. 원본 error를 throw하고 locked=true로 만든다. 읽기 전용 candidate와 travel 첫 actual preflight는 앞에 남아 있다. history.select는 양 commit 성공 뒤에만 실행된다. 무조건 잠금/오류 은폐/자동 재시도/전체 재생성/managed actual 재채택을 추가하지 않았다.
+
+독립 재현은 구현 세션의 cli-projection.js를 실행하거나 결과를 복사하지 않고 새로 작성했다.
+- projection 원본 3조건(apply 대조, travel, restoreDraft): label.for 한 번 쓰기 뒤 input.id 예외. MutationObserver=['for'], input raw ID 유지. 정확한 오류 객체 전달, actual DOM 불변, History cursor/직렬화/항목 identity 보존, locked=true. 주입 제거 후 apply/travel/restoreDraft 모두 잠금 거부.
+- 후속 준비 2조건(travel/restoreDraft): projection을 완료한 다음 editable renderer.preview에서 scope.validateTree가 예외를 던지도록 독립 주입. 기존 신규 unit의 readAttrs 오류와 다른 준비 지점을 선택했다. MutationObserver=['for','id'], 같은 원본 오류 전달, 잠금/History 보존/후속 거부 모두 정상.
+- 읽기 전용 5조건(candidate 3메서드, 초기 actual preflight apply/travel): MutationObserver 0, 양 DOM/cursor/History 보존, locked=false. 원인을 제거하면 같은 작업을 정상 재시도할 수 있다.
+결과 10 PASS / 0 FAIL. 증거 independent-projection.js 및 independent-projection.log.
+
+이는 fault injection으로 검증한 오류 복구 계약이다. 정상 사용자 조작에서 예외가 자연 발생했다거나 실제 데이터 손실을 관찰했다는 뜻이 아니다.
+신규 확정 결함 없음. 수정 지시 없음.
+
+## 4. 테스트 증거
+cwd C:\Users\Leo\Desktop\API 1. 세 명령을 각각 직접 실행했다.
+
+| 명령 | exit | PASS | FAIL | SKIP |
+|---|---:|---:|---:|---:|
+| npm run test:unit | 0 | 85 / 7 files | 0 | 0 |
+| npm run test:e2e | 0 | 32 Chromium | 0 | 0 |
+| npm run test:all | 0 | 85 unit + 32 Chromium | 0 | 0 |
+
+고유 정규 시험 117개. 반복 실행과 독립 진단 10조건을 합산하지 않는다.
+증거 output/playwright/turn06-rereview3/{test-unit,test-e2e,test-all}.log.
+Playwright Skill을 읽고 npx/기존 로컬 CLI로 headed 브라우저를 실행했다. 정규 E2E 자체 서버 종료 뒤 별도 dev 서버를 사용했다.
+추가 실제 UI: 제목 편집→Patch 성공/S1 History, 미적용 draft→Undo로 양 영역 S0, Redo로 양 영역 S1, 변경 없는 ul Node ===, alert 0. independent-ui.log. 정상 성공 경로를 예외 진단과 별도로 확인했다.
+screenshot은 실행하지 않아 알려진 style="" 도구 mutation을 만들지 않았다. 외부 변경 검사 완화 없음. 브라우저/직접 시작 서버 종료.
+
+## 5. 구조적·시험 평가
+8076542→ff2a689 제품/시험 diff는 controller와 신규 unit/E2E 2개, 총 3파일뿐이다. 기존 75 unit/28 E2E 파일과 scope/shared engine은 변경되지 않았다. ff2a689→d7ec630은 공통 인계 문서 4개뿐이다. 기존 Astra review/architecture/id-scope/README도 diff 없음.
+신규 정규 시험은 오류 identity, 실제 부분 쓰기, snapshot 항목 identity/cursor, 주입 제거 후 후속 세 조작 차단을 literal 기대값으로 검사한다. 읽기 전용 거부를 별도로 대조하므로 catch 확대만 확인하는 시험이 아니다. 기존 시험 삭제/skip/완화 없음.
+오류 경계 보완은 확인된 결함에 필요한 범위로 제한됐고 공개 API/아키텍처 계약 변경 없음. 추가 리팩터링을 승인 조건으로 요구하지 않는다.
+
+## 6. 미검증 범위 및 인계
+Firefox/WebKit, 실제 스크린리더 운용, clean dependency reinstall, Phase 2는 미검증. Chrome native AX 정규 시험 통과를 실제 스크린리더 인증으로 과장하지 않는다. 예외 자연 발생 빈도도 검증하지 않았다. 필수 Phase 1 검증은 실행했으며 TEST_BLOCKED 항목 없음.
+다음 담당은 **구현 세션의 Sol**, 허용 작업은 TURN 07 FunctionComponent/루트 useState 및 R01/R02다. 기존 Phase 1 공유 엔진과 회귀를 유지한다. 이번 독립 검수 세션은 제품 수정이나 다음 TURN을 수행하지 않는다. Phase 2/최종 품질은 TURN 12 별도 독립 승인 대상이다.
+
+## 7. 다음 단계 승인 및 최종 상태
+**APPROVED — TURN 06 완료, Sol 구현 세션 TURN 07 진입 허용.**
+시작 cwd/Git root 일치, HEAD=d7ec630..., status clean. 종료 HEAD 동일, 검수 기록 5개만 미커밋 변경이며 제품/정규 테스트/설계/README 불변. 기존 Astra 보고 3개를 그대로 보존하고 이번 보고만 추가했다.
+limit_cycle=2, revision_count=1/2, 이전 주기 완료 2회 보존. 다른 세션 실행/커밋/원격 작업 없음. 기록 후 인계 STOP.

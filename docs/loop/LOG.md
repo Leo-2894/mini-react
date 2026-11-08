@@ -207,3 +207,23 @@
 - 자체 리뷰 git diff --check exit 0. 제품 수정/신규 시험 3파일만 commit ff2a689162c2d6129749f400810846fbee50e736. 기존 증거/검수·설계·README/id-scope·비수정 source/기존 tests 201개 파일 SHA-256 불변(preservation-check.json). architecture/원본 reviews/README/id-scope 수정 없음, 계약 변경 없음.
 - STATE/HANDOFF/ISSUES/LOG 갱신. QA06-005 Sol 수정 완료/Astra 재검수 대기, 독립 RESOLVED나 TURN 06 PASS 아님. 한계: Firefox/WebKit·실제 스크린리더·clean reinstall·Phase 2·자연 발생 빈도 미검증. 예외 주입 결함을 자연 발생/실제 데이터 손실로 주장하지 않음.
 - 최종 인계 HEAD/clean 검증 결과는 output/playwright/turn06-rework3/handoff-receipt.json 및 최종 응답. 다음 담당 Astra 동일 TURN 06 추가 독립 재검수. 인계 후 STOP, TURN 07/다른 세션 실행/원격 작업 없음.
+
+
+## 2026-11-08 — Sol 6.1 / HIGH 독립 검수 세션: TURN 06 추가 재검수 PASS
+- 최신 사용자 지시로 검수 모델 변경을 적용. 구현 세션과 역할 분리, 기존 Astra 보고/판정 소급 수정 없음. 하네스/AGENTS 전체 모델명 변경 없음.
+- 필수 지침/문서 실제 읽기. 지정 cwd/root 일치, HEAD d7ec63024c24571caa22080dd345fc2afd97470a, 시작 status clean. 코드 ff2a689162c2d6129749f400810846fbee50e736, 검수 원문 보존 8076542 확인.
+- 8076542→ff2a689 제품/시험 3파일(controller/new unit/new E2E), ff2a689→HEAD 인계 docs4파일. 기존 시험/scope/shared engine/architecture/id-scope/README/기존 보고 diff 없음.
+- 신규 증거 output/playwright/turn06-rereview3/. 기존 report/test-results를 prior-* 복사 후 실행. 기존 TURN06 증거 수정 없음.
+- 직접 npm run test:unit exit0: 7 files/85 PASS/0 FAIL/0 SKIP.
+- 직접 npm run test:e2e exit0: Chromium32 PASS/0 FAIL/0 SKIP.
+- 직접 npm run test:all exit0: 85unit+32E2E PASS/0 FAIL/0 SKIP. 각 test-*.log. 고유117개, 반복/별도 진단을 합산하지 않음.
+- Playwright Skill 읽고 npx/로컬 CLI 사용. E2E 자체 서버 종료 후 수동 dev/CLI qa-independent3 시작. 독립 작성 probe 저장, 구현 cli-projection.js/결과를 독립 증거로 재사용하지 않음.
+- independent-projection.js/log 10 PASS/0 FAIL. 원본 projection 3조건은 for1회 mutation 뒤 input raw 유지·원본 오류·actual/history/cursor 보존·lock·주입 제거 후 세 조작 거부.
+- 새 독립 후속 준비 반례는 scope.validateTree를 통한 editable preview 오류 2조건(신규 unit readAttrs 반례와 다른 지점). for,id 쓰기 후 원본 오류/lock/history 보존 정상.
+- 읽기 전용 candidate3/preflight2는 양 DOM/cursor/History 보존·쓰기0·비잠금. 원인 제거 후 동일 작업 성공. 무조건 lock/오류 삼키기 없음.
+- independent-ui.log: 실제 제목 편집/Patch/S1 성공→미적용 draft/Undo 양영역S0→Redo 양영역S1, stable ul===, alerts0. 정상 History 성공 확정과 오류 경계를 별도 확인.
+- QA06-001~004 기존 unit/E2E 회귀 정상: value/type/외부 mutation, radio ownership, native label/Chrome AX3타입, Inspector, History50/분기/no-op/참조/listener/caret/commit 실패 lock 포함.
+- QA06-005 독립 RESOLVED, 확인 범위 CRITICAL/HIGH 없음. TURN06 PASS/APPROVED. 새 주기 limit_cycle2 revision_count1/2, 이전 주기2회 보존.
+- 미검증 Firefox/WebKit/실제 스크린리더/clean reinstall/Phase2/예외 자연발생 빈도. fault injection 결과를 자연 발생/실제 손실로 과장하지 않음.
+- screenshot 미실행, 제품 외부 속성 검사 완화 없음. 검수 브라우저 close/직접 dev Ctrl+C 종료(의도한 exit1).
+- 검수 기록5개만 저장, 제품/기존시험/설계/README 불변. 기존 Astra 보고 전체 보존. HEAD 유지, 커밋/원격/다른 세션 실행 없음. 다음 담당 Sol 구현 TURN07, 이번 독립 세션은 인계 STOP.

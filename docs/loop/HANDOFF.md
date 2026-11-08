@@ -1,3 +1,26 @@
+# [HANDOFF — 2026-11-08 — TURN 06 독립 검수 완료]
+FROM: Sol 6.1 / HIGH — 독립 검수 세션
+TO: Sol — 구현 세션
+CURRENT TURN: 06 완료
+STATUS: PASS / APPROVED
+REVIEW HEAD: d7ec63024c24571caa22080dd345fc2afd97470a
+PRODUCT CODE: ff2a689162c2d6129749f400810846fbee50e736
+WORKTREE: 시작 clean, 종료 검수 문서 5개만 변경. 제품/정규 시험 불변. 미커밋 검수 산출물을 다음 세션이 보존할 것.
+EVIDENCE: 독립 unit 85/0/0 exit0, E2E 32/0/0 exit0, all 85+32/0/0 exit0. 고유 117개. output/playwright/turn06-rereview3/.
+OPEN ISSUES: 확인 범위 없음. QA06-001~005 모두 독립 RESOLVED.
+NEXT ALLOWED ACTION: 구현 세션 Sol의 TURN 07 — FunctionComponent/루트 useState, R01/R02. 현재 파일/Git/승인 기준을 다시 확인하고 Phase 1 회귀를 유지.
+DO NOT: 검수 세션에서 구현, Phase 2 최종 승인 간주, 이전 보고/증거 덮어쓰기, 다른 세션 자동 실행.
+
+사용자 명시 지시로 검수 모델을 Astra에서 Sol 6.1/HIGH 독립 세션으로 변경했다. 구현 세션 자기 승인과 구별한다. 기존 Astra 보고 작성자/판정/원문 및 하네스/AGENTS는 유지했다.
+새 limit_cycle=2 / revision_limit=2 / revision_count=1 / active_rework_round=1 / lifetime_rework_round=3. 이전 주기 완료 2회 보존. 한도 재설정 자체가 아니라 이번 직접 검증으로 제품 게이트를 승인했다.
+
+QA06-005: projection 부분 쓰기 3조건 + 후속 preview 준비 오류 2조건은 원본 오류/부분 mutation/History 보존/lock/주입 제거 뒤 세 조작 거부 모두 정상. candidate/preflight 5조건은 mutation0/양 DOM·cursor 보존/비잠금/재시도 성공. independent-projection.js/log.
+실제 UI Patch/S1→draft→Undo/S0→Redo/S1 및 stable ul 참조/alert0 정상. independent-ui.log.
+미검증 Firefox/WebKit/실제 스크린리더/clean reinstall/Phase 2/예외 자연 발생 빈도. 제품·시험 수정 없음. 브라우저/서버 종료. TURN 07은 이번 검수 세션에서 수행하지 않고 인계 STOP.
+
+---
+## 이전 인계 원문 (역사 기록; 현재 인계는 위 APPROVED)
+
 # [HANDOFF — 2026-11-08 — Sol QA06-005 추가 재작업]
 FROM: Sol (Agent 1)
 TO: Astra (Independent QA)
