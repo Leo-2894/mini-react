@@ -1,3 +1,10 @@
+# TURN 07 — 구현 자체 PASS
+SOL-007-01 / MEDIUM / RESOLVED: 잘못된 Hook 종류의 queue가 state no-op 필터에 가려지는 guard 누락. component.update의 queue 종류 검사로 수정, component.test.js 원본 실패 유지 후 통과. 코드 aade8bd0a37b8ad6bf8ff691394d74de526e105e; 증거 output/playwright/turn07/attempt1-unit.log 및 attempt2-unit.log.
+기존 QA06-001~005 독립 RESOLVED 유지, 새 구현은 TURN12 검수 대상. 신규 확정 미해결 없음.
+
+---
+## 이전 기록 보존
+
 # TURN 06 추가 독립 재검수 — PASS / APPROVED (2026-11-08)
 검수 담당: Sol 6.1 / HIGH — 독립 검수 세션 (최신 사용자 지시).
 HEAD d7ec63024c24571caa22080dd345fc2afd97470a / 제품 ff2a689162c2d6129749f400810846fbee50e736.

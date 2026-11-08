@@ -227,3 +227,15 @@
 - 미검증 Firefox/WebKit/실제 스크린리더/clean reinstall/Phase2/예외 자연발생 빈도. fault injection 결과를 자연 발생/실제 손실로 과장하지 않음.
 - screenshot 미실행, 제품 외부 속성 검사 완화 없음. 검수 브라우저 close/직접 dev Ctrl+C 종료(의도한 exit1).
 - 검수 기록5개만 저장, 제품/기존시험/설계/README 불변. 기존 Astra 보고 전체 보존. HEAD 유지, 커밋/원격/다른 세션 실행 없음. 다음 담당 Sol 구현 TURN07, 이번 독립 세션은 인계 STOP.
+
+## TURN 07 시작 — FunctionComponent / 루트 useState
+- HEAD d7ec630 및 예상 검수 문서5개 대조, 사용자 모델 변경 승인과 별도 독립 PASS 확인. 원문 보존 checkpoint 833618d86f9b0ac66bcd743c72597fd7ae9539bd.
+- R01/R02, shared renderer 유지, 기존 증거/report/test-results를 output/playwright/turn07에 보존. 구현 시도1.
+
+### TURN 07 완료 — 자체 PASS
+- 코드 aade8bd0a37b8ad6bf8ff691394d74de526e105e: component/hooks 신설, vnode의 함수 자식 평가 Hook 권한 차단; 신규 unit/component 17, E2E/component 3, README.
+- 시도1: 신규 unit16 PASS/1 FAIL, 슬롯 종류 손상 시 no-op 판정이 guard를 우회. 시도2: queue 종류 guard 보완 후 동일17 PASS, assertion 변경 없음. attempt1/2-unit.log.
+- 필수 명령 각각 exit0: test:unit102/0/0; test:e2e35/0/0; test:all102unit+35Chromium/0/0. 고유137. output/playwright/turn07/test-*.log 및 results.json.
+- CLI open→검증 루트 설치→snapshot→버튼 click→snapshot: +3, renders2(초기1+배치1). cli-result.log. 별도 브라우저/서버 종료 후 test:all, 충돌 없음.
+- Node/focus/caret/실패 UI·hooks 보존, stale setter/queue 무효, props/child/Hook 규칙 PASS. 기존 85+32 및 QA06-005 회귀 유지. 기존 baseline 중 vnode 확장 외 파일 hash 불변. git diff --check PASS. 설계 변경 없음, 모든 조건부 Hook 위반 탐지/원자 rollback은 주장하지 않음.
+- TURN07 PASS는 구현 자체 검증. 별도 독립 최종 검수는 TURN12. 다음 TURN08 진행 가능.

@@ -1,3 +1,14 @@
+# TURN 07 — Sol 자체 완료 / 다음 TURN 08
+CODE: aade8bd0a37b8ad6bf8ff691394d74de526e105e
+STATUS: PASS (구현 자체 검증), TURN06 별도 독립 APPROVED 원문 보존.
+FILES: src/mini-react/component.js/hooks.js/vnode.js, tests/unit/component.test.js, tests/e2e/component.spec.js, README 및 공통 기록4개.
+EVIDENCE: unit102/0/0, Chromium35/0/0, all102+35/0/0 모두 exit0. 고유137, output/playwright/turn07/.
+BOUNDARY: 같은 renderer/Diff/Patch, 루트 전용 상태/순수 자식, committed hooks 오류 보존. 계약 변경 없음.
+NEXT: 구현 Sol TURN08 useEffect/useMemo R03~R05. TURN11 뒤 별도 독립 TURN12 인계 후 STOP.
+
+---
+## 이전 인계 원문 보존
+
 # [HANDOFF — 2026-11-08 — TURN 06 독립 검수 완료]
 FROM: Sol 6.1 / HIGH — 독립 검수 세션
 TO: Sol — 구현 세션
