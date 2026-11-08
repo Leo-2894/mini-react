@@ -1,3 +1,12 @@
+# TURN 10 — 자체 검증 완료
+SOL-010-01 / HIGH / RESOLVED: 정적 server가 / 루트를404 처리. root 자체 허용으로 수정하되 경로 이탈 검사는 유지. 최초 GET1FAIL→신규17E2E/전체53E2E PASS.
+SOL-010-02 / MEDIUM / RESOLVED: 모바일에서 History CSS 숨김. 세로배치 및 실제 모바일 재사용 assertion 추가. CLI display none→flex/width390 유지, E2E PASS.
+SOL-010-03 / LOW / RESOLVED: 긴 JSON scalar 잘림 안내 누락. Viewer unit3/1 red→4/0 green, 표시문구/Raw 안내 보완.
+코드 4143dec271011fb10f4b2a30c24b6235f4a3248b, 증거 output/playwright/turn10/. 구현시도3 내 해결. 신규 확정 미해결 없음, 전체 최종 독립 검수는 TURN12.
+
+---
+## 이전 기록 보존
+
 # TURN 09 — 자체 검증 완료
 SOL-009-01 / LOW / RESOLVED: 민감 경로 값 이후의 정상 segment 과잉 정제. history.js의 다음 segment flag 수정, 원본 실패→통과 증거 output/playwright/turn09/attempt1-unit.log/attempt2-unit-depth.log. 코드 16f3f9d79282beb2f355c76c9ed6f9b97d64b5b6.
 깊은 JSON pretty stringify 한계는 raw fallback으로 처리. 신규 확정 미해결 없음. 실제 네트워크·CORS E2E는 TURN10 범위.

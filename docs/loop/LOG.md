@@ -254,3 +254,13 @@
 - 시도2: 동일25 PASS, 깊은 JSON fallback 회귀 추가 뒤26 PASS. 보조 Python의 기본 cp949로 시험 파일 읽기 실패1회는 UTF-8 명시로 수정하고 신규 깊이 시험이 실제 추가·실행된 attempt2-unit-depth.log에26개 확인. 제품 실패와 구분.
 - 필수 명령 각각 exit0: unit144/0/0, Chromium36/0/0, all144+36/0/0. 고유180, output/playwright/turn09/test-*.log/results.json.
 - 5 methods/query중복/인코딩/header/body 검증, 200/400/500/204/text/invalidJSON/network/timeout/abort, privacy/reuse/20개한도 PASS. Mock Fetch 단위이며 실제 HTTP 전송/CORS 브라우저 증거는 다음 TURN10에서 확보. 기존회귀/QA06-005 유지, 설계변경 없음.
+
+## TURN 10 — 자체 PASS / A03~A05
+- 코드 4143dec271011fb10f4b2a30c24b6235f4a3248b: index/main/App/순수 panels/styles, 실제 HTTP/CORS fixture와 playwright webServer2개, studio E2E17/Viewer unit4, README. 기존 shared 엔진 복제 없음, 루트App만 상태/Hook.
+- 구현시도1: Viewer3 PASS, 최초 E2E GET1 FAIL/진단 위해 남은 실행 중단(exit1). / 루트가 기존 server 경계 검사에 거부돼404, error-context의 Not found 확인. attempt1-e2e.log/attempt1-test-results/ 보존.
+- 시도2: root 자체만 허용하고 하위경로 경계 유지, 신규17E2E PASS(exit0). 전체147unit+53E2E 3명령 PASS 후 자체 화면 리뷰.
+- 시도3: 모바일 CSS history display:none과 긴 scalar 잘림 안내 누락 발견. CLI mobile-before-fix.log, 신규 unit3 PASS/1FAIL red-scalar.log. 모바일 history 세로배치/긴값 생략 안내 보완, 동일4unit PASS, 기존 mobile E2E에 실제 History 재사용 assertion 보강.
+- 최종 필수3명령 각각 exit0: unit148/0/0; Chromium53/0/0; all148+53/0/0. 고유201. output/playwright/turn10/final-test-*.log/results.json. 이전 전체 실행도 pre-polish-*로 보존, 실패 삭제/skip 없음.
+- 실제 네트워크5 methods/query/header/body, 400/500/204/invalidJSON/text/HTML문자열, CORS 허용4174/미허용4175, timeout/retry, slowA→fastB/Cancel/unmount 및 늦은응답/이력 오염 방지, header마스킹/안전재사용/Clear, caret/Node/단축키/모바일 PASS.
+- CLI 실제 URL입력→Send→JSON확장→snapshot. desktop.png 시각확인. screenshot 후 reload한 다음 모바일 검증/촬영, mobile-after-fix.log width390=viewport/history flex. mobile.png 시각확인. 모든 수동 서버/브라우저 종료, 최종 E2E와 충돌 없음.
+- git diff --check PASS. 계약 변경 없음. 본문100k/트리200개8단계/민감경로heuristic 한계 README 명시. 다음 TURN11 통합 마감/독립검수 인계.

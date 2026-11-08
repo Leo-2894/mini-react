@@ -1,3 +1,13 @@
+# TURN 10 — 자체 PASS / 다음 TURN 11
+CODE: 4143dec271011fb10f4b2a30c24b6235f4a3248b
+SCOPE: App 루트 Hooks+순수 Request/Response/Sidebar/JSON, 실제 Fetch/취소/이력/반응형 UI.
+EVIDENCE: unit148/0/0, Chromium53/0/0, all148+53/0/0 각각 exit0. 고유201. output/playwright/turn10/final-test-*.log.
+ISSUES: root404/모바일 History/긴scalar 안내 수정 완료, 실패 증거 보존. 구현 시도3, gate 통과.
+NEXT: 구현 Sol TURN11 최종 회귀·설명 문서·자체 검토 후 별도 독립 TURN12로 인계 STOP.
+
+---
+## 이전 기록 보존
+
 # TURN 09 — 자체 PASS / 다음 TURN 10
 CODE: 16f3f9d79282beb2f355c76c9ed6f9b97d64b5b6
 FILES: src/api/request.js/response.js/history.js, tests/unit/api.test.js, README, 공통기록.
