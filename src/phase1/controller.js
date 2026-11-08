@@ -37,18 +37,24 @@ export function createPhase1(actualHost, editHost) {
       const draft = candidate(); // Safety before editable baseline adoption.
       const actualPlan = actualRenderer.preview(entry.tree);
       validatePatch(actualHost, actualPlan, actualScope);
-      editScope.projectTree(draft); editRenderer.adoptEditedDOM();
-      const editPlan = editRenderer.preview(entry.tree);
-      validatePatch(actualHost, actualPlan, actualScope); validatePatch(editHost, editPlan, editScope);
-      try { actualRenderer.commit(actualPlan); editRenderer.commit(editPlan); }
+      // Projection can mutate DOM before renderer preparation or commit fails.
+      try {
+        editScope.projectTree(draft); editRenderer.adoptEditedDOM();
+        const editPlan = editRenderer.preview(entry.tree);
+        validatePatch(actualHost, actualPlan, actualScope); validatePatch(editHost, editPlan, editScope);
+        actualRenderer.commit(actualPlan); editRenderer.commit(editPlan);
+      }
       catch (error) { locked = true; throw error; }
       history.select(index);
     },
     restoreDraft() {
-      guard(); const draft = candidate(); editScope.projectTree(draft); editRenderer.adoptEditedDOM();
-      const plan = editRenderer.preview(history.current.tree);
-      validatePatch(editHost, plan, editScope);
-      try { editRenderer.commit(plan); } catch (error) { locked = true; throw error; }
+      guard(); const draft = candidate();
+      try {
+        editScope.projectTree(draft); editRenderer.adoptEditedDOM();
+        const plan = editRenderer.preview(history.current.tree);
+        validatePatch(editHost, plan, editScope);
+        editRenderer.commit(plan);
+      } catch (error) { locked = true; throw error; }
     },
     destroy() { actualRenderer.destroy(); editRenderer.destroy(); releaseActual(); releaseEditor(); }
   };
