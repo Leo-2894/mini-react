@@ -1,3 +1,23 @@
+# TURN 06 두 번째 독립 재검수 — 현재 상태 (2026-11-08)
+HEAD 7efb498ec1877ff8a0f791264f1d51f0ee6fdf2f / 제품 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52.
+**REJECTED / 운영 BLOCKED / revision_count=2. 사람의 방향 결정 전 자동 재작업·TURN 07 금지.**
+
+| ID | 상태 | 근거 |
+|---|---|---|
+| QA06-001 | RESOLVED 유지 | value/type/no-op 독립 및 기존 회귀 정상 |
+| QA06-002 | RESOLVED 유지 | radio source 참조/checked/form ownership/Patch 정상 |
+| QA06-003 | RESOLVED | native control/labels, Chrome AX 이름 checkbox/radio/text 양쪽 정상. logical/physical 경계·외부 mutation 검증 정상 |
+| QA06-004 | RESOLVED 유지 | 기존 5개 ID 충돌 및 독립 Inspector UI/History 정상 |
+| QA06-005 | HIGH / OPEN | controller.js:40,48 projection의 부분 쓰기 예외가 잠금 catch 밖. travel/restoreDraft 실패 후 locked=false 및 후속 apply 허용 |
+
+QA06-005 재현: S1 저장→editor label.for/input.id raw rename→input.setAttribute('id') 예외 주입→travel(0) 또는 restoreDraft. 기대 부분 mutation 후 lock/후속 거부. 실제 label 속성만 projection된 상태에서 lock 없음. apply 대조군은 정상 lock.
+원인/최소 수정: 첫 projection mutation부터 오류 보호 범위 포함. 기존 읽기 전용 validation 거부는 비잠금 유지. 추가 수정은 한도 도달 때문에 사람의 명시적 방향 결정 필요.
+증거 output/playwright/turn06-rereview2/independent-projection-failure.log. 정상 조작에서 자연 발생한 예외로 과장하지 않음. 상세 코드/판정은 reviews/turn06.md 두 번째 재검수 §3.
+정규 75 unit/28 E2E 모두 PASS exit 0이나 새 부분 실패 경로 미포함. native 관계·이름 원본 결함과 새 오류 보호 결함을 구분한다.
+
+---
+## 이전 이슈 원문 (역사 기록)
+
 # TURN 06 REVIEW_REWORK 2 — 현재 Sol 수정 상태
 CODE: 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52. 독립 판정은 첫 재검수 REJECTED 유지. 다음은 Astra 두 번째 재검수다.
 

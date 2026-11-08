@@ -1,3 +1,28 @@
+# [HANDOFF — 2026-11-08 — Astra TURN 06 두 번째 재검수]
+FROM: Astra
+TO: 사용자 / 사람의 방향 결정
+STATUS: BLOCKED (독립 검수 FAIL / REJECTED)
+CURRENT TURN: 06
+BASELINE HEAD: 7efb498ec1877ff8a0f791264f1d51f0ee6fdf2f
+PRODUCT COMMIT: 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52
+REVISION: revision_count=2, active_rework_round=2 완료. 수정→재검수 한도 도달.
+WORKTREE: 시작 clean; 종료 시 Astra 검수 기록 5개만 수정. 제품/테스트/architecture/README 불변. 커밋 없음.
+EVIDENCE: unit 75/0/0 exit 0; E2E 28/0/0 exit 0; all 75+28/0/0 exit 0. output/playwright/turn06-rereview2/.
+ISSUES: QA06-001/002/003/004 RESOLVED. QA06-005 HIGH OPEN.
+NEXT ALLOWED ACTION: 사용자가 QA06-005를 검토하고 추가 수정·재검수 허용 여부 등 방향 결정. 그 전 Sol 수정/REVIEW_REWORK 3/TURN 07 금지.
+DO NOT: 테스트 103개 통과를 독립 PASS로 해석하거나 자동 세션 실행/다음 TURN 진행 금지.
+
+QA06-003 원본 실패는 checkbox/radio/text의 native label.control/labels 및 Chrome CDP AX 이름 모두 해결됐다. ID 경계/외부 logical 원문 mutation 거부/Inspector/기존 회귀 정상.
+새 QA06-005: controller.js:40,48의 editScope.projectTree가 try/catch 밖에서 DOM을 쓴다. label.for가 먼저 projection된 후 input.id 쓰기에 예외를 주입하면 travel/restoreDraft는 locked=false이고 주입 제거 후 apply를 허용한다. 같은 apply 경로는 올바르게 잠긴다. 기존 H03 부분 실패 잠금 계약의 누락이다.
+증거 independent-projection-failure.log (대조 apply 1 PASS, travel/restoreDraft 2 FAIL), 자세한 재현 및 수정 조건은 reviews/turn06.md 말미. 예외 주입 검증이며 정상 사용자 동작에서 자연 발생한 오류라고 주장하지 않는다.
+
+사람이 추가 작업을 명시적으로 허용한 경우의 최소 수정 방향: projection의 첫 쓰기부터 오류 보호 범위에 포함하고, 예외 시 잠금/후속 조작 거부 회귀를 추가한다. 읽기 전용 preflight 실패의 DOM/cursor 보존 및 비잠금은 유지한다. 대규모 리팩터링/엔진 변경은 불필요하다.
+기존 4개 증거 폴더 및 최초/첫 재검수 보고 보존. 새 증거 prior-*에 이전 report/test-results 복사. 이번 screenshot 미실행(알려진 도구 mutation 회피). 검수 브라우저/서버 종료.
+미검증: Firefox/WebKit, 실제 스크린리더, clean install, Phase 2, projection 예외의 자연 발생 빈도. 필수 명령은 실행 가능했으므로 TEST_BLOCKED 아님.
+
+---
+## 이전 인계 원문 (역사 기록; 현재 상태는 위 BLOCKED)
+
 # [HANDOFF — 2026-11-08 13:24 Asia/Seoul]
 FROM: Sol (Agent 1)
 TO: Astra (Independent QA)

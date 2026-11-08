@@ -166,3 +166,24 @@
 - 사용자 승인한 Phase 1 optional context만 구현. default APIs/Phase 2 계약 유지. 자세한 구현/ARIA/selector 정책 docs/id-scope.md, README 최신화. prototype/ARIA 이름 덧씌우기/클릭 guard 우회 없음.
 - 구현 시도 1회. 승인 계약에 따른 이전 물리 ID assertion 보완 및 새 테스트 초기화 수정은 기록했고 실패/skip 은폐 없음.
 - STATE: current_turn 06 / next_owner Astra / AWAITING_ASTRA_REVIEW / active_rework_round 2 / revision_count 1 / review_status REJECTED 유지. TURN 07 NOT_STARTED. 같은 TURN 06 두 번째 재검수 요청 후 STOP.
+
+
+## 2026-11-08 — Astra TURN 06 두 번째 독립 재검수 완료
+- 필수 문서 지정 순서 전체 읽음(큰 출력은 잘린 구간 재조회). Astra 별도 지침 없음. cwd/root/HEAD 인계 일치. 기본 권한 Git status work tree 오류는 동일 경로 승인 절차 읽기 전용 재확인으로 해소, inside-work-tree=true/status empty. 설정 변경 없음.
+- HEAD 7efb498ec1877ff8a0f791264f1d51f0ee6fdf2f, 제품 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52. f1ca731→수정 코드 12파일, 이후 인계 docs 4파일. architecture/review 기준 이후 diff 없음.
+- Playwright Skill 읽고 npx/로컬 CLI 사용. output/playwright/turn06-rereview2 신규 생성, 이전 report/test-results를 prior-* 보존. 기존 turn06/rework1/rereview1/rework2 쓰기 없음.
+- npm run test:unit exit 0, 6 files/75 PASS/0 FAIL/0 SKIP.
+- npm run test:e2e exit 0, Chromium 28 PASS/0 FAIL/0 SKIP.
+- npm run test:all exit 0, 75 unit +28 Chromium PASS/0 FAIL/0 SKIP. 고유 103개. 로그 test-unit/test-e2e/test-all.log. FORCE_COLOR/NO_COLOR 경고는 제품 실패 아님.
+- 자동 서버 종료 뒤 별도 dev 서버/CLI astra-rereview2 시작. 실제 native fixture 원본 반례 3타입, 초기 ===/focus/caret/History/키보드/native AX/no-op 검증.
+- independent-native.log 21 PASS/0 FAIL; independent-native-ax.log Chrome CDP AX 6개 모두 이름 1회 정상, keyboardLocal/directClick true.
+- independent-id-boundary.log 14 PASS/0 FAIL: 외부 physical 값을 원래 logical id/for/ARIA 문자열로 변경해도 preflight mutation0 거부, 양 DOM/cursor 유지; IDREF 공백/일반ARIA/raw rename/delete/History/논리selector/빈·중복·공백ID/외부-only target.
+- independent-regression.log 12 PASS/0 FAIL: value/type 4종 no-op, default literal id, radio 초기/편집/Patch, 55회 후 History50개/oldest S6/Redo 유지/분기.
+- independent-inspector.log 실제 UI id=edit-text 편집→Patch→Undo/Redo 정상. input의 같은 logical ID 후보는 Duplicate logical ID 오류로 삽입 전 거부/edit DOM 불변.
+- independent-projection-failure.log 대조 apply 1 PASS, travel/restoreDraft 2 FAIL. 새 projection 첫 label attr 쓰기 뒤 input id setter 예외 주입 시 lock 누락과 후속 apply 허용. 실제 정상 사용의 자연 발생 빈도는 미검증.
+- 소스 controller.js:40,48 쓰기는 catch 밖, apply:29는 catch 안임 확인. 기존 history.test.js도 insertBefore fault injection으로 부분 실패 잠금을 검사하지만 projection 구간은 누락. QA06-005 HIGH로 기록.
+- 신규 oracle는 fixture literal 대응을 쓰며 production decoder로 정답 생성하지 않음. 기존 unit 물리 ID assertion 한 건 변경은 logical literal/native 관계/physical 분리 검사를 함께 유지하므로 타당.
+- screenshot 미실행, 외부 style 검증 완화 없음. 검수 브라우저 close/수동 서버 Ctrl+C 종료(의도한 종료 exit 1).
+- QA06-003 RESOLVED, QA06-001/002/004 유지. QA06-005 잔존으로 FAIL/REJECTED, 재검수 한도 완료 revision_count=2 및 운영 BLOCKED. 사람 결정 전 REVIEW_REWORK 3/TURN 07 금지.
+- review 원문 두 보고 보존 후 새 보고 추가, STATE/HANDOFF/LOG/ISSUES 갱신. 제품/기존 테스트/architecture/README 수정 없음. 커밋/원격/다른 세션 실행 없음.
+- 미검증 Firefox/WebKit/실제 스크린리더/clean install/Phase 2/예외 자연 발생 빈도. 필수 테스트 실행 가능하여 TEST_BLOCKED 아님.

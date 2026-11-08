@@ -267,3 +267,121 @@ label guard는 DOM 관계와 클릭 동작을 두 정책으로 나누고 browser
 **REJECTED. 다음 담당 Sol / TURN 06 REVIEW_REWORK 2. TURN 07은 NOT_STARTED 유지.**
 revision_count=1은 첫 수정→첫 재검수가 완료됐다는 뜻이다. 최대 2회 중 한 회가 남는다. 두 번째 수정→재검수에도 주요 결함이 남으면 하네스에 따라 BLOCKED로 멈추고 사람이 방향을 결정한다.
 이번 작성 범위는 리뷰/STATE/HANDOFF/LOG/ISSUES 및 필요한 architecture 보완 계약이다. 제품·기존 테스트·README 수정 없음. 다른 세션/다음 TURN 실행 없음. 검수용 브라우저와 직접 시작한 서버 종료 후 인계 STOP.
+
+
+---
+
+# [TURN 06 — INDEPENDENT QA REPORT — 두 번째 재검수]
+DATE: 2026-11-08 (Asia/Seoul)
+VERDICT: FAIL / REJECTED
+OPERATIONAL STATUS: BLOCKED — 수정→재검수 2회 한도 도달, 사람의 방향 결정 필요
+BASELINE HEAD: 7efb498ec1877ff8a0f791264f1d51f0ee6fdf2f
+PRODUCT COMMIT: 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52
+PREVIOUS REVIEW / CONTRACT CHECKPOINT: f1ca731
+REVISION_COUNT: 2
+NEXT ACTION: 사람의 방향 결정. REVIEW_REWORK 3 / TURN 07 자동 진입 금지.
+
+## 1. 종합 판정
+**REJECTED / 운영 BLOCKED.**
+QA06-003의 native label 관계·접근성 이름 결함은 해결됐다. QA06-001/002/004 회귀도 통과했다. 다만 새 scope projection이 travel/restoreDraft의 오류 잠금 범위 밖에서 DOM을 변경하여, 부분 쓰기 실패 후 추가 조작을 허용하는 QA06-005를 재현했다. 필수 H03 오류 처리 게이트를 충족하지 못한다.
+
+필수 문서를 지정 순서로 모두 읽었다. 별도 Astra 전용 파일 없음. 실제 cwd/Git root 지정 경로, HEAD 인계 SHA 일치, 시작 status clean. 첫 기본 권한 실행의 git status가 work tree 오류를 냈으나 동일 경로를 승인 절차로 읽기 전용 재확인하여 inside-work-tree=true/status empty를 확인했다. Git 설정 변경 없음.
+f1ca731→1ec56bc 변경 12개 파일, 1ec56bc→HEAD 공통 기록 4개뿐. architecture 및 최초/첫 재검수 보고는 f1ca731 이후 변경 없음. 검수 중 제품·기존 테스트 수정 없음.
+
+## 2. 요구사항 충족 상태
+| 범위 | 판정 | 근거 |
+|---|---|---|
+| D01/D02, F01/F02, P01~P05 | 충족(실행 범위) | 75 unit/28 E2E, 초기 source ===/focus/caret, default API, strict physical preflight 및 기존 엔진 회귀 |
+| H01 및 QA06-003 native 관계 | 충족 | checkbox/radio/text 각 host label.control 로컬, labels=1; Chrome native AX 이름 각 1회, 독립 클릭·키보드·History |
+| logical/physical scope | 충족(문서 지원 범위) | logical id/for/IDREF, 토큰 공백/순서, missing target, raw logical 편집, selector, 빈/중복 ID 거부 |
+| H02 및 H03 정상 History | 충족 | no-op Redo/분기 폐기/50개/양 영역 복원, 일반 preflight 보존 |
+| H03 예기치 않은 부분 실패 잠금 | 미충족 | 새 projection 단계의 travel/restoreDraft 실패에서 locked=false, 후속 apply 허용(QA06-005) |
+| H04 / Inspector | 충족(실행 범위) | 위험 입력·paste/drop 기존 E2E, 5개 ID 충돌 회귀; 독립 UI 중복 ID 사전 거부 |
+| 공유 엔진/금지 런타임 | 충족(현 Phase 1) | 순수 diff/Tree 불변, scope는 기존 DOM/Patch 경로의 선택적 context; native getter/aria-label 우회/label guard 없음 |
+| Phase 2 | 범위 밖 | 미착수 자체를 결함으로 판정하지 않음 |
+
+## 3. 결함별 결과
+
+### QA06-003 — 기존 HIGH → RESOLVED (이 기준 코드에서)
+- 대상: src/mini-react/scope.js, dom.js, patch.js, renderer.js 및 Phase 1 경계/Inspector.
+- 원본 explicit label fixture를 checkbox/radio/text에서 각각 다시 실행: label.control===자기 host input, input.labels.length=1. 초기 source 참조 및 text focus/selection 유지.
+- explicit 중첩 클릭, implicit 클릭, 직접 input 클릭, Space, Patch→Undo/Redo→draft 폐기 후 native 연결 유지. no-op 0 mutation, physical ID 안정.
+- Chrome CDP Accessibility.getPartialAXTree에서 실제/테스트 각 checkbox 이름 "Local checkbox", radio "Local radio", textbox "Local text", ignored=false. 총 6개 이름 정상. 실제 스크린리더 운용 검증은 아님.
+- scope.readAttrs는 Node별 직접 기록한 physical 값과 현재 값이 같을 때만 decode. 임의 prefix stripping 없음. raw logical rename 및 삭제/History 확인.
+- scope.physicalAttrs 기반 preflight는 decoder로 현재 값을 정상화하여 비교하지 않는다. 외부 physical id/for/aria-labelledby/aria-describedby를 원래 logical 문자열로 변경한 반례도 모두 mutation 0으로 거부, 양 DOM/cursor 유지.
+- 문서화된 IDREF 토큰 변환/ASCII 공백 보존, 일반 ARIA 원문, missing target의 내부 dangling ID 및 outside-only 연결 차단, 빈/공백/중복 ID 거부 확인.
+- 논리 selector는 detached clone의 native CSS parser를 사용하고 실제 Node를 반환한다. 실제 DOM 재렌더링이 아니며 live :focus 등 문서상 제외 범위를 새 필수 요구로 확대하지 않았다.
+- 증거: independent-native.log(21/0), independent-native-ax.log(6 native AX + keyboard/direct click 정상), independent-id-boundary.log(14/0).
+
+### QA06-001 / QA06-002 / QA06-004 — RESOLVED 유지
+- QA06-001: 기본 context 없는 renderer에서 checkbox/radio/text/number 값 반복 render, ===와 no-op 0 쓰기 독립 확인. attrs/props 충돌·삭제·외부 value/type 회귀는 기존 정규 시험 통과.
+- QA06-002: 초기 source checked와 ===, 서로 다른 form owner, editor 선택만으로 actual 불변, apply 후 양쪽 checked 일치 독립 확인.
+- QA06-004: 정규 5개 충돌 시험 유지. 실제 UI h3 id=edit-text→텍스트 변경→Patch→Undo/Redo 성공. 같은 ID를 input에 추가하려는 후보는 삽입 전 오류로 거부하고 edit DOM 보존.
+- 증거: independent-regression.log(12/0), independent-inspector.log, 세 필수 테스트 로그.
+
+### QA06-005 — HIGH / OPEN — 새 projection 부분 실패 후 잠금 누락
+- 위치: src/phase1/controller.js:40,48 (projectTree가 mutation을 수행하지만 try/catch 밖); catch는 43~44,51에 위치. src/mini-react/scope.js:46~67의 write/projectTree.
+- 관련 계약: architecture §5 예기치 않은 DOM 예외 중단, §6 부분 적용 오류 후 추가 조작 차단; H03. 이번 사용자 필수 검증 C/D의 부분 실패 잠금 유지.
+- 재현: 연결된 임시 actual/editor fixture에서 S1을 저장한다. editor label.for와 input.id를 raw logical 'renamed'로 바꾼 뒤, 해당 input.setAttribute만 id 쓰기 때 예외를 던지도록 메모리에서 주입한다. travel(0) 또는 restoreDraft를 호출한다.
+- 실행 순서: projectTree가 label.for를 먼저 physical로 바꾼다 → input.id 쓰기가 예외 → controller의 catch에 도달하지 않아 locked=false → 주입을 제거한 뒤 app.apply()가 정상 허용된다.
+- 기대: 부분 mutation 후 예외를 드러내고 locked=true, 이후 apply/travel/restoreDraft 거부. 읽기 전용 validation 실패는 DOM/cursor 보존 및 잠금 없이 재시도 가능해야 한다.
+- 실제: travel/restoreDraft 모두 예외 메시지는 전달되지만 edit DOM은 부분 변경되고 locked=false, 후속 apply 허용. actual DOM은 이 지점에서 바뀌지 않았다. apply 경로는 동일 주입에서 locked=true/후속 apply 거부로 대조군 통과.
+- 원인: 기존 catch는 renderer.commit만 감싼다. 새 projectTree 쓰기를 그 앞에 추가하면서 오류 보호 범위를 확장하지 않았다.
+- 심각도 근거: 필수 상태/오류 처리 계약의 누락이며 두 사용자 복구 경로에서 일관되게 재현. 일반 정상 클릭에서 자연 발생한 브라우저 예외나 데이터 손실을 입증했다는 주장은 하지 않는다. 기존 tests/unit/history.test.js의 insertBefore 예외 주입과 동일한 오류 복구 검증 방식이다.
+- 증거: independent-projection-failure.log: apply 대조 1 PASS, travel/restoreDraft 2 FAIL. CLI exit 0은 probe 실행 성공이며 기능 통과가 아니다.
+- 수정 권장(사람이 추가 작업을 허용한 경우에만): 실제 첫 projection mutation부터 이후 준비/commit까지 오류 경계를 포함하여 부분 적용 오류를 잠근다. validation을 무조건 lock시키거나 rollback/전체 재렌더로 숨기지 않는다. 두 projection 실패 회귀를 추가하고 기존 preflight 보존/commit 실패 잠금과 함께 검증한다.
+- 재현 코드(저장소 파일 수정 없이 browser eval):
+~~~js
+const {createPhase1}=await import('/src/phase1/controller.js');
+const a=document.createElement('div'), e=document.createElement('div');
+a.innerHTML='<label for="box">Local</label><input id="box"><p>S0</p>';
+document.body.append(a,e);
+const app=createPhase1(a,e);
+e.querySelector('p').textContent='S1'; app.apply();
+e.querySelector('label').htmlFor='renamed';
+const input=e.querySelector('input'); input.id='renamed';
+const originalSet=input.setAttribute;
+input.setAttribute=function(name,value) {
+  if(name==='id') throw Error('Injected projection write failure');
+  return originalSet.call(this,name,value);
+};
+const before=e.innerHTML;
+try { app.travel(0); } catch(error) { console.log(error.message); }
+// 별도 새 fixture에서 app.restoreDraft()도 같은 결과
+console.log(e.innerHTML!==before, app.locked); // 실제 true,false / 기대 true,true
+input.setAttribute=originalSet;
+app.apply(); // 실제 허용 / 기대 잠금 오류
+app.destroy();a.remove();e.remove();
+~~~
+
+## 4. 테스트 증거
+cwd: C:\Users\Leo\Desktop\API 1
+
+| 직접 실행 | exit | PASS | FAIL | SKIP |
+|---|---:|---:|---:|---:|
+| npm run test:unit | 0 | 75 / 6 files | 0 | 0 |
+| npm run test:e2e | 0 | 28 Chromium | 0 | 0 |
+| npm run test:all | 0 | 75 unit + 28 E2E | 0 | 0 |
+
+고유 정규 시험 103개. 각 결과는 output/playwright/turn06-rereview2/test-unit.log, test-e2e.log, test-all.log. 실제 명령 종료 코드도 도구 결과로 확인했다. 반복 수치는 합산하지 않는다.
+독립 probe 수치도 정규 시험과 합산하지 않는다: native 21/0, ID boundary 14/0, regression 12/0, projection failure 1/2 (PASS/FAIL). native AX 6개 정상, keyboard/direct click 및 UI ID 충돌/중복 거부 별도 정상. probe 코드와 결과는 각 로그에 있다.
+
+기존 물리 ID 원문 assertion 한 건의 변경을 직접 검토했다. scoped read의 literal logical id/for 기대값, native control, 두 host physical ID 차이를 함께 검사하므로 새 계약에 맞는 보완이다.
+새 browser oracle는 fixture data-key→literal logical ID 대응으로 attrs를 복원하며 production decoder를 기대값 생성에 호출하지 않는다. native 관계/accessible name/description 및 History literal assertion을 병행한다. 다만 신규 projection 예외 경로가 기존 commit 예외 시험에 포함되지 않아 QA06-005를 놓쳤다.
+
+기존 네 증거 디렉터리 보존, report/test-results는 실행 전에 새 경로 prior-*로 복사했다. screenshot은 이번 기능 검증 중 실행하지 않아 알려진 style="" 도구 mutation을 유발하지 않았다. 기존 외부 style 검사 완화 없음.
+미검증: Firefox/WebKit, 실제 스크린리더, clean install, Phase 2, 정상 브라우저 사용에서 projection 쓰기 예외의 자연 발생 빈도. fault injection을 그 빈도의 증거로 주장하지 않는다. 필수 시험 실행 불가가 아니므로 TEST_BLOCKED 아님.
+
+## 5. 구조적 평가
+ID scope는 승인된 선택적 context 범위에서 기존 공유 엔진에 통합됐다. 순수 Diff/Tree 형식 및 default renderer 경로를 유지하며 클릭 우회 guard를 제거했다. native 관계 복구 방식은 적합하다.
+추가 쓰기 경로가 controller의 기존 오류 보호 경계 밖에 놓인 점이 결함이다. 큰 리팩터링이나 추가 격리 방식은 필요하지 않으며 오류 경계 보완과 해당 회귀만 요구한다. 현재 scope registry/selector clone의 성능을 측정된 장애 없이 결함으로 확대하지 않는다.
+
+## 6. 후속 수정 조건 및 사람의 결정
+하네스 수정→재검수 두 회를 완료했다. Sol REVIEW_REWORK 3을 자동 허용하지 않는다.
+사람이 제한적인 추가 수정과 동일 TURN 재검수를 명시적으로 허용하면 QA06-005의 두 예외 경로를 수정하고, projection 실패→lock 및 validation 실패→무쓰기/비잠금 조건을 대조 시험할 수 있다. 기존 103개 및 native 관계/physical mutation 회귀를 유지한다.
+현재는 제품 수정·새 테스트 작성·다음 세션 실행을 하지 않고 중단한다.
+
+## 7. 다음 단계 승인
+**REJECTED / BLOCKED. revision_count=2, active_rework_round=2 완료.**
+QA06-003은 RESOLVED로 기록하되 QA06-005 HIGH가 남아 TURN 07을 승인하지 않는다. 다음 담당은 사람의 방향 결정이며 자동 REVIEW_REWORK 3 없음.
+기록 변경은 turn06 review/STATE/HANDOFF/LOG/ISSUES 5개만. 제품·기존 테스트·architecture·README 불변. 검수 브라우저와 직접 시작한 dev 서버 종료. 커밋/원격 작업/다른 세션 실행 없음. 원본 두 보고를 보존하고 이 결과를 추가했다.

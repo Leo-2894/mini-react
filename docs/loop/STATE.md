@@ -1,21 +1,21 @@
 # API Studio loop state
 current_turn: 06
-next_owner: Astra
-revision_count: 1
+next_owner: Human
+revision_count: 2
 review_status: REJECTED
-next_action: ASTRA_TURN06_REREVIEW_2
-rework_status: AWAITING_ASTRA_REVIEW
+operational_status: BLOCKED
+next_action: HUMAN_DIRECTION_REQUIRED
+rework_status: REWORK_2_REVIEW_COMPLETE_REJECTED
 active_rework_round: 2
 implementation_attempts: 1
-last_verified_commit: 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52
+last_verified_commit: 7efb498ec1877ff8a0f791264f1d51f0ee6fdf2f
 product_commit: 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52
-last_updated: 2026-11-08 13:24 Asia/Seoul
+last_updated: 2026-11-08 Asia/Seoul
 
-현재 권위 있는 독립 판정: Astra TURN 06 첫 재검수 FAIL / REJECTED 유지.
-QA06-001/002/004의 독립 해결 상태 유지. QA06-003은 Sol 두 번째 수정/자체 회귀 완료, Astra 두 번째 재검수 대기.
-revision_count는 완료된 Sol 수정→Astra 재검수 횟수다. 첫 회 완료(1/2); 두 번째 수정→재검수 한 회 남음. active_rework_round=2는 Sol 두 번째 수정 완료/재검수 대기다. 자체 수정 완료만으로 revision_count를 올리지 않는다.
-다음 담당 Astra, 같은 TURN 06 두 번째 재검수. 두 번째 재검수에도 주요 결함이 남으면 하네스에 따라 BLOCKED 및 사람의 방향 결정. TURN 07은 Astra PASS 전 금지.
-last_verified_commit은 Sol 자체 검증 코드이며 독립 승인된 코드라는 뜻이 아니다. 승인된 제한적 ID 경계 보완을 구현했으며 제품 QA 승인은 별개다.
+두 번째 독립 재검수 완료: FAIL / REJECTED. 수정→재검수 2회 한도 도달로 운영 BLOCKED. 다음은 사람의 방향 결정이며 자동 REVIEW_REWORK 3 또는 TURN 07 없음.
+QA06-001/002/003/004 RESOLVED. QA06-005 HIGH OPEN: travel/restoreDraft의 projection 부분 쓰기 예외가 lock을 설정하지 않아 후속 apply 허용.
+75 unit/28 Chromium E2E, test:all 모두 exit0·FAIL0·SKIP0. 독립 projection 반례 2조건 FAIL. 정규 통과를 전체 승인으로 간주하지 않음.
+검사 기준 SHA는 승인된 코드라는 의미가 아니다. 제품/테스트 불변, 검수 기록 5개만 수정. 브라우저/서버 종료.
 
 | TURN | Owner | Status | Evidence | Commit |
 |---|---|---|---|---|
@@ -24,13 +24,16 @@ last_verified_commit은 Sol 자체 검증 코드이며 독립 승인된 코드�
 | 03 | Sol | PASS | Sol 자체: F01/F02 누적 20 unit | 601b091 |
 | 04 | Sol | PASS | Sol 자체: P01~P05 누적 32 unit | 07a20db |
 | 05 | Sol | PASS | Sol 자체: 53 unit + 8 Chromium E2E; 독립 결함은 06 참조 | 83b1711 |
-| 06 | Astra | REVIEW_REWORK | QA06-003 Sol 수정 완료 / 두 번째 재검수 대기; 기존 REJECTED 유지 | 1ec56bc |
+| 06 | Astra | BLOCKED | 두 번째 재검수 REJECTED: QA06-003 해결, QA06-005 HIGH; 한도 도달 | 7efb498 |
 | 07 | Sol | NOT_STARTED | TURN 06 PASS 전 진입 금지 | none |
 | 08 | Sol | NOT_STARTED | — | none |
 | 09 | Sol | NOT_STARTED | — | none |
 | 10 | Sol | NOT_STARTED | — | none |
 | 11 | Sol | NOT_STARTED | — | none |
 | 12 | Astra | NOT_STARTED | 최종 승인 전 | none |
+
+## 이전 검증 기록 (역사 기록; 현재 판정은 위 BLOCKED)
+
 
 최초 Astra 독립 실행: test:unit 53/0/0 exit 0; test:e2e 8/0/0 exit 0; test:all 53+8/0/0 exit 0 (PASS/FAIL/SKIP).
 최초 Astra 별도 Chromium probe: 4개 결함을 5개 기대/실제 조건으로 재확인, 0 PASS/5 FAIL. CLI exit 0을 기능 PASS로 해석하지 않는다.
