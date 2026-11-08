@@ -187,3 +187,23 @@
 - QA06-003 RESOLVED, QA06-001/002/004 유지. QA06-005 잔존으로 FAIL/REJECTED, 재검수 한도 완료 revision_count=2 및 운영 BLOCKED. 사람 결정 전 REVIEW_REWORK 3/TURN 07 금지.
 - review 원문 두 보고 보존 후 새 보고 추가, STATE/HANDOFF/LOG/ISSUES 갱신. 제품/기존 테스트/architecture/README 수정 없음. 커밋/원격/다른 세션 실행 없음.
 - 미검증 Firefox/WebKit/실제 스크린리더/clean install/Phase 2/예외 자연 발생 빈도. 필수 테스트 실행 가능하여 TEST_BLOCKED 아님.
+
+## QA06-005 추가 재작업 시작 — 한도 주기 2 / 전체 재작업 3
+- 최신 사용자 지시 "다시 한도 재설정 됐어" 및 이번 QA06-005 구현 지시가 한도 재설정/추가 수정의 명시 근거. 이전 주기 수정→재검수 2회 및 독립 REJECTED 보고는 보존.
+- 새 주기 revision_count=0, limit=2, active_rework_round=1 (전체 이력 3), 운영 상태 REVIEW_REWORK. 독립 review_status REJECTED 유지, 제품 승인/07 승인 아님.
+- 필수 문서 및 실제 cwd/root/HEAD 7efb498 확인. 예상한 Astra 문서 5개만 변경. baseline checkpoint에 검수 원문 보존. 기존 증거 및 비수정 코드/시험 hash, 기존 report/test-results를 turn06-rework3에 보존.
+
+## 2026-11-08 — Sol QA06-005 완료 / 새 한도 주기 2, 전체 재작업 3
+- 사용자 "다시 한도 재설정 됐어"로 이전 운영 BLOCKED만 해제. 이전 완료 재검수 2회/REJECTED 원문 보존 checkpoint 8076542bf2c46bf9e42cdedeb928dd7425889fe0. 새 revision_count=0/2, active_rework_round=1, lifetime_rework_round=3, 독립 REJECTED 유지. Sol 완료로 횟수 증가 없음.
+- 제품 수정 전에 신규 tests/unit/projection-failure.test.js 및 tests/e2e/projection-failure.spec.js 작성. 단위 6 PASS/4 FAIL/0 SKIP(exit 1), Chromium 2 PASS/2 FAIL/0 SKIP(exit 1). 증거 turn06-rework3/red-unit.log, red-e2e.log, red-test-results/, red-playwright-report/. 기존 report/test-results는 prior-*에 먼저 보존.
+- 실패 원인: travel/restoreDraft의 projection과 후속 adopt/preview가 catch 밖. 첫 label.for 쓰기 성공 후 input.id 쓰기 예외는 원본 오류/actual/cursor 보존에도 locked=false이며 주입 제거 후 세 조작 허용. 후속 preparation 읽기 예외도 동일. apply 대조군과 읽기 전용 거부는 통과.
+- 구현 수정 시도 1: src/phase1/controller.js만 수정, 두 경로의 projection 시작부터 preparation/재검증/commit까지 오류 보호 범위 확장. 읽기 전용 candidate/초기 actual preflight는 밖에 유지. history.select는 성공 뒤에만 진행. 기존 ID scope/공유 Diff/Patch/default API/기존 시험 불변.
+- 동일 신규 회귀 재실행: unit 10 PASS/0 FAIL/0 SKIP(exit 0), Chromium 4 PASS/0 FAIL/0 SKIP(exit 0); green-unit.log, green-e2e.log. 부분 mutation(for 1회)·정확한 오류 전달·locked=true·history 항목 identity/cursor 보존·주입 제거 후 apply/travel/restoreDraft 거부. candidate 3조건/actual preflight 2조건은 mutation 0·양 DOM/cursor 유지·비잠금 및 unit 재시도 성공. 기존 commit 실패 잠금 유지.
+- npm run test:unit exit 0: 7 files, 85 PASS/0 FAIL/0 SKIP. test-unit.log.
+- Playwright Skill 읽고 npx 존재 확인, 로컬 CLI sol-rework3. E2E 자체 서버 종료 후 별도 dev 서버 실행, Inspector 텍스트 변경→Patch→History 정상. 전용 CLI 5조건(projection 3 + 후속 preparation 2) PASS, 원본 오류/실제 for 또는 for,id 쓰기/잠금/후속 거부/actual/history 보존. cli-projection.js/log, cli-console.log, cli-snapshot-*.log. screenshot 미실행, 외부 속성 검사 완화 없음. 브라우저 close와 별도 서버 Ctrl+C 종료(의도한 exit 1), 이후 E2E와 충돌 없음.
+- npm run test:e2e exit 0: Chromium 32 PASS/0 FAIL/0 SKIP. test-e2e.log, full-e2e-test-results/, full-e2e-playwright-report/.
+- npm run test:all exit 0: unit 85 PASS + Chromium 32 PASS, FAIL 0/SKIP 0. test-all.log, final-test-results/, final-playwright-report/. 고유 정규 117개(기존 103+신규 14), 재실행/CLI 진단 수치를 합산하지 않음. results.json.
+- 기존 QA06-001 value/type/반복 render, QA06-002 radio 소유권, QA06-003 native label.control/input.labels/Chrome AX 이름, QA06-004 Inspector ID 충돌 회귀 PASS. physical 외부 변경 사전 거부/History 분기/no-op Redo/50개/두 host preflight·commit 실패/Node/listener/focus/caret 회귀 PASS.
+- 자체 리뷰 git diff --check exit 0. 제품 수정/신규 시험 3파일만 commit ff2a689162c2d6129749f400810846fbee50e736. 기존 증거/검수·설계·README/id-scope·비수정 source/기존 tests 201개 파일 SHA-256 불변(preservation-check.json). architecture/원본 reviews/README/id-scope 수정 없음, 계약 변경 없음.
+- STATE/HANDOFF/ISSUES/LOG 갱신. QA06-005 Sol 수정 완료/Astra 재검수 대기, 독립 RESOLVED나 TURN 06 PASS 아님. 한계: Firefox/WebKit·실제 스크린리더·clean reinstall·Phase 2·자연 발생 빈도 미검증. 예외 주입 결함을 자연 발생/실제 데이터 손실로 주장하지 않음.
+- 최종 인계 HEAD/clean 검증 결과는 output/playwright/turn06-rework3/handoff-receipt.json 및 최종 응답. 다음 담당 Astra 동일 TURN 06 추가 독립 재검수. 인계 후 STOP, TURN 07/다른 세션 실행/원격 작업 없음.

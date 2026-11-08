@@ -1,3 +1,24 @@
+# TURN 06 QA06-005 — Sol 추가 수정 완료 / Astra 독립 재검수 대기
+CODE: ff2a689162c2d6129749f400810846fbee50e736. 독립 review_status=REJECTED 유지. 한도 재설정은 제품 승인이 아니다.
+사용자 "다시 한도 재설정 됐어"에 따라 새 limit_cycle=2, revision_count=0/2, active_rework_round=1(전체 3회차). 이전 완료 2회/REJECTED 원문은 아래 보존. 다음 담당은 Astra 동일 TURN 06 추가 독립 재검수.
+
+| ID | 현재 상태 | 수정·회귀 근거 |
+|---|---|---|
+| QA06-001 | Astra RESOLVED 유지 | 기존 value/type/반복 render/외부 변경 거부 회귀 PASS |
+| QA06-002 | Astra RESOLVED 유지 | 기존 radio form ownership/초기 checked/편집/Patch/History 회귀 PASS |
+| QA06-003 | Astra RESOLVED 유지 | 기존 native label.control/input.labels/Chrome AX 이름, logical/physical ID·외부 mutation 거부 회귀 PASS |
+| QA06-004 | Astra RESOLVED 유지 | 기존 Inspector ID 충돌·논리 selector·History 회귀 PASS |
+| QA06-005 HIGH | Sol 수정 완료 / Astra 재검수 대기 (독립 RESOLVED 미승인) | controller의 travel/restoreDraft 첫 projection부터 준비·commit까지 catch 확장. 오류 전달/잠금/후속 거부/History 보존 신규 회귀 PASS |
+
+QA06-005 원인: DOM을 쓰는 editScope.projectTree와 후속 준비가 catch 바깥이어서 부분 mutation 뒤 locked=false로 남았다. 수정 파일 src/phase1/controller.js(기존 40,48 인근). 읽기 전용 candidate/초기 actual preflight는 보호 경계 앞에 유지해 무조건 잠그지 않는다. 오류를 삼키거나 자동 복구/전체 재렌더하지 않는다. API·ID scope 설계 변경 없음.
+신규 회귀 tests/unit/projection-failure.test.js 10건 및 tests/e2e/projection-failure.spec.js 4건. 첫 for 쓰기 성공/다음 id 쓰기 실패를 MutationObserver와 오류 identity로 검증. history.entries identity·cursor/actual 불변, 주입 제거 후 apply/travel/restoreDraft 모두 거부. 후속 preparation 예외 2 unit도 보호. 읽기 전용 거부 5조건은 쓰기 0/비잠금 및 unit 재시도 성공. 일반 apply 대조군/기존 commit 실패 잠금 유지.
+증거 output/playwright/turn06-rework3/: red-unit.log(exit 1, 6/4/0), red-e2e.log(exit 1, 2/2/0), green-unit.log(0,10/0/0), green-e2e.log(0,4/0/0). PASS/FAIL/SKIP 순서.
+필수 test:unit 0,85/0/0; test:e2e 0,32/0/0 Chromium; test:all 0,85+32/0/0. 고유 117개. test-unit/test-e2e/test-all.log, results.json, CLI 별도 5조건 cli-projection.log. 기존 시험을 삭제·skip·완화하지 않음.
+예외 주입에서 확인한 오류 복구 결함으로 자연 발생 빈도나 실제 데이터 손실로 과장하지 않는다. 미검증 Firefox/WebKit·실제 스크린리더·clean reinstall·Phase 2. 기존 판정은 Astra만 갱신한다.
+
+---
+## 이전 Astra 두 번째 재검수 및 이슈 원문 (역사 기록)
+
 # TURN 06 두 번째 독립 재검수 — 현재 상태 (2026-11-08)
 HEAD 7efb498ec1877ff8a0f791264f1d51f0ee6fdf2f / 제품 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52.
 **REJECTED / 운영 BLOCKED / revision_count=2. 사람의 방향 결정 전 자동 재작업·TURN 07 금지.**

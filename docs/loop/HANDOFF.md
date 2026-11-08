@@ -1,3 +1,57 @@
+# [HANDOFF — 2026-11-08 — Sol QA06-005 추가 재작업]
+FROM: Sol (Agent 1)
+TO: Astra (Independent QA)
+CURRENT TURN: 06 — 동일 TURN 추가 독립 재검수 요청
+STATUS: AWAITING_ASTRA_REVIEW (Sol 자체 검증 완료 / 기존 독립 REJECTED 유지)
+CODE SHA / LAST VERIFIED COMMIT: ff2a689162c2d6129749f400810846fbee50e736
+REVIEW BASELINE: 7efb498ec1877ff8a0f791264f1d51f0ee6fdf2f (제품 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52)
+PRESERVATION CHECKPOINT: 8076542bf2c46bf9e42cdedeb928dd7425889fe0 — Astra의 의도된 검수 문서 5개를 원문 그대로 보존.
+FINAL HANDOFF HEAD: 이 문서를 포함한 최종 docs-only 커밋. 실제 전체 SHA와 최종 clean 상태는 output/playwright/turn06-rework3/handoff-receipt.json 및 Sol 최종 응답에 기록. git rev-parse HEAD로 대조.
+WORKTREE: 제품/시험 커밋 + 공통 기록 4개 docs-only 커밋 후 clean 확인. 원격 작업 없음.
+
+## 한도·승인 상태
+- 최신 사용자 지시 "다시 한도 재설정 됐어"를 명시 근거로 기존 한도 BLOCKED만 해제했다. 제품/독립 QA 승인이나 TURN 07 허용이 아니다.
+- 이전 주기: 완료된 수정→재검수 2회와 두 REJECTED 보고를 보존.
+- 새 주기 limit_cycle=2, revision_limit=2, revision_count=0 유지. active_rework_round=1은 새 주기 첫 재작업이며 전체 이력상 세 번째(lifetime_rework_round=3). 구현 수정 시도 1회. Sol 완료만으로 재검수 횟수를 올리지 않는다.
+- QA06-001/002/003/004 독립 RESOLVED 유지. QA06-005 HIGH는 **Sol 수정 완료 / Astra 재검수 대기**이며 독립 RESOLVED가 아니다.
+
+## 수정 범위·오류 경계
+- src/phase1/controller.js: travel/restoreDraft의 try/catch를 editScope.projectTree 첫 호출부터 준비·commit까지 확장했다. 원본 오류를 재전달하고 locked=true. 부분 실패 뒤 주입을 제거해도 세 조작을 거부한다. history.select는 두 commit 성공 뒤에만 실행된다.
+- 읽기 전용 candidate 검증과 travel의 첫 actual preflight는 mutation 보호 구간 앞에 유지. 거부 시 DOM/cursor 보존 및 비잠금. projection 이후의 preparation/adoption/preview/재검증 실패는 이미 쓰기가 발생할 수 있으므로 같은 잠금 경계에 포함한다.
+- 신규 tests/unit/projection-failure.test.js 10건, tests/e2e/projection-failure.spec.js 4건. 기존 75 unit/28 E2E의 내용·assertion·skip 불변.
+- ID scope, logical/physical ID 계약, managed actual 재채택 금지, 같은 Diff/Patch와 default renderer/Phase 2 API 불변. 전체 재생성/rollback/재시도 없음. 설계 변경 없음, architecture/id-scope/README 수정 불필요하여 보존.
+
+## 실제 실패 → 성공과 필수 명령
+모든 경로는 output/playwright/turn06-rework3/ 기준. PASS/FAIL/SKIP 순서이며 반복 실행은 고유 수에 합산하지 않는다.
+
+| 실행 | 종료 코드 | 실제 결과 | 증거 |
+|---|---:|---|---|
+| 수정 전 신규 unit | 1 | 6/4/0 | red-unit.log |
+| 수정 전 신규 Chromium | 1 | 2/2/0 | red-e2e.log, red-test-results/, red-playwright-report/ |
+| 수정 후 신규 unit | 0 | 10/0/0 | green-unit.log |
+| 수정 후 신규 Chromium | 0 | 4/0/0 | green-e2e.log |
+| npm run test:unit | 0 | 85/0/0 | test-unit.log |
+| npm run test:e2e | 0 | 32/0/0 Chromium | test-e2e.log, full-e2e-test-results/, full-e2e-playwright-report/ |
+| npm run test:all | 0 | unit 85/0/0 + Chromium 32/0/0 | test-all.log, final-test-results/, final-playwright-report/ |
+
+고유 정규 시험 117개(기존 103 + 신규 14). 실행 요약 results.json.
+- travel/restoreDraft의 label.for 쓰기 성공→input.id 예외는 수정 전 locked=false/주입 제거 후 세 조작 허용에서 수정 후 locked=true/세 조작 거부로 바뀜. MutationObserver로 for 한 번만 기록, input은 raw ID 유지, 원본 오류 identity·actual DOM·snapshot 항목 identity·cursor 보존 assertion.
+- apply 동일 예외 대조군은 수정 전후 모두 잠금. projection 성공 뒤 editable adoption read 오류 2건도 원본 오류 전달/잠금/후속 거부.
+- 읽기 전용 후보 오류 3조건 및 initial actual preflight 2조건: 두 DOM/cursor 불변, mutation 0, unlocked. unit은 원인 제거 후 재시도 성공도 확인. 기존 commit 단계 부분 실패 잠금 유지.
+- 기존 QA06-001 value/type·반복 render, QA06-002 radio 소유권, QA06-003 native label.control/input.labels/Chrome AX 이름, QA06-004 Inspector ID 충돌 모두 기존 unit/E2E PASS. physical 외부 속성 거부·History 분기/no-op Redo/50개·Node/listener/focus/caret 회귀도 PASS.
+
+## 브라우저·보존·한계
+- 설치된 Playwright Skill을 읽고 npx 로컬 CLI 사용. 화면 Inspector 편집→Patch/History 진행 및 별도 예외 주입 5조건(apply/travel/restoreDraft projection 3 + travel/restoreDraft 후속 preparation 2) 모두 PASS. cli-projection.js/log, cli-console.log, cli-snapshot-*.log. 추가 진단은 고유 정규 시험에 미포함.
+- E2E 자체 서버와 별도 서버를 순차 사용했고 CLI/수동 서버 종료. screenshot 미실행으로 도구 style mutation 회피. 외부 변경 검사 완화 없음.
+- 기존 모든 TURN 06 증거 폴더와 review/architecture/id-scope/README/비수정 source/기존 tests 201개 파일 SHA-256 불변: baseline-hashes.json, preservation-check.json. 실행 전 기존 report/test-results는 prior-*로 보존. Astra turn06.md 원문·판정 불변.
+- 예외 주입으로 확인한 오류 복구 결함이다. 정상 조작에서의 자연 발생 빈도/데이터 손실은 입증하지 않았으며 그런 주장도 하지 않는다. Firefox/WebKit·실제 스크린리더·clean reinstall·Phase 2 미검증. Sol 검사 범위에서 잔여 결함 미재현, 독립 승인 대기.
+
+NEXT ALLOWED ACTION: Astra가 같은 TURN 06의 QA06-005 원본 재현 및 신규 예외 경계/기존 회귀를 독립 검수 → 판정·공통 기록·새 주기 revision_count 갱신 → STOP.
+DO NOT: Sol 자체 승인, TURN 07, 다른 세션 자동 실행, 기존 증거/검수 판정 덮어쓰기.
+
+---
+## 이전 Astra 두 번째 재검수 인계 원문 (역사 기록; 현재 상태는 위 인계)
+
 # [HANDOFF — 2026-11-08 — Astra TURN 06 두 번째 재검수]
 FROM: Astra
 TO: 사용자 / 사람의 방향 결정

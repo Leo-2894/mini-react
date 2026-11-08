@@ -1,21 +1,30 @@
 # API Studio loop state
 current_turn: 06
-next_owner: Human
-revision_count: 2
+limit_cycle: 2
+revision_limit: 2
+previous_cycle_completed_reviews: 2
+lifetime_rework_round: 3
+limit_reset_reason: 사용자 명시 지시 "다시 한도 재설정 됐어" (QA06-005 추가 수정 허용)
+next_owner: Astra
+revision_count: 0
 review_status: REJECTED
-operational_status: BLOCKED
-next_action: HUMAN_DIRECTION_REQUIRED
-rework_status: REWORK_2_REVIEW_COMPLETE_REJECTED
-active_rework_round: 2
+operational_status: AWAITING_ASTRA_REVIEW
+next_action: ASTRA_TURN06_ADDITIONAL_REVIEW_QA06_005
+rework_status: SOL_FIXED_AWAITING_REVIEW
+active_rework_round: 1
 implementation_attempts: 1
-last_verified_commit: 7efb498ec1877ff8a0f791264f1d51f0ee6fdf2f
-product_commit: 1ec56bc5e7ed5093f3ba5ff516352cc92b0e9d52
+last_verified_commit: ff2a689162c2d6129749f400810846fbee50e736
+last_independently_reviewed_head: 7efb498ec1877ff8a0f791264f1d51f0ee6fdf2f
+product_commit: ff2a689162c2d6129749f400810846fbee50e736
 last_updated: 2026-11-08 Asia/Seoul
 
-두 번째 독립 재검수 완료: FAIL / REJECTED. 수정→재검수 2회 한도 도달로 운영 BLOCKED. 다음은 사람의 방향 결정이며 자동 REVIEW_REWORK 3 또는 TURN 07 없음.
-QA06-001/002/003/004 RESOLVED. QA06-005 HIGH OPEN: travel/restoreDraft의 projection 부분 쓰기 예외가 lock을 설정하지 않아 후속 apply 허용.
-75 unit/28 Chromium E2E, test:all 모두 exit0·FAIL0·SKIP0. 독립 projection 반례 2조건 FAIL. 정규 통과를 전체 승인으로 간주하지 않음.
-검사 기준 SHA는 승인된 코드라는 의미가 아니다. 제품/테스트 불변, 검수 기록 5개만 수정. 브라우저/서버 종료.
+이전 주기: 두 번째 독립 재검수 FAIL / REJECTED, 완료 2회 및 한도 도달 BLOCKED 기록을 보존한다.
+현재: 사용자 명시 한도 재설정으로 운영 BLOCKED만 해제. QA06-005는 Sol 수정 완료 / Astra 추가 독립 재검수 대기. 독립 review_status=REJECTED 유지.
+새 주기 2회 한도, 완료된 재검수 revision_count=0. active_rework_round=1은 새 주기 기준이며 전체 이력상 재작업 3회차다. Sol 완료만으로 count 증가 없음. TURN 07 미승인.
+QA06-001/002/003/004의 독립 RESOLVED 유지. QA06-005는 독립 RESOLVED가 아니다.
+검증된 제품/신규 시험 ff2a689: controller 오류 보호 범위 및 신규 unit 10/E2E 4만 변경. 기존 시험·ID scope·default renderer/Phase 2 계약 불변.
+필수 명령 각각 exit 0: unit 85 PASS, Chromium E2E 32 PASS, test:all 85+32 PASS. 모두 FAIL 0/SKIP 0, 고유 117개. 증거 output/playwright/turn06-rework3/.
+기존 검수 산출물 5개는 checkpoint 8076542에 보존. 기존 증거/검수·설계·비수정 소스·기존 시험 201개 파일 hash 불변. 별도 CLI/서버 종료, 인계 후 STOP.
 
 | TURN | Owner | Status | Evidence | Commit |
 |---|---|---|---|---|
@@ -24,7 +33,7 @@ QA06-001/002/003/004 RESOLVED. QA06-005 HIGH OPEN: travel/restoreDraft의 projec
 | 03 | Sol | PASS | Sol 자체: F01/F02 누적 20 unit | 601b091 |
 | 04 | Sol | PASS | Sol 자체: P01~P05 누적 32 unit | 07a20db |
 | 05 | Sol | PASS | Sol 자체: 53 unit + 8 Chromium E2E; 독립 결함은 06 참조 | 83b1711 |
-| 06 | Astra | BLOCKED | 두 번째 재검수 REJECTED: QA06-003 해결, QA06-005 HIGH; 한도 도달 | 7efb498 |
+| 06 | Astra | REJECTED | QA06-005 Sol 수정 완료; 추가 독립 재검수 대기. 새 주기 0/2 | ff2a689 |
 | 07 | Sol | NOT_STARTED | TURN 06 PASS 전 진입 금지 | none |
 | 08 | Sol | NOT_STARTED | — | none |
 | 09 | Sol | NOT_STARTED | — | none |
@@ -32,7 +41,7 @@ QA06-001/002/003/004 RESOLVED. QA06-005 HIGH OPEN: travel/restoreDraft의 projec
 | 11 | Sol | NOT_STARTED | — | none |
 | 12 | Astra | NOT_STARTED | 최종 승인 전 | none |
 
-## 이전 검증 기록 (역사 기록; 현재 판정은 위 BLOCKED)
+## 이전 검증 기록 (역사 기록; 현재 판정과 한도 주기는 위 메타데이터)
 
 
 최초 Astra 독립 실행: test:unit 53/0/0 exit 0; test:e2e 8/0/0 exit 0; test:all 53+8/0/0 exit 0 (PASS/FAIL/SKIP).
@@ -76,3 +85,13 @@ QA06-001/002/003/004 RESOLVED. QA06-005 HIGH OPEN: travel/restoreDraft의 projec
 - 증거 output/playwright/turn06-rework2/. Chrome native CDP AX 이름, CLI native label/control/labels 및 History 확인. 기존 증거/설계/검수 101개 파일 hash 불변.
 - revision_count=1 유지, active_rework_round=2. 두 번째 Astra 재검수까지 주요 결함 잔존 시 하네스의 BLOCKED/사람 결정 규칙 적용.
 - TURN 07 미착수. Sol은 인계 후 STOP.
+
+## Sol QA06-005 — 추가 재작업 완료 / 새 한도 주기 2
+- 사용자 근거: "다시 한도 재설정 됐어". 이전 주기 완료 2회·REJECTED 원문 보존, 현재 주기 revision_count=0/2, active_rework_round=1, lifetime_rework_round=3.
+- 수정 시도 1회. travel/restoreDraft는 읽기 전용 candidate/초기 actual preflight 이후, 첫 projection 호출부터 준비/adoption/preview/재검증/commit까지 같은 catch에서 locked=true 후 원본 오류 재전달. history.select는 성공 뒤에만 실행. apply 대조군 불변.
+- 수정 전 신규 unit 6 PASS/4 FAIL, Chromium 2 PASS/2 FAIL (각 exit 1). 수정 후 신규 unit 10 PASS, E2E 4 PASS (각 exit 0), 모두 SKIP 0. red/green 로그 보존.
+- label.for 첫 쓰기 성공→input.id 예외 시 실제 부분 mutation·원본 오류·history/cursor 보존·잠금 확인. 주입 제거 후 apply/travel/restoreDraft 모두 거부. 후속 준비 단계 read 오류도 단위/CLI에서 잠금 확인.
+- 읽기 전용 candidate 3조건/actual preflight 2조건은 mutation 0·양 DOM/cursor 보존·비잠금, 수정 후 재시도 성공(unit). 기존 commit 실패 잠금 회귀 유지.
+- 기존 QA06-001~004, 외부 physical mutation, History 분기/no-op Redo/50개, 참조/listener/focus/caret 회귀 PASS. Playwright Skill CLI 별도 5조건 PASS는 정규 117개에 합산하지 않음.
+- 예외 주입으로 검증한 오류 복구 결함이며 정상 사용자 조작의 자연 발생 빈도/데이터 손실을 입증한 결과가 아니다. Firefox/WebKit·실제 스크린리더·clean reinstall·Phase 2 미검증.
+- 다음 담당 Astra: 같은 TURN 06 추가 독립 재검수. 기존 reports 원문/판정 보존. TURN 07/다른 세션 자동 실행 없이 STOP.
