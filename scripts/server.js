@@ -9,7 +9,7 @@ http.createServer(async (req, res) => {
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
     if (pathname.split('/').some(part => part.startsWith('.')) || pathname.includes('node_modules')) throw Error('Forbidden');
     let file = path.resolve(root, '.' + pathname);
-    if (!file.startsWith(root + path.sep)) throw Error('Forbidden');
+    if (file !== root && !file.startsWith(root + path.sep)) throw Error('Forbidden');
     if ((await stat(file)).isDirectory()) file = path.join(file, 'index.html');
     res.setHeader('Content-Type', (types[path.extname(file)] || 'text/plain') + '; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store');

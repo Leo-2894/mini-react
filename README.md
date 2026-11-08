@@ -1,6 +1,6 @@
 # API Studio / Mini React
 
-현재 진행: TURN 06은 별도 Sol 6.1/HIGH 독립 검수에서 PASS / APPROVED. TURN 07~08 FunctionComponent와 루트 Hooks를 구현했다. 제품 페이지(`index.html`)는 TURN 10 대상이다.
+현재 진행: Phase 1은 TURN 06 별도 독립 APPROVED. TURN 07~10 자체 Mini React Hooks와 API Studio를 구현했다. 전체 제품의 최종 독립 검수는 TURN 12 대상이다.
 
 ## 실행 (Windows PowerShell)
 
@@ -11,7 +11,7 @@ npx playwright install chromium
 npm run dev
 ```
 
-브라우저에서 `http://127.0.0.1:4173/phase1/` 접속. 서버는 127.0.0.1에서만 실행한다. 루트 `/` 페이지는 TURN 10 대상이며 현재 제공하지 않는다. Node 24.22.1 / npm 11.19.1에서 검증.
+API Studio는 `http://127.0.0.1:4173/`, DOM Lab은 `http://127.0.0.1:4173/phase1/`에서 실행한다. 서버는 127.0.0.1에서만 실행한다. Node 24.22.1 / npm 11.19.1에서 검증.
 
 ```powershell
 npm run test:unit
@@ -89,3 +89,13 @@ useMemo(factory, deps)는 같은 deps 정책으로 값과 참조를 재사용한
 HTTP 4xx/5xx는 상태·headers·body가 있는 응답이다. 잘못된 JSON은 raw text로 표시하고 parse 경고를 구분한다. 네트워크 오류만으로 CORS/DNS 원인을 확정하지 않으며 우회 proxy를 사용하지 않는다. response header의 auth/cookie/key/token/secret/password/credential 이름 값은 마스킹한다. 응답 표시는 100,000자로 제한하고 잘림을 알린다. 전체 수신 메모리 제한은 보장하지 않는다. 깊은 JSON은 pretty stringify 실패 시 raw text로 fallback한다.
 
 History는 세션 메모리 20개이며 id/time/method/정제 URL/status/elapsed만 저장한다. query/hash/userinfo를 제거하고 민감 이름 뒤 경로 값과 긴 토큰형 segment를 [redacted]로 가린다. 임의 경로에 숨은 모든 비밀을 탐지하는 보장은 없다. 재사용은 method/정제 URL만 복원하며 Params/Headers/Body를 비운다. 자동 전송하지 않는다. localStorage와 console에 요청·응답 본문이나 인증값을 기록하지 않는다.
+
+## API Studio 시연 (TURN 10)
+
+1. URL과 HTTP method를 선택한다. Params/Headers에서 행을 추가하고 체크박스로 전송 여부를 바꾼다. Body 탭은 GET 외 메서드의 JSON을 편집한다.
+2. Send request 또는 Ctrl/⌘+Enter로 전송한다. 다시 보내면 이전 작업을 취소하며 최신 요청만 결과/이력에 반영한다. Cancel request도 제공한다.
+3. 상태·소요 시간과 JSON 트리/Raw/Response headers를 확인한다. 트리는 최대 200개 항목·8단계이며 긴 scalar는 생략을 알린다. Raw/pretty 본문은 최대 100,000자다. HTML은 문자열로 표시한다.
+4. Recent requests는 method와 정제 URL만 복원한다. 인증/Params/Body는 다시 입력한다. Clear로 이력을 비우며 reload하면 세션 이력도 사라진다. [redacted] 경로는 편집하기 전 Send가 차단된다.
+5. Cookie/Host 등 forbidden header는 브라우저가 제어하며 입력한다고 전송되는 것이 아니다. CORS 허용 여부도 대상 서버가 결정한다. credentials는 omit이며 명시적 Authorization header는 해당 Send 요청에 사용한다.
+
+외부 API 없이 재현하려면 dev 서버와 별도 터미널에서 `node tests/fixtures/server.js`를 실행한다. 앱에 `http://127.0.0.1:4174/echo`를 입력하면 로컬 method/query/header/body echo를 확인한다. 4174는 4173 origin만 CORS 허용, 4175는 CORS 미허용 대조군이다. 두 서버는 테스트 전용이며 E2E는 4173/4174/4175를 자체 시작·종료하므로 수동 서버를 먼저 종료한다.
