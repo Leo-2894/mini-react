@@ -239,3 +239,11 @@
 - CLI open→검증 루트 설치→snapshot→버튼 click→snapshot: +3, renders2(초기1+배치1). cli-result.log. 별도 브라우저/서버 종료 후 test:all, 충돌 없음.
 - Node/focus/caret/실패 UI·hooks 보존, stale setter/queue 무효, props/child/Hook 규칙 PASS. 기존 85+32 및 QA06-005 회귀 유지. 기존 baseline 중 vnode 확장 외 파일 hash 불변. git diff --check PASS. 설계 변경 없음, 모든 조건부 Hook 위반 탐지/원자 rollback은 주장하지 않음.
 - TURN07 PASS는 구현 자체 검증. 별도 독립 최종 검수는 TURN12. 다음 TURN08 진행 가능.
+
+## TURN 08 — 자체 PASS / R03~R05
+- 시작 STATE IN_PROGRESS, 현재 계약7절 재확인. 코드 6dab819e4b03ed9eb953e84cafded084b81b0d3f: hooks/component 확장, 신규 hooks unit16/E2E1, README. 구현 시도1, 신규16개 첫 실행 PASS.
+- deps 생략/[]/동일/변경/길이/NaN/-0/복사, cleanup 전체→setup 전체/중복 방지/예외 지속, Promise setup 오류, post-patch DOM 관찰, effect setter 다음 microtask/50회 loop 제한 PASS.
+- memo 호출수/값 ===/실패 render cache 보존, 자연 Hook 종류 변경, factory Hook/setter 차단, unmount queued props 무효 PASS.
+- npm run test:unit exit0 118/0/0, test:e2e exit0 Chromium36/0/0, test:all exit0 118+36/0/0. 고유154, output/playwright/turn08/test-*.log/results.json. 기존 reports prior-*/E2E별도/final-* 보존. E2E 자체 서버 외 별도 서버 없음.
+- 기존 Phase1/QA06-005 및 TURN07 전부 유지. git diff --check PASS. effect 오류는 이미 commit된 UI를 rollback하지 않으며 render 실패와 구분해 README에 명시. 공개 계약 변경 없음.
+- 다음 TURN09 진행 가능. 최종 독립 승인 아님.

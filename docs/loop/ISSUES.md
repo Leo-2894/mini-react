@@ -1,3 +1,9 @@
+# TURN 08 — 자체 검증 완료
+신규 확정 미해결 없음. R03~R05 및 이전 회귀118unit/36E2E PASS. effect 오류 후 이미 commit된 UI의 rollback은 계약 범위 밖이며 실패 render 보존과 구분한다.
+
+---
+## 이전 기록 보존
+
 # TURN 07 — 구현 자체 PASS
 SOL-007-01 / MEDIUM / RESOLVED: 잘못된 Hook 종류의 queue가 state no-op 필터에 가려지는 guard 누락. component.update의 queue 종류 검사로 수정, component.test.js 원본 실패 유지 후 통과. 코드 aade8bd0a37b8ad6bf8ff691394d74de526e105e; 증거 output/playwright/turn07/attempt1-unit.log 및 attempt2-unit.log.
 기존 QA06-001~005 독립 RESOLVED 유지, 새 구현은 TURN12 검수 대상. 신규 확정 미해결 없음.

@@ -1,6 +1,6 @@
 # API Studio loop state
-current_turn: 07
-next_turn: 08
+current_turn: 08
+next_turn: 09
 limit_cycle: 2
 revision_limit: 2
 previous_cycle_completed_reviews: 2
@@ -14,7 +14,7 @@ revision_count: 1
 review_status: PASS
 approval_status: APPROVED
 operational_status: IN_PROGRESS
-next_action: TURN07_R01_R02
+next_action: TURN08_R03_R05
 rework_status: COMPLETED_APPROVED
 active_rework_round: 1
 implementation_attempts: 1
@@ -38,7 +38,7 @@ TURN 06 추가 독립 재검수 PASS / APPROVED. QA06-001~005 RESOLVED, 확인 �
 | 05 | Sol | PASS | Sol 자체: 53 unit + 8 Chromium E2E; 독립 결함은 06 참조 | 83b1711 |
 | 06 | Sol 6.1 독립 QA | PASS | QA06-001~005 RESOLVED, 추가 독립 재검수 APPROVED | d7ec630 |
 | 07 | Sol | PASS | 자체: unit102/Chromium35, R01/R02 | aade8bd |
-| 08 | Sol | NOT_STARTED | — | none |
+| 08 | Sol | PASS | 자체: unit118/Chromium36, R03~R05 | 6dab819 |
 | 09 | Sol | NOT_STARTED | — | none |
 | 10 | Sol | NOT_STARTED | — | none |
 | 11 | Sol | NOT_STARTED | — | none |
@@ -107,3 +107,6 @@ TURN 06 추가 독립 재검수 PASS / APPROVED. QA06-001~005 RESOLVED, 확인 �
 
 ## TURN 07 완료 — Sol 자체 PASS
 코드 aade8bd0a37b8ad6bf8ff691394d74de526e105e; 신규 unit17/E2E3, 전체102+35, 필수3명령 exit0/FAIL0/SKIP0. 고유137. 오류 슬롯 guard 보완 후 재검증, 시도2. 다음 허용 TURN08 R03~R05. TURN06 독립 승인 범위와 이후 코드 자체 검증을 구분한다.
+
+## TURN 08 완료 — Sol 자체 PASS
+코드 6dab819e4b03ed9eb953e84cafded084b81b0d3f; 신규16unit/1E2E, 전체118+36/FAIL0/SKIP0, 필수3명령 exit0. 고유154. 수정시도1. 다음 허용 TURN09 API 모듈 A01/A02.

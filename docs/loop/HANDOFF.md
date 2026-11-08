@@ -1,3 +1,13 @@
+# TURN 08 — 자체 PASS / 다음 TURN 09
+CODE: 6dab819e4b03ed9eb953e84cafded084b81b0d3f
+FILES: hooks.js/component.js, 신규 tests/unit/hooks.test.js 및 tests/e2e/hooks.spec.js, README, 공통 기록.
+EVIDENCE: 필수3명령 exit0; unit118/0/0, Chromium36/0/0, all118+36/0/0. 고유154. output/playwright/turn08/.
+OPEN: 신규 확정 결함 없음. effect 오류는 post-commit 오류이며 rollback 없음; README 한계 명시.
+NEXT: 구현 Sol TURN09 Fetch/request/response/정제 History A01/A02. TURN12 독립 검수는 별도 세션.
+
+---
+## 이전 기록 보존
+
 # TURN 07 — Sol 자체 완료 / 다음 TURN 08
 CODE: aade8bd0a37b8ad6bf8ff691394d74de526e105e
 STATUS: PASS (구현 자체 검증), TURN06 별도 독립 APPROVED 원문 보존.
