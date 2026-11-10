@@ -1,0 +1,21 @@
+{
+  "name": "api-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build && node scripts/server.js",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test:all": "npm run typecheck && npm run build && npm run test:unit && npm run test:e2e",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "node scripts/build.js"
+  },
+  "devDependencies": {
+    "@playwright/cli": "^0.1.23",
+    "@playwright/test": "^1.65.0",
+    "jsdom": "^31.0.0",
+    "typescript": "7.0.2",
+    "vitest": "^5.1.0"
+  }
+}

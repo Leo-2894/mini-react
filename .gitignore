@@ -147,3 +147,11 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# API Studio generated artifacts
+node_modules/
+test-results/
+playwright-report/
+output/
+.playwright-cli/
+dist/

@@ -1,0 +1,22 @@
+{
+  "revision": "plain-language-first",
+  "local_links": 113,
+  "invalid_links": [],
+  "details_balanced": true,
+  "figures": 11,
+  "captions": 11,
+  "plain_language_topics": 24,
+  "visual_check": {
+    "exit_code": 0,
+    "problems": 0,
+    "sheet_inspected": true,
+    "widths": [
+      390,
+      1280
+    ]
+  },
+  "protected_files": 76,
+  "original_files_changed": [],
+  "product_tests": "not rerun; learning artifact only",
+  "backup": "revisions/before-plain-language/"
+}
