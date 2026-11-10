@@ -1,0 +1,151 @@
+{
+  "source": "work.md",
+  "revision": "concept-expansion",
+  "coverage": [
+    {
+      "group": "Phase 1",
+      "concept": "Document / Window · DOM 읽기/쓰기",
+      "feature": "초기 복제·단축키",
+      "anchor": "dom-basics"
+    },
+    {
+      "group": "Phase 1",
+      "concept": "DOM 변화 감지 API",
+      "feature": "MutationObserver로 no-op 시험",
+      "anchor": "dom-observation"
+    },
+    {
+      "group": "Phase 1",
+      "concept": "Reflow / Repaint · DOM 비용",
+      "feature": "불필요한 쓰기·전체 교체를 줄임",
+      "anchor": "layout-paint"
+    },
+    {
+      "group": "Phase 1",
+      "concept": "VDOM 구조와 필요한 이유",
+      "feature": "편집 DOM과 App 결과를 같은 데이터로",
+      "anchor": "vdom-structure"
+    },
+    {
+      "group": "Phase 1",
+      "concept": "속성·현재 입력값·이벤트",
+      "feature": "입력 재독해와 listener 관리",
+      "anchor": "live-props"
+    },
+    {
+      "group": "Phase 1",
+      "concept": "Diff 동작 · 다섯 변화 유형",
+      "feature": "형제 대응·재귀·변경 명령 계산",
+      "anchor": "diff-deep"
+    },
+    {
+      "group": "Phase 1",
+      "concept": "실제 DOM에 반영 · 부분 갱신",
+      "feature": "Preflight·참조 결속·Patch",
+      "anchor": "patch-deep"
+    },
+    {
+      "group": "Phase 1",
+      "concept": "State History · Undo / Redo",
+      "feature": "불변 snapshot·cursor·분기",
+      "anchor": "history-deep"
+    },
+    {
+      "group": "연결 개념",
+      "concept": "key · Node 동일성 · id",
+      "feature": "목록과 두 영역의 정체성 보존",
+      "anchor": "identity-key"
+    },
+    {
+      "group": "Phase 2",
+      "concept": "FunctionComponent · 생명주기",
+      "feature": "함수 실행과 인스턴스 저장 분리",
+      "anchor": "component-lifecycle"
+    },
+    {
+      "group": "Phase 2",
+      "concept": "UI 분리 · props · 순수 자식",
+      "feature": "Sidebar/Editor/Response 역할 분리",
+      "anchor": "props-lifting"
+    },
+    {
+      "group": "Phase 2",
+      "concept": "State 위치 · Lifting State Up",
+      "feature": "루트 App이 소유하고 callback으로 변경",
+      "anchor": "props-lifting"
+    },
+    {
+      "group": "Phase 2",
+      "concept": "useState · setter의 추가 책임",
+      "feature": "초기화·action·예약·갱신 경로",
+      "anchor": "state-setter"
+    },
+    {
+      "group": "Phase 2",
+      "concept": "함수 재실행 뒤 상태 유지",
+      "feature": "hooks 배열·index·호출 규칙",
+      "anchor": "hook-slots"
+    },
+    {
+      "group": "구현 연결",
+      "concept": "불변 갱신 · 입력 state 동기화",
+      "feature": "Object.is·객체 참조·props.value",
+      "anchor": "immutable-input"
+    },
+    {
+      "group": "선택 구현",
+      "concept": "여러 상태 변경을 한 번에",
+      "feature": "queue·microtask Batching",
+      "anchor": "batching-deep"
+    },
+    {
+      "group": "Phase 2",
+      "concept": "useEffect · deps · cleanup",
+      "feature": "요청·listener의 시작과 정리",
+      "anchor": "effect-deep"
+    },
+    {
+      "group": "Phase 2",
+      "concept": "useMemo · 계산 캐시",
+      "feature": "요청 검증·응답 가공 재사용",
+      "anchor": "memo-deep"
+    },
+    {
+      "group": "두 Phase",
+      "concept": "같은 VDOM / Diff / Patch 사용",
+      "feature": "Render→Commit→Effect 구분",
+      "anchor": "render-commit"
+    },
+    {
+      "group": "비교 학습",
+      "concept": "실제 React의 동작과 차이",
+      "feature": "공통 원리·지원 범위·실행 시점",
+      "anchor": "react-comparison"
+    },
+    {
+      "group": "필수 품질",
+      "concept": "단위·기능 시험 · 엣지 케이스",
+      "feature": "값·참조·호출 수·브라우저 확인",
+      "anchor": "testing-deep"
+    },
+    {
+      "group": "제품 응용",
+      "concept": "HTTP · Fetch · Promise · JSON",
+      "feature": "Send와 응답 Viewer",
+      "anchor": "api-concepts"
+    },
+    {
+      "group": "제품 응용",
+      "concept": "비동기 수명 · metadata 이력",
+      "feature": "최신 요청 보호·정제 저장",
+      "anchor": "async-history"
+    },
+    {
+      "group": "승인 확장",
+      "concept": "TypeScript · Node.js",
+      "feature": "소스 타입·빌드·도구 실행 환경",
+      "anchor": "tooling-deep"
+    }
+  ],
+  "scope": "Learning HTML only; original product, tests, README, reviews preserved"
+}

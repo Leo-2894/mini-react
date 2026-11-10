@@ -97,3 +97,101 @@ README와 implementation은 두 페이지/로컬 fixture/세 명령/React 차이
 TURN12 최초 독립 검수 REJECTED. revision_count=0 유지; TURN06 주기/재검수 횟수와 별도다. 다음 담당은 Sol 구현 세션의 동일 TURN12 REVIEW_REWORK. 수정→재검수 한도2회를 적용하되 최초 검수를 완료 횟수로 세지 않는다.
 프로젝트 전체 구현은 있으나 최종 검수·로컬 제출 승인 미완료. 원격 제출/배포 미수행. 반려 상태이므로 승인용 로컬 검수 commit은 만들지 않았다.
 시작 clean→종료 신규 turn12.md 및 공통 기록4개만 변경. 제품/기존 시험/설계/README/TURN06 보고 불변, HEAD eb368fd 유지. 자신이 시작한 브라우저·4173 dev 및 4174/4175 fixture 종료. 검수 기록 후 STOP, 다른 세션 자동 실행 없음.
+
+---
+
+# [TURN 12 — FIRST POST-REWORK INDEPENDENT QA REPORT]
+REVIEWER: **Sol 6.1 / HIGH — 독립 검수 세션**
+STATUS: **PASS / APPROVED**
+SCOPE / REVIEW HEAD: 885d8ea1d7ff2d9560c1cf4e73eff77205339bfa
+APPROVED PRODUCT SHA: e513ba404d00cfbf3602afe240276efa2920905e
+QA12-001 MINIMUM FIX: 129b8845fde62fa03c679a061154d758f389e2bc
+REVISION_COUNT: **1/2** (동일 TURN12 첫 수정→독립 재검수 완료)
+FILES CHANGED: 이 보고와 STATE/HANDOFF/LOG/ISSUES만. 제품·정규 시험 수정 없음.
+ARCHITECTURE CHANGES BY REVIEWER: 없음. 사용자 승인 strict TypeScript 보완 계약을 검증.
+COMMIT BY REVIEWER: none. 검사 HEAD 유지, 5개 검수 문서만 미커밋.
+NEXT OWNER / NEXT ACTION: 사용자 / 로컬 제출 자료 확인. 개발 TURN 추가 실행 없음.
+HANDOFF: 작성 완료. PROJECT COMPLETE / SUBMISSION READY: **true / true** (로컬 검수 범위).
+
+## 1. 종합 판정
+**PASS / APPROVED. QA12-001을 독립 RESOLVED로 판정한다. 미해결 CRITICAL/HIGH 0건, 필수 검증 미실행 없음.**
+Phase1, Phase2, 실제 API Studio 서비스와 승인된 TypeScript 전환의 필수 게이트를 충족했다. 최초 REJECTED 보고는 위 원문 그대로 보존한다. 당시 JavaScript 언어 판정은 당시 SHA의 역사 기록이며 현재 언어 판정으로 사용하지 않는다.
+이번 검수는 구현과 분리된 세션이다. 사용자 지시의 검수 모델 변경 및 TypeScript 전환 승인만 적용했으며 기존 에이전트/하네스를 일괄 변경하지 않았다. 자체 PASS 로그를 복사해 독립 결과로 사용하지 않았다.
+시작 실제 cwd/Git root는 C:\Users\Leo\Desktop\API 1이며 HEAD와 clean worktree가 인계 기준과 일치했다. receipt 및 Git 계보를 대조했다. e513ba4→885d8ea는 공통 기록4개뿐이며 이후 제품 변경 없다. 최초 보고는 c4ff3bd의 bytes와 동일함을 확인한 뒤 이번 보고를 append했다. 예상하지 못한 변경/동시 수정 없음.
+
+## 2. 요구사항 충족 상태
+
+| 요구사항 | 판정 | 코드·실행 근거 |
+|---|---|---|
+| D01~D02 DOM↔VDOM | 충족 | 실제 childNodes/live props 읽기, 최초 source Node 유지; vdom unit/Phase1 E2E 및 독립 native probe |
+| F01~F02 순수 Diff | 충족 | 변경별 계획·깊은/복수/keyed/unkeyed·불변 입력의 기존 assertion 보존 및 통과 |
+| P01~P05 Patch | 충족 | Node===/no-op 쓰기0/listener 정리/controlled input/caret/사전 거부 회귀; 양 페이지 동일 renderer |
+| H01~H04 History/안전 편집 | 충족 | 현재 editor 재독해, Undo/Redo·분기·no-op Redo·50개 한계·독립 snapshot·안전 입력 정규 회귀 |
+| R01~R05 Phase2 | **구현됨 / 독립 검증 완료** | component/hooks 직접 검토, unit/Chromium 및 runtime 독립10/0 |
+| A01~A02 요청/응답 모델 | 충족 | URL·query/header/JSON 검증과 오류 분류 unit, 실제 HTTP 대조 |
+| A03~A05 서비스 상호작용 | **구현됨 / 독립 검증 완료** | 실제5메서드/취소/timeout/CORS/늦은 응답/JSON/이력·재사용/모바일·행·왕복 |
+| A06 공유 엔진/금지 런타임/문서 | 충족 | Phase1 controller와 FunctionComponent가 동일 renderer→diff/patch 사용, runtime dependencies 없음; README/implementation 재현 경로 |
+| TS 보완 계약 | 충족 | 제품TS21/JS사본0, strict/noEmitOnError, 실제 dist HTTP/bytes, 실패·symlink 격리 probe |
+
+하네스 최종 체크리스트의 필수 항목을 위 코드·단위·실제 Chromium 증거로 대조했다. 테스트 전용 Vitest/jsdom/Playwright/TypeScript와 제품 런타임을 구별한다.
+
+## 3. 결함별 판정과 독립 재현
+**QA12-001 / HIGH → 독립 RESOLVED.**
+대상 src/api/history.ts의 raw segment 분리 후 decode 및 24자 이상 token 판별. 최소 수정은 decoded slash를 기존 문자집합에 포함한다. decoded slash를 다시 경로 구분자로 나누거나 전체 URL decode로 경계를 잃지 않는다.
+UI 재현: %2F/%2f 각각 새 reload 후 가짜 Params/Header/Body를 입력하고 원본 URL을 실제 Send. root History metadata, Recent requests 접근성 이름, Reuse draft와 Send disabled를 검사했다. 기대값은 literal http://127.0.0.1:4174/session/[redacted]이며 production sanitizer로 정답을 만들지 않았다.
+실제: 두 사례 모두 저장 URL/접근성 이름/Reuse URL이 [redacted], Send disabled=true, 재사용 Params/Headers=[], Body='', 원문 토큰·민감 query/body/auth 부재. entry는 id/time/method/url/status/elapsed만 보유. UI2PASS/0FAIL, pageerror=[].
+JWT/plus/slash/underscore/hyphen/padding, 일반 a%2Fb segment 보존, 민감 이름 뒤 값 정제, query/hash/userinfo 제거도 literal 기대값으로 독립 확인했다. 임의 비밀을 모두 탐지한다고 확대하지 않는다.
+증거: independent-privacy-ui.js/.log, independent-http.js/.log, independent-ts-boundaries.js/.log. 신규 privacy unit8/E2E2도 현재 TS/compiled JS에서 통과했다.
+
+**QA06-001~004 / 기존 독립 RESOLVED 유지, 현재 회귀 PASS.**
+value/type projection, radio form ownership, native label/AX 이름, Inspector 충돌·IDREF 및 외부 physical mutation 거부의 정규 회귀 통과. 별도 checkbox/radio/text probe에서도 source Node===, label.control===같은 host input, input.labels 자기 label만1, physical ID 분리, logical id/ARIA 보존, Patch/Undo/Redo 후 관계 유지, no-op 쓰기0을 확인했다.
+
+**QA06-005 / 기존 독립 RESOLVED 유지, 원본 오류 경계 재확인.**
+compiled JS에서 projection/apply·travel·restoreDraft 첫 for 쓰기 성공 후 id 쓰기 fault를 독립 재주입했다. 실제 부분 mutation, 원본 Error===, locked=true, actual/History/cursor 보존, 주입 제거 후 세 조작 거부를 확인했다. projection 뒤 preview 준비 fault도 보호된다. candidate/초기 preflight 읽기 전용 실패는 쓰기0·비잠금·원인 제거 후 retry 성공. 독립10PASS/0FAIL. 예외 주입을 자연 발생 오류나 실제 데이터 손실로 과장하지 않는다.
+
+**SOL-012-TS-01 / 구현 자체 발견 회귀 — 독립 해결 확인.**
+TS element projection 대상이 Text일 때 Expected projected element를 쓰기 전에 던지고 DOM 불변인 것을 별도 브라우저 probe에서도 확인했다.
+신규 미해결 결함 없음. 결함 수정을 위한 구현 인계 없음.
+
+## 4. Phase2와 서비스의 실제 동작
+FunctionComponent mount/update/updateProps/unmount, 인스턴스별 hooks/queue/index/generation 및 실패 draft commit 경계를 검토했다. App만 state/effect/memo를 소유하고 panels 자식은 props 전용 순수 함수다. h(Child)는 Hook 권한을 차단하며 외부/자식/initializer/updater/memo Hook과 종류/개수 변화는 정규 회귀에서 거부된다.
+실제 경로는 setter→ordered queue/microtask→루트 재실행→새 VDOM→기존 renderer.preview/commit→공유 diff/patch다. Phase1 controller도 동일 renderer를 사용한다. 별도 엔진·전체 DOM 재생성·React/Vue/Preact/Hooks 라이브러리 우회 없음.
+runtime 독립10/0: lazy1회·setter 안정성, 값/함수 updater 순서와 batching, props update, 자식 Node===/focus/caret, 최종 Object.is no-op 쓰기0, effect cleanup 전체→setup 전체, NaN/-0/길이 deps, memo 및 실패 render의 hooks/cache/UI 보존, 명시 retry, unmount 후 stale setter/예약 무효, child Hook 거부, 자동 effect loop50회 제한.
+HTTP 독립22/0: 실제 loopback5메서드/query/header/body, 민감 응답 header 마스킹, 409/503/204/invalid JSON/text/large, 실제 timeout/취소/CORS 및 token metadata.
+deterministic UI: 취소 신호를 무시한 늦은 응답이 최신 응답/History를 덮지 않음, 동적 행 Node===, 두 페이지 왕복·실제 편집→Patch→Undo, 390px 모바일 overflow 없음·이력 표시, 키보드 Send, pageerror=[].
+JSON 트리 제한/응답 HTML 비실행/이력20개·reload/오류 후 재전송도 정규 E2E 통과. 실패 effect는 post-commit 오류이며 원자 rollback이나 React 전체 호환성을 주장하지 않는다.
+
+## 5. TypeScript·Node·빌드·서빙
+제품 src는 기존19모듈+공통 타입2=21 TS이며 수동 관리 제품JS사본0이다. 브라우저는 tsc 생성 JavaScript native ES modules, Node는 정적 개발 서버/빌드/시험/HTTP fixture에 사용한다. 별도 제품 REST API backend는 없으며 브라우저 Fetch가 대상 API에 요청한다.
+실제 Node v24.22.1/npm11.19.1/TypeScript 설치·package·lock 모두7.0.2. strict/noEmitOnError=true, NodeNext/ES2022/DOM 환경. broad any/ts-ignore/ts-nocheck 없음. Hook slot/generic clone/cache 등의 제한된 내부 단언은 내부 상관관계 경계이며 외부 JSON/VDOM/DOM 입력은 unknown/노드 종류 및 값 검증을 유지한다.
+기존13 unit 파일은 .js→.ts import 외 bytes가 동일함을 독립 대조했다. 기존 E2E와 기대값 삭제/skip/완화 없음. 신규 E2E hash 검사는 실제 TS 파일을 읽고 버전을 대조하며 기존 privacy assertion을 대체하지 않는다.
+build.js의 절대 root/dist·직속 부모 검증과 symlink 거부를 검토했다. 격리 fixture에 동일 build.js/tsconfig를 복사해 의도적 TS2322→exit1/오래된 index 제거, dist junction→exit1/대상 sentinel 보존을 확인했다. 제품 dist/원본은 실패 probe로 변경하지 않았다.
+독립 HTTP로21개 JS URL의200/JavaScript MIME와 응답 bytes===dist 파일, source hashes/버전, /와 /phase1/ HTML script import, /src/main.ts404를 확인했다. npm run dev 초기 자동 build도 확인했다. E2E 설정은 npm run dev를 자체 실행해 최신 빌드를 준비하며 unit은 TS 원본을 읽는다.
+증거 independent-build-type-audit.json, independent-serving.json, build.log, dev.log. 격리 fixture node_modules junction은 읽기 용도로 사용했으며 재귀 삭제하지 않았다.
+
+## 6. 직접 실행한 시험 증거
+증거 base: output/playwright/turn12-rereview1/. 기존 report/test-results는 prior-*에 먼저 보존했다.
+
+| 직접 실행 명령 | exit | PASS | FAIL | SKIP | 증거 |
+|---|---:|---|---:|---:|---|
+| npm run typecheck | 0 | strict 검사 완료 | — | — | typecheck.log |
+| npm run build | 0 | TS21+두 페이지 자산 | — | — | build.log |
+| npm run test:unit | 0 | 161 / 14 files | 0 | 0 | test-unit.log |
+| npm run test:e2e | 0 | 62 Chromium | 0 | 0 | test-e2e.log |
+| npm run test:all | 0 | typecheck/build+161 unit+62 Chromium | 0 | 0 | test-all.log |
+
+고유 정규 시험223개. 반복 실행과 독립 probe는 합산하지 않는다. Playwright Skill을 읽고 실제 CLI headed browser를 사용했다. 별도 probe는 HTTP22/0, runtime10/0, projection10/0, TS/native/privacy9/0, UI encoded slash2/0 및 deterministic 흐름 정상으로 구분한다.
+npm run dev 초기 자동 build/4173·두 페이지 접속 확인 후 Ctrl+C 종료(exit1: 수동 종료이며 시험 실패로 계산하지 않음). 자체 브라우저 qa-ts-final 및 fixture4174/4175도 종료. 종료 후 세 포트 LISTEN 없음. 기능 검사 마지막 final-mobile.png를 촬영·열어 확인했으며 screenshot 이후 추가 Patch를 수행하지 않았다.
+409/503/CORS negative의 예상 network console 오류와 stale setter/주입 loop 오류는 정상 흐름 오류와 구분했다. 정상 UI pageerror=[] 및 정규 console 검사 통과.
+보조 조사에서 TS 구버전 classic API 경로와 잘못 짚은 App 경로 조회가 실패했다. 제품 변경 전 읽기/도구 경로 오류이며 실제 설치 TS7 CLI와 src/App.ts로 수정해 확인했다. 이를 제품/필수 시험 실패로 세거나 성공 증거로 사용하지 않았다.
+
+## 7. 구조적 평가·지원 한계·다음 단계 승인
+공유 엔진·root transaction·ID scope·입력 오류 경계가 유지된다. 참조 보존/no-op과 제한된 History/Viewer로 현재 범위 성능을 확인했다. 전면 리팩터링이나 추가 필수 기능을 요구하지 않는다.
+미검증: clean dependency reinstall, Firefox/WebKit, 실제 스크린리더 운용, 실제 외부 운영 API 가용성/CORS, 예외 주입 자연 발생 빈도. Chrome native AX 정규 회귀 통과를 스크린리더 운용 인증으로 표현하지 않는다.
+지원 한계: 원자 rollback, 모든 조건부/custom Hook 위반 자동 탐지, 모든 임의 비밀 탐지, 전체 응답 수신 메모리 제한, source watch를 보장하지 않는다. 승인된 HTML/Chromium/로컬 fixture 범위의 필수 검증 누락은 없다.
+승인 효력은 검사 HEAD885d8ea의 제품e513ba4 및 검증한 도구/시험/문서 범위에 한정하며 이후 코드 변경으로 자동 승계하지 않는다.
+revision_count0→1/2, active_rework_round1. 구현 시도3회와 독립 재검수1회, TURN06 역사 횟수를 분리한다.
+시작 clean→종료 이 보고와 STATE/HANDOFF/LOG/ISSUES 5개만 미커밋, 제품/기존 시험/설계/README 불변, HEAD 유지. record-baseline.json/final-record-audit.json에 원문 prefix·소스 hash·Git 상태 기록. 로컬 검수 commit 없음.
+**TURN12 PASS / APPROVED → 전체 종료.** 로컬 포트폴리오 제출 준비 완료이며 원격 제출·push·PR·배포는 수행하지 않았다. 다음 담당 사용자/로컬 제출 자료 확인. Sol 구현 세션에 남은 필수 수정 지시 없음. 다른 세션 실행/추가 구현 없이 STOP.
+
+REVIEW COMPLETED: 2026-11-08 20:47:13 Asia/Seoul

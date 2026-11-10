@@ -1,25 +1,27 @@
 # API Studio loop state
 current_turn: 12
-next_turn: 12
-next_owner: Sol 6.1 / HIGH
-next_role: Independent Review (별도 세션)
-implementation_status: PASS (TURN12 REVIEW_REWORK 1 자체 검증)
-review_status: REJECTED
-approval_status: REJECTED
-operational_status: AWAITING_INDEPENDENT_REVIEW
-project_complete: false
-submission_ready: false
-next_action: TURN12_INDEPENDENT_REREVIEW_QA12_001_AND_TYPESCRIPT
-last_verified_commit: e513ba404d00cfbf3602afe240276efa2920905e
+next_turn: none
+next_owner: User
+next_role: Local submission review / project closed
+implementation_status: PASS (TURN12 REVIEW_REWORK 1)
+review_status: PASS
+approval_status: APPROVED
+operational_status: COMPLETE
+project_complete: true
+submission_ready: true
+next_action: LOCAL_SUBMISSION_REVIEW_ONLY
+last_verified_commit: 885d8ea1d7ff2d9560c1cf4e73eff77205339bfa
 product_commit: e513ba404d00cfbf3602afe240276efa2920905e
 qa12_fix_commit: 129b8845fde62fa03c679a061154d758f389e2bc
-phase1_review_status: PASS / APPROVED (TURN06 당시 SHA에 한정)
+phase1_review_status: PASS / APPROVED (current TS product regression verified)
 phase1_approved_product_commit: ff2a689162c2d6129749f400810846fbee50e736
-last_independently_reviewed_head: eb368fdc7a32cd79a382a0726af9fd0c5b53ab43
-reviewer: Sol 6.1 / HIGH — 별도 독립 검수 세션
+phase2_review_status: IMPLEMENTED / PASS / APPROVED
+api_studio_review_status: IMPLEMENTED / PASS / APPROVED
+last_independently_reviewed_head: 885d8ea1d7ff2d9560c1cf4e73eff77205339bfa
+reviewer: Sol 6.1 / HIGH — 독립 검수 세션
 reviewer_change_reason: 최신 사용자 명시 검수 모델 변경; 구현과 검수 역할 분리
 review_counter_scope: TURN12
-revision_count: 0
+revision_count: 1
 revision_limit: 2
 active_rework_round: 1
 implementation_attempts: 3 (privacy 수정 / TS 초기 진단 / projection guard 보존)
@@ -28,10 +30,25 @@ qa06_new_cycle_completed_reviews: 1
 qa06_previous_cycle_completed_reviews: 2
 qa06_lifetime_rework_round: 3
 qa06_limit_reset_reason: 사용자 명시 지시 "다시 한도 재설정 됐어"
-last_updated: 2026-11-08 20:09 Asia/Seoul
+last_updated: 2026-11-08 20:47:13 Asia/Seoul
 
-QA12-001 Sol 수정 완료 / 독립 재검수 대기. 제품 TypeScript21, 브라우저 compiled JavaScript, Node YES(dev/build/test/fixture), 제품 backend 없음.
-typecheck/build/unit161/E2E62/all161+62 각 exit0, FAIL0/SKIP0, 고유223개. 독립 REJECTED와 revision_count0/2 유지.
+## TURN12 첫 수정 후 독립 재검수 — PASS / APPROVED
+
+검수 담당: Sol 6.1 / HIGH — 독립 검수 세션.
+검사 HEAD885d8ea1d7ff2d9560c1cf4e73eff77205339bfa, 제품e513ba404d00cfbf3602afe240276efa2920905e, 최소 privacy 수정129b884.
+QA12-001 독립 RESOLVED: %2F/%2f 원본 UI 저장/이름/Reuse [redacted], Send 차단, 민감 draft 미복원.
+Phase1·Phase2·API Studio **구현됨/독립 검증 완료**, QA06-001~005 현재 회귀 통과.
+제품21TS/JS사본0, 브라우저 compiled JS, Node dev/build/test/fixture, 별도 제품backend 없음.
+typecheck/build/unit161/E2E62/test:all 각각 exit0; FAIL0/SKIP0, 정규 고유223개. dev 초기 자동build 및 두 페이지 확인 후 종료.
+독립 HTTP22/0·runtime10/0·projection10/0·TS/native/privacy9/0, privacy UI2/0 및 deterministic 모바일/왕복/늦은응답 흐름 정상.
+strict·버전·serving21개 bytes 및 실패/symlink 경계 검증. 증거 output/playwright/turn12-rereview1/ 및 reviews/turn12.md 추가 보고.
+기존 보고·증거 보존; 제품/정규시험 수정 없음. revision_count=1/2, active_rework_round=1 (TURN12 첫 완료 재검수, 구현시도3회/TURN06과 별도).
+최종 PASS / APPROVED, project_complete=true, submission_ready=true (로컬 검수 범위). CRITICAL/HIGH0, 필수 미검증 없음.
+미검증: clean dependency reinstall/Firefox·WebKit/실제 스크린리더/외부 운영API/예외 자연빈도. watch·모든 비밀탐지·전체 수신메모리 한계 등 문서 지원 경계 유지.
+승인은 검사HEAD 제품에 한정하며 이후 코드변경으로 자동 승계하지 않는다. 브라우저·수동서버 종료. 원격 push/PR/배포 없음.
+종료 검수문서5개만 미커밋, HEAD 유지. 다음 담당 사용자/로컬 제출 확인, 구현 추가작업 없음. STOP.
+
+## 아래는 이전 구현·검수 당시의 역사 기록 (현재 판정은 상단 PASS / APPROVED)
 
 ## TURN12 REVIEW_REWORK 1 — Sol 구현 수정 완료 / 독립 재검수 대기
 시각: 2026-11-08 20:09 Asia/Seoul. 자체 검증 PASS이며 독립 판정 REJECTED는 유지한다.
@@ -94,9 +111,9 @@ typecheck/build/unit161/E2E62/all161+62 각 exit0, FAIL0/SKIP0, 고유223개. �
 | 09 | Sol | PASS | 자체: unit144/Chromium36 A01/A02 | 16f3f9d |
 | 10 | Sol | PASS | 자체: unit148/Chromium53, 실제HTTP/CORS/경합 | 4143dec |
 | 11 | Sol | PASS | 자체: unit152/Chromium59, A06/문서/인계 | 9c53b3a |
-| 12 | Sol 6.1 독립 QA | REJECTED | QA12-001 HIGH, 긴 base64 encoded slash History 누락; reviews/turn12.md | eb368fd |
+| 12 | Sol 6.1 독립 QA | PASS | QA12-001 RESOLVED; TS21; unit161/E2E62; reviews/turn12.md 재검수 APPROVED | 885d8ea |
 
-## 이전 구현/검수 기록 (역사 기록; 현재 상태는 위 TURN12 REJECTED)
+## 이전 구현/검수 기록 (역사 기록; 현재 상태는 상단 참조)
 
 
 ## 이전 검증 기록 (역사 기록; 현재 상태는 위 PASS/APPROVED)

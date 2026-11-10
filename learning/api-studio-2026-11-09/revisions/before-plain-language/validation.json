@@ -1,0 +1,29 @@
+{
+  "updated": "2026-11-09 Asia/Seoul",
+  "revision": "expanded-assignment-concepts",
+  "head": "885d8ea1d7ff2d9560c1cf4e73eff77205339bfa",
+  "product": "e513ba404d00cfbf3602afe240276efa2920905e",
+  "local_links": 113,
+  "invalid_links": [],
+  "duplicate_ids": [],
+  "details": 41,
+  "figures": 14,
+  "captions": 14,
+  "coverage_topics": 24,
+  "coverage_map": "concept-coverage.json",
+  "visual_check": {
+    "exit_code": 0,
+    "problems": 0,
+    "min_label_px_390": 12,
+    "min_label_px_1280": 14.21,
+    "sheets_visually_inspected": true,
+    "core_nested_figures_visible": true
+  },
+  "preservation": {
+    "protected_files": 76,
+    "changed": 0,
+    "previous_version": "revisions/before-concept-expansion/"
+  },
+  "scope": "Learning artifact only; original source, tests, README and QA records preserved; product tests not rerun; no commit",
+  "content": "Definitions, purpose, mechanisms, examples, source and existing evidence for browser DOM, VDOM, diff/patch, history, component/props, state/hooks, batching, effect/memo, shared engine, React comparison, tests and app/tooling concepts"
+}

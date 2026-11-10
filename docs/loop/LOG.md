@@ -353,3 +353,22 @@
 - 동일 TURN12에서 QA12-001 red→green을 독립 재현하고 TS 소스 전환·strict·빌드 삭제 경계·dev/E2E 자동 build·unit TS/브라우저 최신 JS 연결·두 페이지·기존 전체 계약을 검수한다. 기존 JS/과거 SHA 승인으로 새 코드 전체를 승인하지 않는다.
 - 미검증: clean dependency reinstall, Firefox/WebKit, 실제 스크린리더 운용, 실제 외부 API 가용성/CORS, 예외 주입의 자연 발생 빈도. 임의 비밀 전체 탐지/응답 전체 수신 메모리 제한/자동 watch를 보장하지 않는다.
 - 새로운 자체 확인 미해결 결함 없음. 독립 재검수 미실시이므로 최종 제품 승인·제출 준비는 false. 다음 허용 작업은 사용자가 시작하는 별도 Sol 6.1/HIGH 동일TURN12 재검수. 인계 후 STOP.
+
+
+---
+## 2026-11-08 20:47:13 Asia/Seoul — TURN12 첫 수정 후 독립 재검수 PASS / APPROVED
+
+검수 담당: Sol 6.1 / HIGH — 독립 검수 세션.
+검사 HEAD885d8ea1d7ff2d9560c1cf4e73eff77205339bfa, 제품e513ba404d00cfbf3602afe240276efa2920905e, 최소 privacy 수정129b884.
+QA12-001 독립 RESOLVED: %2F/%2f 원본 UI 저장/이름/Reuse [redacted], Send 차단, 민감 draft 미복원.
+Phase1·Phase2·API Studio **구현됨/독립 검증 완료**, QA06-001~005 현재 회귀 통과.
+제품21TS/JS사본0, 브라우저 compiled JS, Node dev/build/test/fixture, 별도 제품backend 없음.
+typecheck/build/unit161/E2E62/test:all 각각 exit0; FAIL0/SKIP0, 정규 고유223개. dev 초기 자동build 및 두 페이지 확인 후 종료.
+독립 HTTP22/0·runtime10/0·projection10/0·TS/native/privacy9/0, privacy UI2/0 및 deterministic 모바일/왕복/늦은응답 흐름 정상.
+strict·버전·serving21개 bytes 및 실패/symlink 경계 검증. 증거 output/playwright/turn12-rereview1/ 및 reviews/turn12.md 추가 보고.
+기존 보고·증거 보존; 제품/정규시험 수정 없음. revision_count=1/2, active_rework_round=1 (TURN12 첫 완료 재검수, 구현시도3회/TURN06과 별도).
+최종 PASS / APPROVED, project_complete=true, submission_ready=true (로컬 검수 범위). CRITICAL/HIGH0, 필수 미검증 없음.
+미검증: clean dependency reinstall/Firefox·WebKit/실제 스크린리더/외부 운영API/예외 자연빈도. watch·모든 비밀탐지·전체 수신메모리 한계 등 문서 지원 경계 유지.
+승인은 검사HEAD 제품에 한정하며 이후 코드변경으로 자동 승계하지 않는다. 브라우저·수동서버 종료. 원격 push/PR/배포 없음.
+종료 검수문서5개만 미커밋, HEAD 유지. 다음 담당 사용자/로컬 제출 확인, 구현 추가작업 없음. STOP.
+보조 도구 경로 오류(TS classic API/App 디렉터리) 후 실제 TS7 CLI/src/App.ts로 재확인; 제품/필수명령 실패와 구별. 정상 UI pageerror=[]; CORS/409/503·주입 loop는 의도한 negative 대조.

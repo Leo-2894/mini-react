@@ -1,3 +1,18 @@
+# TURN12 첫 수정 후 독립 재검수 — 현재 미해결 CRITICAL/HIGH 0
+DATE: 2026-11-08 20:47:13 Asia/Seoul
+REVIEWER: Sol 6.1 / HIGH — 독립 검수 세션
+STATUS: PASS / APPROVED
+
+| ID | 심각도 | 최종 상태 | 독립 근거 |
+|---|---|---|---|
+| QA12-001 | HIGH (발견 당시) | RESOLVED | 원본 %2F/%2f UI 저장/이름/Reuse 정제, Send 차단·민감 draft 미복원; UI2/0·HTTP22/0·literal 경계 |
+| QA06-001~005 | 과거 결함별 등급 보존 | RESOLVED 유지 / 현재 회귀 PASS | unit161/E2E62, native 관계3종/no-op 및 projection/preparation/read-only 오류10/0 |
+| SOL-012-TS-01 | 구현 자체 발견 회귀 | 독립 해결 확인 | Text projection throw/쓰기0/DOM 불변, 정규 unit 및 compiled JS probe |
+
+신규 미해결 결함 없음. 해결 근거/재현·기대·실제/한계는 reviews/turn12.md 추가 보고, output/playwright/turn12-rereview1/ 참조. 과거 반려 원문은 아래 보존하며 현재 판정으로 해석하지 않는다.
+
+---
+## 이전 이슈 기록 원문
 # TURN12 REVIEW_REWORK 1 — 구현 수정 완료 / 독립 재검수 대기
 QA12-001 / HIGH / Sol 수정 완료 — 독립 재검수 대기 / CODE e513ba404d00cfbf3602afe240276efa2920905e.
 독립 REJECTED는 유지한다. 최초 보고의 HIGH/OPEN 판정 원문을 아래에 보존하며 구현 세션이 독립 RESOLVED로 변경하지 않는다.

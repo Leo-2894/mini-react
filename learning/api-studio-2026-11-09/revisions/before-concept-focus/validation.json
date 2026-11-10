@@ -1,0 +1,29 @@
+{
+  "created": "2026-11-09 Asia/Seoul",
+  "head": "885d8ea1d7ff2d9560c1cf4e73eff77205339bfa",
+  "product": "e513ba404d00cfbf3602afe240276efa2920905e",
+  "local_links": 92,
+  "invalid_links": [],
+  "details": 30,
+  "figures": 10,
+  "captions": 10,
+  "files": [
+    "api-studio-learning.html",
+    "api-studio-learning.sheet-2.png",
+    "api-studio-learning.sheet-3.png",
+    "api-studio-learning.sheet.png",
+    "api-studio-learning.src.html"
+  ],
+  "visual_check": {
+    "exit_code": 0,
+    "problems": 0,
+    "min_label_px_390": 12,
+    "min_label_px_1280": 14.21,
+    "sheets_visually_inspected": true
+  },
+  "preservation": {
+    "protected_files": 76,
+    "changed": 0
+  },
+  "scope": "New learning folder only; no product tests rerun; no original files changed; no commit"
+}
