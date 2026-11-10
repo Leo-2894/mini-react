@@ -156,3 +156,10 @@ QA12-001: encoded slash(%2F/%2f)를 가진 긴 base64는 raw segment 안에서 d
 QA12-001의 신규 두 unit과 두 UI 사례는 수정 전 실패, 수정 후 통과했다. TS 자체 리뷰에서 projection 대상이 element 대신 text일 때 오류를 조용히 생략하는 전환 회귀도 실패 시험으로 확보해 명시적 거부를 복원했다. 마지막 변경 후 위 전체 명령을 재실행했다. Playwright Skill CLI에서 정제된 History 재사용/Send 차단과 DOM Lab Patch/Undo를 직접 확인하고 브라우저와 수동 서버를 종료했다.
 
 새 증거는 output/playwright/turn12-rework1/에 있다. 현재 자체 검증 PASS는 독립 승인과 별개이며 TURN12의 기존 REJECTED를 유지한다. 다음은 별도 Sol 6.1/HIGH 세션의 동일 TURN12 재검수다. 언어·빌드·서빙 경로도 검수 범위다.
+
+---
+
+## Repository introduction
+
+# mini-react
+Krafton Jungle SW-AI Lab Week11~12 mini-react project
