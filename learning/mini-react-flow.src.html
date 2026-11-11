@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko" data-register="blueprint">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mini React Lab · 개념 흐름도</title>
+  <link rel="stylesheet" href="kit.css" data-ve-kit>
+  <style>
+    :root { --accent: #167565; --accent-dim: #e1f3ed; }
+    body { font-family: "DM Sans", "Malgun Gothic", sans-serif; }
+    main { max-width: 960px; }
+    header h1 { font-size: clamp(27px, 4vw, 44px); }
+    .routes, .steps, .hooks { display: grid; gap: var(--s-3); }
+    .routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .steps { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; }
+    .hooks { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .arrow { color: var(--accent); font-weight: 700; text-align: center; }
+    .route, .step { background: var(--surface); border: 1px solid var(--border-bright); border-radius: var(--r-2); padding: var(--s-3); }
+    .route strong, .step strong { display: block; font-size: var(--t-body); }
+    .route span, .step span { display: block; margin-top: var(--s-1); font-size: var(--t-small); color: var(--text-dim); }
+    .join { text-align: center; margin-block: var(--s-2); font-size: var(--t-small); color: var(--text-dim); }
+    .shared { border: 1px dashed var(--border-bright); background: var(--accent-dim); padding: var(--s-3); }
+    .shared > p { margin: 0 0 var(--s-2); font-weight: 700; font-size: var(--t-small); }
+    .hook { border-top: 1px solid var(--border-bright); padding-block: var(--s-2); }
+    .hook h3 { margin: 0; font-size: var(--t-body); }
+    .hook p { font-size: var(--t-small); margin: var(--s-1) 0 0; }
+    .links { display: flex; flex-wrap: wrap; gap: var(--s-3); font-size: var(--t-small); }
+    @media(prefers-color-scheme: dark) { :root { --accent: #85e9be; --accent-dim: #18332e; } }
+    @media(max-width: 560px) {
+      .steps, .hooks { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Mini React Lab</p>
+    <h1>두 실습은 같은 엔진을 씁니다</h1>
+    <p class="lead">편집한 DOM이나 바뀐 State로 다음 화면을 만들고, 달라진 곳만 반영합니다.</p>
+  </header>
+  <figure aria-label="DOM Lab과 Hook Lab이 새 Virtual DOM을 만들어 공용 Diff와 Patch에 전달합니다.">
+    <div class="routes">
+      <div class="route"><strong>Phase 1 · DOM Lab</strong><span>제목을 바꾸고 Patch를 누릅니다.</span><span>↓ 편집한 DOM을 읽습니다.</span></div>
+      <div class="route"><strong>Phase 2 · Hook Lab</strong><span>+3 버튼으로 State를 바꿉니다.</span><span>↓ App을 다시 실행합니다.</span></div>
+    </div>
+    <p class="join">두 경로가 새 Virtual DOM을 넘깁니다 ↓</p>
+    <div class="shared">
+      <p>공용 화면 갱신</p>
+      <div class="steps">
+        <div class="step"><strong>Virtual DOM</strong><span>다음 화면을 데이터로 표현합니다.</span></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="step"><strong>Diff</strong><span>이전과 비교해 변경을 찾습니다.</span></div>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="step"><strong>Patch</strong><span>바뀐 곳을 실제 DOM에 반영합니다.</span></div>
+      </div>
+    </div>
+    <figcaption>DOM Lab은 성공한 화면을 History에 저장하고, Hook Lab은 FunctionComponent가 Hook 값을 보관합니다.</figcaption>
+  </figure>
+  <section>
+    <h2>Hook Lab에서 확인하는 세 가지 동작</h2>
+    <figure>
+      <div class="hooks">
+        <div class="hook"><h3>useState</h3><p>+3을 누르면 숫자가 늘고 입력한 메모가 남습니다.</p></div>
+        <div class="hook"><h3>useEffect</h3><p>구독 채널을 바꾸면 이전 신호 연결을 정리합니다.</p></div>
+        <div class="hook"><h3>useMemo</h3><p>보기만 바꾸면 저장한 결과 객체를 다시 씁니다.</p></div>
+      </div>
+      <figcaption>State는 값을 기억하고, Effect는 외부 작업을 연결하며, Memo는 계산 결과를 다시 씁니다.</figcaption>
+    </figure>
+  </section>
+  <section class="sources">
+    <div class="links"><a href="../phase1/">DOM Lab 열기</a><a href="../">Hook Lab 열기</a></div>
+    <p>구현 위치 · src/phase1/controller.ts · src/App.ts · src/mini-react/renderer.ts</p>
+  </section>
+</main>
+</body>
+</html>

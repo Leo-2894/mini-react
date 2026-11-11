@@ -3,28 +3,28 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'">
-  <title>DOM Lab · API Studio</title><link rel="icon" href="./favicon.svg">
+  <title>DOM Lab · Mini React Lab</title><link rel="icon" href="./favicon.svg">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="../">API STUDIO <span>/ DOM LAB</span></a><span class="badge">PHASE 01</span></header>
+  <header class="topbar"><a class="brand" href="../">Mini React Lab</a><nav class="phase-nav" aria-label="학습 페이지"><a href="./" aria-current="page">Phase 1 DOM Lab</a><a href="../">Phase 2 Hook Lab</a><a href="../learning/mini-react-flow.html">개념 흐름도</a></nav></header>
   <main>
-    <div class="intro"><p class="eyebrow">ENGINE VALIDATION</p><h1>변경만 찾고, 필요한 곳만.</h1><p>직접 만든 Virtual DOM · Diff · Patch 엔진의 동작을 확인하세요.</p></div>
+    <div class="intro"><p class="eyebrow">Phase 1 · DOM Lab</p><h1>변경만 찾고, 필요한 곳만.</h1><p>테스트 영역의 제목을 바꾸고 Patch를 눌러 보세요. 실제 영역에서 글자가 바뀌는 것을 확인한 뒤 Undo로 돌아갈 수 있습니다.</p></div>
     <div class="toolbar"><button id="patch" type="button" class="primary">Patch 적용</button><button id="undo" type="button">Undo</button><button id="redo" type="button">Redo</button><button id="restore" type="button">편집 되돌리기</button></div>
     <div class="workspace">
       <section class="panel"><div class="panel-heading"><h2>실제 영역</h2><span>COMMITTED</span></div><p class="hint">Patch로만 갱신됩니다. 초기 샘플의 노드 참조를 보존합니다.</p>
-        <div id="actual-host" class="stage"><article data-key="card" class="sample-card"><h3 data-key="heading">Hello, Mini React</h3><p data-key="description">테스트 영역을 편집한 뒤 Patch를 눌러 보세요.</p><ul data-key="list"><li data-key="a">DOM 읽기</li><li data-key="b">Diff 비교</li><li data-key="c">부분 Patch</li></ul><label data-key="label">샘플 입력 <input data-key="input" type="text" value="API Studio"></label></article></div>
+        <div id="actual-host" class="stage"><article data-key="card" class="sample-card"><h3 data-key="heading">Hello, Mini React</h3><p data-key="description">테스트 영역을 편집한 뒤 Patch를 눌러 보세요.</p><ul data-key="list"><li data-key="a">DOM 읽기</li><li data-key="b">Diff 비교</li><li data-key="c">부분 Patch</li></ul><label data-key="label">샘플 입력 <input data-key="input" type="text" value="Mini React"></label></article></div>
       </section>
       <section class="panel"><div class="panel-heading"><h2>테스트 영역</h2><span>EDITABLE DOM</span></div><p class="hint">텍스트를 직접 입력하거나 아래 Inspector로 구조를 바꾸세요.</p><div id="edit-host" class="stage" contenteditable="true" aria-label="테스트 DOM 편집기" spellcheck="false"></div></section>
     </div>
+    <div id="feedback-host"></div>
     <section class="panel inspector"><div class="panel-heading"><h2>DOM Inspector</h2><span>EDIT HOST ONLY</span></div>
       <p class="hint">선택자는 테스트 영역 안에서 찾습니다. 예: <code>[data-key="heading"]</code>, <code>ul</code>, <code>li</code></p>
-      <div class="fields"><label>대상 CSS 선택자<input id="target" value="[data-key=&quot;heading&quot;]"></label><label>텍스트 / 새 요소 내용<input id="edit-text" value="Hello, API Studio"></label><label>요소 태그<select id="tag"><option>p</option><option>span</option><option>li</option><option>strong</option><option>section</option><option>div</option></select></label></div>
+      <div class="fields"><label>대상 CSS 선택자<input id="target" value="[data-key=&quot;heading&quot;]"></label><label>텍스트 / 새 요소 내용<input id="edit-text" value="Hello, DOM Lab"></label><label>요소 태그<select id="tag"><option>p</option><option>span</option><option>li</option><option>strong</option><option>section</option><option>div</option></select></label></div>
       <div class="actions"><button id="set-text" type="button">텍스트 변경</button><button id="add-node" type="button">자식 추가</button><button id="replace-node" type="button">요소 교체</button><button id="remove-node" type="button" class="danger">요소 삭제</button></div>
       <div class="fields"><label>속성 이름<input id="attr-name" value="class"></label><label>속성 값<input id="attr-value" value="highlight"></label></div><div class="actions"><button id="set-attr" type="button">속성 설정</button><button id="remove-attr" type="button">속성 삭제</button></div>
       <p class="hint">허용된 HTML·속성·CSS만 적용됩니다. 붙여넣기와 드롭은 일반 텍스트로 처리합니다.</p>
     </section>
-    <div id="feedback-host"></div>
-    <footer>SHARED ENGINE / VANILLA JAVASCRIPT <span>VDOM · DIFF · PATCH</span></footer>
+    <footer>같은 Diff/Patch로 상태도 화면에 반영해 보세요. <a href="../">Phase 2 실습으로 이동</a></footer>
   </main><script type="module" src="../src/phase1/main.js"></script>
 </body></html>
