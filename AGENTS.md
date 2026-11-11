@@ -1,9 +1,10 @@
-# API Studio 작업 규약
+# Mini React Lab 작업 규약
+- 2026-11-11 사용자 변경으로 제품 범위를 Phase 1 DOM Lab과 Phase 2 Hook Lab 학습 실습으로 변경했다. 기존 하네스의 HTTP 서비스 요구와 이전 검수 보고는 당시 구현 이력이다. 현재 실행과 실습 기준은 README를 따른다.
 - 시작 시 CODEX_LOOP_HARNESS.md 전체, docs/loop/STATE.md와 HANDOFF.md를 읽고 실제 파일/Git 상태를 대조한다.
 - 우선순위: 최신 사용자 지시 > 과제 원문 필수 요구사항 > 하네스 게이트 > docs/architecture.md. 모호한 충돌은 BLOCKED로 기록한다.
 - Astra는 TURN 01/06/12의 설계·독립 검수, Sol은 TURN 02~05/07~11의 구현을 담당한다. 다른 담당의 TURN을 대신 PASS 처리하지 않는다.
 - 같은 저장소를 동시에 수정하지 않는다. 기존 사용자 파일을 보호한다. QA는 제품 코드를 수정하지 않고 결함을 Sol에 인계한다.
-- HTML/CSS/Vanilla JS ES modules만 제품에 사용한다. 외부 UI/VDOM/Hooks/상태/CSS 프레임워크 금지. 테스트 도구는 devDependencies로만 둔다.
+- HTML/CSS와 TypeScript로 제품을 작성하며 브라우저는 컴파일된 Vanilla JS ES modules를 실행한다. 외부 UI/VDOM/Hooks/상태/CSS 프레임워크 금지. 테스트 도구는 devDependencies로만 둔다.
 - Phase 1 테스트 DOM 직접 편집 → DOM 재독해 → shared Diff/Patch로 실제 영역 갱신. Undo/Redo는 두 영역을 동기화한다.
 - Phase 2는 같은 엔진을 사용하고 App 루트만 State/Hooks를 보유한다. 자식은 props 전용 순수 함수. 직접 DOM/innerHTML로 엔진을 우회하지 않는다.
 - 명령·실제 결과·미검증을 구분해 LOG/ISSUES/STATE/HANDOFF를 갱신한다. 시험 삭제/skip/완화로 PASS를 만들지 않는다.

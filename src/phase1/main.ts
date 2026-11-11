@@ -1,5 +1,5 @@
 import { isValueControl, errorMessage } from '../mini-react/types.js';
-import type { ElementVNode, Container, VNode } from '../mini-react/types.js';
+import type { ElementVNode, Container, VNode, Operation } from '../mini-react/types.js';
 function required(selector: string): HTMLElement {
   const node = document.querySelector(selector);
   if (!(node instanceof HTMLElement)) throw Error('Missing Phase 1 control: ' + selector);
@@ -26,10 +26,32 @@ const actual = $('actual-host'), editor = $('edit-host');
 const app = createPhase1(actual, editor);
 const feedback = createRenderer($('feedback-host'));
 let message = '실제 DOM을 읽어 테스트 영역에 복제했습니다. 초기 상태 S0가 저장되었습니다.', isError = false, draft = false, serial = 0;
+let lastOperations: readonly Operation[] | null = null;
+const operationLabels: Record<Operation['type'], string> = {
+  CREATE: '새 요소 만들기',
+  TEXT: '글자 바꾸기',
+  ATTRS: '속성 바꾸기',
+  EVENTS: '이벤트 연결 바꾸기',
+  PROPS: '입력값 맞추기',
+  CHILDREN: '자식 구성 바꾸기'
+};
+
+function patchSummary() {
+  if (lastOperations === null) return null;
+  const counts = new Map<Operation['type'], number>();
+  for (const operation of lastOperations) counts.set(operation.type, (counts.get(operation.type) ?? 0) + 1);
+  return h('section', { key: 'patch-summary', attrs: { class: 'panel patch-summary', 'aria-label': '최근 Patch 명령' } },
+    h('h2', {}, '최근 Patch 명령'),
+    counts.size
+      ? h('ul', {}, [...counts].map(([type, count]) => h('li', { key: type }, h('code', {}, type), ' · ' + operationLabels[type] + ' · ' + count + '개')))
+      : h('p', { attrs: { class: 'hint' } }, '바뀐 곳이 없어 변경 명령이 없습니다.'));
+}
+
 function updateFeedback() {
   const history = app.history;
   feedback.render(tree(
     h('div', { key: 'status', attrs: { class: isError ? 'status error' : 'status', role: isError ? 'alert' : 'status' } }, message),
+    patchSummary(),
     h('section', { key: 'history', attrs: { class: 'panel history' } },
       h('div', { attrs: { class: 'panel-heading' } }, h('h2', {}, 'State History'), h('span', {}, `${history.cursor + 1} / ${history.entries.length} · MAX 50`)),
       h('ol', {}, history.entries.map((entry, index) => h('li', { key: entry.id }, h('button', { attrs: { type: 'button', 'aria-current': index === history.cursor ? 'true' : 'false' }, events: { click: () => run(() => { app.travel(index); draft = false; return `S${entry.id}로 양 영역을 복원했습니다.`; }) } }, `S${entry.id} · ${entry.summary}`))))
@@ -53,7 +75,7 @@ function run(action: () => string): void {
   catch (error) { message = errorMessage(error); isError = true; }
   updateFeedback();
 }
-function apply() { run(() => { const result = app.apply(); draft = false; return result.changed ? `Patch 완료: ${result.operations.length}개 명령을 적용하고 양 영역 상태를 저장했습니다.` : '변경 없음: History와 Redo 경로를 유지했습니다.'; }); }
+function apply() { run(() => { const result = app.apply(); lastOperations = result.operations; draft = false; return result.changed ? `Patch 완료: ${result.operations.length}개 명령을 적용하고 양 영역 상태를 저장했습니다.` : '변경 없음: History와 Redo 경로를 유지했습니다.'; }); }
 function travel(offset: number): void { run(() => { app.travel(app.history.cursor + offset); draft = false; return '양 영역과 History 커서를 함께 이동했습니다.'; }); }
 function edited() { draft = true; message = '미적용 편집이 있습니다. Patch를 적용하거나 편집을 되돌리세요.'; isError = false; updateFeedback(); }
 function target() {

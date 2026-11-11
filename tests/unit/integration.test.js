@@ -1,4 +1,3 @@
-import {historyEntry} from '../../src/api/history.ts';
 import {afterEach,it,expect,vi} from 'vitest';
 import {FunctionComponent} from '../../src/mini-react/component.ts';
 import {useState,useEffect} from '../../src/mini-react/hooks.ts';
@@ -13,11 +12,4 @@ it('rejects setting another root from the active render',()=>{
 });
 it('completes all unmount cleanups once even if one throws',()=>{
  vi.spyOn(console,'error').mockImplementation(()=>{});const log=[];const{root}=mount(()=>{useEffect(()=>()=>{log.push(1);throw Error('cleanup');},[]);useEffect(()=>()=>log.push(2),[]);return h('p');});root.unmount();root.unmount();expect(log).toEqual([1,2]);expect(root.hooks).toEqual([]);
-});
-
-it('redacts common long JWT/base64 path values before storing History',()=>{
- for(const token of ['eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature','abcdefghijklmnopqrstuvwx+abc=']) {
-  const entry=historyEntry({method:'GET',url:'https://example.test/session/'+token},{status:200,elapsed:1},{id:'safe',time:1});
-  expect(entry.url).toBe('https://example.test/session/[redacted]');
- }
 });

@@ -15,4 +15,4 @@ http.createServer(async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
     res.end(await readFile(file));
   } catch { res.writeHead(404); res.end('Not found'); }
-}).listen(port, '127.0.0.1', () => console.log(`API Studio: http://127.0.0.1:${port}`));
+}).listen(port, '127.0.0.1', () => console.log(`Mini React Lab: http://127.0.0.1:${port}`));

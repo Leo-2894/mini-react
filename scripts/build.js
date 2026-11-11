@@ -27,6 +27,8 @@ async function walk(folder) {
   }
 }
 await walk('src'); await walk('phase1');
+await mkdir(path.join(output, 'learning'), { recursive: true });
+await copyFile(path.join(root, 'learning/mini-react-flow.html'), path.join(output, 'learning/mini-react-flow.html'));
 await copyFile(path.join(root, 'index.html'), path.join(output, 'index.html'));
 const pkg = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
 await writeFile(path.join(output, 'build-info.json'), JSON.stringify({ typescript: pkg.devDependencies.typescript, sourceHashes }, null, 2));
